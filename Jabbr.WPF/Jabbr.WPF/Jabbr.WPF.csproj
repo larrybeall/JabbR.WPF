@@ -45,6 +45,12 @@
     <Reference Include="Ninject">
       <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Client\Ninject.dll</HintPath>
     </Reference>
+    <Reference Include="Phoenix.Controls">
+      <HintPath>..\lib\phoenix.controls\Phoenix.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Phoenix.Windows.Controls">
+      <HintPath>..\lib\phoenix.controls\Phoenix.Windows.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -68,7 +74,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Authentication\AuthenticationWindowView.xaml.cs">
+      <DependentUpon>AuthenticationWindowView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Authentication\AuthenticationWindowViewModel.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Page Include="Authentication\AuthenticationWindowView.xaml">
