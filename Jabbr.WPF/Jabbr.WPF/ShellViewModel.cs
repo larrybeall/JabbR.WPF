@@ -17,7 +17,7 @@ using Caliburn.Micro;
         
         public void Test()
         {
-            var viewModel = new AuthenticationWindowViewModel();
+            var viewModel = new AuthWindowViewModel();
             _windowManager.ShowDialog(viewModel);
         }
     }
