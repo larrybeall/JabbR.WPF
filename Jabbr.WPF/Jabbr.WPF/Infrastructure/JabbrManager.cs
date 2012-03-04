@@ -29,7 +29,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.Kicked += ClientOnKicked;
             _client.LoggedOut += ClientOnLoggedOut;
             _client.PrivateMessage += ClientOnPrivateMessage;
-            _client.RoomCountChanged += ClientOnRoomCountChanged;
+            //_client.RoomCountChanged += ClientOnRoomCountChanged;
             _client.UserActivityChanged += ClientOnUserActivityChanged;
             _client.UserJoined += ClientOnUserJoined;
             _client.UserLeft += ClientOnUserLeft;
