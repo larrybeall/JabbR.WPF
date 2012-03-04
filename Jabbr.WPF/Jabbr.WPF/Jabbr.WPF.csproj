@@ -85,8 +85,9 @@
     </ApplicationDefinition>
     <Compile Include="Authentication\AuthWindowViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
-    <Compile Include="JabbRClient.cs" />
-    <Compile Include="JabbrManager.cs" />
+    <Compile Include="Infrastructure\JabbRClient.cs" />
+    <Compile Include="Infrastructure\JabbrManager.cs" />
+    <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Page Include="Authentication\AuthWindowView.xaml">

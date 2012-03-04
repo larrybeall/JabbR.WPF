@@ -7,24 +7,18 @@ using JabbR.Client;
 using Phoenix.Windows.Controls;
 using System.Windows;
 using JabbR.Client.Models;
+using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF.Authentication
 {
     public class AuthWindowViewModel
     {
-        public void OnTokenReceived(Window window, TokenReceivedEventArgs args)
+        public string Token { get; set; }
+
+        public void OnTokenReceived(Window window, EventArgs args)
         {
-            LogOnInfo info;
-
-            var client = JabbrManager.Instance.Client;
-            string value = client.Authenticate(args.Token);
-            MessageBox.Show(value);
-            client.Connect(value).ContinueWith(task =>
-                                               {
-                                                   info = task.Result;
-                                                   System.Diagnostics.Debug.WriteLine("I'm here");
-                                               });
-
+            window.Close();
         }
+
     }
 }
