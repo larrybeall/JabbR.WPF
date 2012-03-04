@@ -22,13 +22,13 @@
     <i:Interaction.Behaviors>
         <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" AutoSizeToContent="True" />
     </i:Interaction.Behaviors>
-    <Grid>
-        <phx:JanrainWidget 
+    <Grid cal:Message.Attach="[Event Loaded] = [Action OnTokenReceived($view, $eventArgs)]">
+        <!--<phx:JanrainWidget 
             x:Name="authWidget"
             ApplicationName="jabbr"
             CollapseBrowserOnBusy="False" 
             Width="380" 
             Height="166"
-            cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($view, $eventArgs)]"/>
+            cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($view, $eventArgs)]"/>-->
     </Grid>
 </metro:MetroWindow>

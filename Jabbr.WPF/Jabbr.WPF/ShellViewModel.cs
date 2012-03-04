@@ -1,4 +1,6 @@
-﻿namespace Jabbr.WPF {
+﻿using System;
+
+namespace Jabbr.WPF {
     using System.ComponentModel.Composition;
     using System.Windows;
 using Caliburn.Micro;
@@ -17,8 +19,11 @@ using Caliburn.Micro;
         
         public void Test()
         {
+            //var manager = Infrastructure.JabbrManager.Instance;
             var viewModel = new AuthWindowViewModel();
+            //_windowManager.ShowWindow(viewModel);
             _windowManager.ShowDialog(viewModel);
+            Infrastructure.JabbrManager.Instance.SignIn(null, () => MessageBox.Show("Finished signin"));
         }
     }
 }

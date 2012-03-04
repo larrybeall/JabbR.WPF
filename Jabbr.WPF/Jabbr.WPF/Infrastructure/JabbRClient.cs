@@ -34,7 +34,8 @@ namespace Jabbr.WPF
             Stream dataStream = request.GetRequestStream();
             dataStream.Write(postBytes, 0, postBytes.Length);
             dataStream.Close();
-            request.GetResponse();
+            var response = request.GetResponse();
+            response.Close();
 
             CookieCollection cookies = cookieContainer.GetCookies(new Uri(_url));
             string cookieValue = cookies[0].Value;
