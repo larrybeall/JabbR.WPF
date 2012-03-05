@@ -3,13 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        xmlns:properties="clr-namespace:Jabbr.WPF.AttachedProperties"
         xmlns:phx="clr-namespace:Phoenix.Windows.Controls;assembly=Phoenix.Windows.Controls"
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:cal="http://www.caliburnproject.org"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         Height="216" Width="395"
-        Title="sign in">
+        Title="sign in"
+        x:Name="uiThis">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -22,13 +24,27 @@
     <i:Interaction.Behaviors>
         <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" AutoSizeToContent="True" />
     </i:Interaction.Behaviors>
-    <Grid cal:Message.Attach="[Event Loaded] = [Action OnTokenReceived($view, $eventArgs)]">
-        <!--<phx:JanrainWidget 
+    <!--<Grid cal:Message.Attach="[Event Loaded] = [Action OnTokenReceived($view, $eventArgs)]">
+        <phx:JanrainWidget 
             x:Name="authWidget"
             ApplicationName="jabbr"
             CollapseBrowserOnBusy="False" 
             Width="380" 
             Height="166"
-            cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($view, $eventArgs)]"/>-->
-    </Grid>
+            cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($view, $eventArgs)]"/>
+    </Grid>-->
+    <TabControl>
+        <TabItem Header="Open Id">
+            <Button Content="Sign In" cal:Message.Attach="[Event Loaded] = [Action OnTokenReceived($view)]" /> 
+        </TabItem>
+        <TabItem Header="Standard">
+            <StackPanel Width="380" Height="200">
+                <TextBlock Text="Username:" />
+                <TextBox x:Name="Username" />
+                <TextBlock Text="Password:" />
+                <PasswordBox x:Name="Password" properties:PasswordHelper.Password="{Binding DataContext.Password, ElementName=uiThis, Mode=TwoWay}" />
+                <Button Content="Sign In" x:Name="btnSignInStandard" cal:Message.Attach="[Event Click] = [Action SignInStandard($view)]" />
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </metro:MetroWindow>

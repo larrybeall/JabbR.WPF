@@ -7,6 +7,7 @@ using JabbR.Client.Models;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace Jabbr.WPF.Infrastructure
 {
@@ -29,7 +30,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.Kicked += ClientOnKicked;
             _client.LoggedOut += ClientOnLoggedOut;
             _client.PrivateMessage += ClientOnPrivateMessage;
-            //_client.RoomCountChanged += ClientOnRoomCountChanged;
+            _client.RoomCountChanged += ClientOnRoomCountChanged;
             _client.UserActivityChanged += ClientOnUserActivityChanged;
             _client.UserJoined += ClientOnUserJoined;
             _client.UserLeft += ClientOnUserLeft;
@@ -37,19 +38,19 @@ namespace Jabbr.WPF.Infrastructure
             _client.UsersInactive += ClientOnUsersInactive;
         }
 
-        private void ClientOnUsersInactive(IEnumerable<User> enumerable)
+        private void ClientOnUsersInactive(IEnumerable<User> users)
         {
         }
 
-        private void ClientOnUserTyping(User user, string s)
+        private void ClientOnUserTyping(User user, string room)
         {
         }
 
-        private void ClientOnUserLeft(User user, string s)
+        private void ClientOnUserLeft(User user, string room)
         {
         }
 
-        private void ClientOnUserJoined(User user, string s)
+        private void ClientOnUserJoined(User user, string room)
         {
         }
 
@@ -57,19 +58,19 @@ namespace Jabbr.WPF.Infrastructure
         {
         }
 
-        private void ClientOnRoomCountChanged(Room r, int i)
+        private void ClientOnRoomCountChanged(Room room, int count)
         {
         }
 
-        private void ClientOnPrivateMessage(string s, string s1, string arg3)
+        private void ClientOnPrivateMessage(string from, string to, string message)
         {
         }
 
-        private void ClientOnLoggedOut(IEnumerable<string> enumerable)
+        private void ClientOnLoggedOut(IEnumerable<string> rooms)
         {
         }
 
-        private void ClientOnKicked(string s)
+        private void ClientOnKicked(string room)
         {
         }
 
@@ -77,7 +78,7 @@ namespace Jabbr.WPF.Infrastructure
         {
         }
 
-        private void ClientOnMessageReceived(Message message, string s)
+        private void ClientOnMessageReceived(Message message, string room)
         {
         }
 
@@ -110,22 +111,21 @@ namespace Jabbr.WPF.Infrastructure
             System.Diagnostics.Debug.WriteLine("start sign in.");
             //string userId = Authenticate(token);
             System.Diagnostics.Debug.WriteLine("got user id");
-            _client.Connect("e14c35c2-5b4a-49f4-be5a-f3a77b325c45").ContinueWith(task =>
-                                                     {
-                                                         var loginInfo = task.Result;
-                                                         System.Diagnostics.Debug.WriteLine("wtf");
-                                                         var userInfo = _client.GetUserInfo().Result;
-                                                         System.Diagnostics.Debug.WriteLine("got user info");
-
-                                                         foreach (var room in loginInfo.Rooms)
-                                                         {
-                                                             _client.JoinRoom(room.Name);
-                                                         }
-                                                         InvokeOnUi(completAction);
-                                                     });
+            CompleteSignIn(_client.Connect("e14c35c2-5b4a-49f4-be5a-f3a77b325c45"), completAction);
         }
 
-        public string Authenticate(string token)
+        public void SignInStandard(string username, string password, Action completeAction)
+        {
+            CompleteSignIn(_client.Connect(username, password), completeAction);
+        }
+
+        public void Disconnect()
+        {
+            _client.Disconnect();
+            Thread.Sleep(500);
+        }
+
+        private string Authenticate(string token)
         {
             CookieContainer cookieContainer = new CookieContainer();
 
@@ -161,6 +161,23 @@ namespace Jabbr.WPF.Infrastructure
             }
 
             _uiContext.Post(_ => toInvoke(), null);
+        }
+
+        private void CompleteSignIn(Task<LogOnInfo> signInTask, Action  completeAction)
+        {
+            signInTask.ContinueWith((task) =>
+                                        {
+                                            var loginInfo = task.Result;
+                                            System.Diagnostics.Debug.WriteLine("wtf");
+                                            var userInfo = _client.GetUserInfo().Result;
+                                            System.Diagnostics.Debug.WriteLine("got user info");
+
+                                            foreach (var room in loginInfo.Rooms)
+                                            {
+                                                _client.JoinRoom(room.Name);
+                                            }
+                                            InvokeOnUi(completeAction);
+                                        });
         }
     }
 }

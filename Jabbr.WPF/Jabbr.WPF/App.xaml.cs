@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Threading.Tasks;
+using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF
 {
@@ -24,6 +25,12 @@ namespace Jabbr.WPF
         {
             System.Diagnostics.Debugger.Break();
             unobservedTaskExceptionEventArgs.SetObserved();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            JabbrManager.Instance.Disconnect();
+            base.OnExit(e);
         }
     }
 }
