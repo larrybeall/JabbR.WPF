@@ -45,7 +45,7 @@
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.0.6.0.1\lib\net40\MahApps.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.0.8.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json">
       <HintPath>..\lib\Jabbr.Client\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject">
@@ -83,10 +83,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AttachedProperties\PasswordHelper.cs" />
     <Compile Include="Authentication\AuthWindowViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
+    <Compile Include="Infrastructure\EventArgs.cs" />
     <Compile Include="Infrastructure\JabbRClient.cs" />
     <Compile Include="Infrastructure\JabbrManager.cs" />
+    <Compile Include="Infrastructure\Models\ExtensionMethods.cs" />
+    <Compile Include="Infrastructure\Models\Message.cs" />
+    <Compile Include="Infrastructure\Models\Room.cs" />
+    <Compile Include="Infrastructure\Models\User.cs" />
+    <Compile Include="Infrastructure\Models\UserStatus.cs" />
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
     <Compile Include="ShellViewModel.cs" />
@@ -94,20 +101,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

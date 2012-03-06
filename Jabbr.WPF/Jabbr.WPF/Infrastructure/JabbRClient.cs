@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using SignalR.Client.Transports;
 
 namespace Jabbr.WPF
 {
@@ -43,6 +44,11 @@ namespace Jabbr.WPF
             JObject jsonObject = JObject.Parse(cookieValue);
 
             return (string)jsonObject["userId"];
+        }
+
+        protected override IClientTransport OnCreateTransport()
+        {
+            return new LongPollingTransport();
         }
     }
 }
