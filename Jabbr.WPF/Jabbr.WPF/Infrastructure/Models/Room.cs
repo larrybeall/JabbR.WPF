@@ -24,9 +24,13 @@ namespace Jabbr.WPF.Infrastructure.Models
             Name = room.Name;
             Count = room.Count;
             Private = room.Private;
-            Users = room.Users.Select(user => new User(user));
             Owners = room.Owners;
-            RecentMessages = room.RecentMessages.Select(message => new Message(message));
+
+            if (room.Users != null)
+                Users = room.Users.Select(user => new User(user));
+
+            if(room.RecentMessages != null)
+                RecentMessages = room.RecentMessages.Select(message => new Message(message));
         }
     }
 }

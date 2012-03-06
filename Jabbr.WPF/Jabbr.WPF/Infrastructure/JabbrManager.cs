@@ -40,12 +40,40 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<RoomDetailsEventArgs> JoinedRoom;
+        public event EventHandler<RoomsReceivedEventArgs> RoomsReceived;
+        public event EventHandler<UserEventArgs> LoggedIn;
+        public event EventHandler<RoomEventArgs> LeftRoom;
+
+
+        private void OnLeftRoom(string room)
+        {
+            var handler = LeftRoom;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new RoomEventArgs(room)));
+        }
+
+        private void OnLoggedIn(User user)
+        {
+            IsLoggedIn = true;
+            Username = user.Name;
+
+            var handler = LoggedIn;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new UserEventArgs(user)));
+        }
 
         private void OnJoinedRoom(Room roomDetails)
         {
             var handler = JoinedRoom;
             if(handler != null)
                 InvokeOnUi(() => handler(this, new RoomDetailsEventArgs(roomDetails)));
+        }
+
+        private void OnRoomsReceived(IEnumerable<Room> rooms)
+        {
+            var handler = RoomsReceived;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, new RoomsReceivedEventArgs(rooms)));
         }
 
         private void ClientOnUsersInactive(IEnumerable<User> users)
@@ -99,6 +127,9 @@ namespace Jabbr.WPF.Infrastructure
 
         private void ClientOnLoggedOut(IEnumerable<string> rooms)
         {
+            IsLoggedIn = false;
+            Username = null;
+
             var handler = LoggedOut;
             if(handler != null)
                 InvokeOnUi(() => handler(this, new LoggedOutEventArgs(rooms)));
@@ -126,6 +157,7 @@ namespace Jabbr.WPF.Infrastructure
         }
         
         public string Username { get; private set; }
+        public bool IsLoggedIn { get; private set; }
 
         public JabbR.Client.JabbRClient Client
         {
@@ -143,6 +175,42 @@ namespace Jabbr.WPF.Infrastructure
         public void SignInStandard(string username, string password, Action completeAction)
         {
             CompleteSignIn(_client.Connect(username, password), completeAction);
+        }
+
+        public bool SendCommand(string command, string room)
+        {
+            if (command.StartsWith("/join"))
+            {
+                string toJoin = command.Replace("/join", string.Empty).Trim();
+                JoinRoom(toJoin);
+                return true;
+            }
+
+            if (command.StartsWith("/leave"))
+            {
+                string toLeave = command.Replace("/leave", string.Empty).Trim();
+                LeaveRoom(toLeave);
+                return true;
+            }
+
+            return _client.Send(command, room).Result;
+        }
+
+        public void JoinRoom(string room)
+        {
+            _client.JoinRoom(room).ContinueWith(_ =>
+            {
+                _client.GetRoomInfo(room).ContinueWith(details =>
+                {
+                    var roomInfo = details.Result;
+                    OnJoinedRoom(roomInfo);
+                });
+            });
+        }
+
+        public void LeaveRoom(string room)
+        {
+            _client.LeaveRoom(room).ContinueWith(t => OnLeftRoom(room));
         }
 
         public void Disconnect()
@@ -222,29 +290,25 @@ namespace Jabbr.WPF.Infrastructure
         private void CompleteSignIn(Task<LogOnInfo> signInTask, Action  completeAction)
         {
             signInTask.ContinueWith((task) =>
-            {
-                var loginInfo = task.Result;
-                System.Diagnostics.Debug.WriteLine("wtf");
-                var userInfo = _client.GetUserInfo().Result;
-                System.Diagnostics.Debug.WriteLine("got user info");
-
-                foreach (var room in loginInfo.Rooms)
                 {
-                    string roomName = room.Name;
-                    _client.JoinRoom(roomName).ContinueWith(_ =>
-                    {
-                        _client.GetRoomInfo(roomName).ContinueWith(details =>
+                    var loginInfo = task.Result;
+                    var userInfo = _client.GetUserInfo().Result;
+
+                    OnLoggedIn(userInfo);
+
+                    _client.GetRooms().ContinueWith((rooms) =>
                         {
-                            var roomInfo = details.Result;
-                            InvokeOnUi(() => OnJoinedRoom(roomInfo));
-                        }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
-                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously); ;
-                    }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
-                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously); ;
-                }
-                InvokeOnUi(completeAction);
-            }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
-                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+                            var availableRooms = rooms.Result;
+                            OnRoomsReceived(availableRooms);
+                        });
+
+                    foreach (var room in loginInfo.Rooms)
+                    {
+                        string roomName = room.Name;
+                        JoinRoom(roomName);
+                    }
+                    InvokeOnUi(completeAction);
+                });
         }
     }
 }
