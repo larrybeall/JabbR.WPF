@@ -14,8 +14,14 @@ namespace Jabbr.WPF.Authentication
 {
     public class AuthWindowViewModel : PropertyChangedBase
     {
+        private readonly JabbrManager _jabbrManager;
         private string _username;
         private string _password;
+
+        public AuthWindowViewModel(JabbrManager jabbrManager)
+        {
+            _jabbrManager = jabbrManager;
+        }
 
         public string Username
         {
@@ -45,12 +51,12 @@ namespace Jabbr.WPF.Authentication
 
         public void OnTokenReceived(Window window, EventArgs args)
         {
-            JabbrManager.Instance.SignIn(string.Empty, window.Close);
+            _jabbrManager.SignIn(string.Empty, window.Close);
         }
 
         public void SignInStandard(Window window)
         {
-            JabbrManager.Instance.SignInStandard(Username, Password, window.Close);
+            _jabbrManager.SignInStandard(Username, Password, window.Close);
         }
     }
 }

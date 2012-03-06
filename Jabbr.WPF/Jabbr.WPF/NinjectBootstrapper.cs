@@ -6,6 +6,7 @@ using Caliburn.Micro;
 using Ninject;
 using System.Reflection;
 using System.IO;
+using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF
 {
@@ -48,6 +49,7 @@ namespace Jabbr.WPF
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             _kernel.Bind<IShell>().To<ShellViewModel>().InSingletonScope();
+            _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
     }
 }

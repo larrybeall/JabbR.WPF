@@ -20,85 +20,111 @@ namespace Jabbr.WPF.Infrastructure
         private readonly string _url;
         private readonly SynchronizationContext _uiContext;
 
-        private JabbrManager()
+        public JabbrManager()
         {
             _uiContext = SynchronizationContext.Current;
             _url = "http://jabbr.net";
-            _client = new JabbR.Client.JabbRClient(_url);
-            _client.MessageReceived += ClientOnMessageReceived;
-            _client.Disconnected += ClientOnDisconnected;
-            _client.Kicked += ClientOnKicked;
-            _client.LoggedOut += ClientOnLoggedOut;
-            _client.PrivateMessage += ClientOnPrivateMessage;
-            _client.RoomCountChanged += ClientOnRoomCountChanged;
-            _client.UserActivityChanged += ClientOnUserActivityChanged;
-            _client.UserJoined += ClientOnUserJoined;
-            _client.UserLeft += ClientOnUserLeft;
-            _client.UserTyping += ClientOnUserTyping;
-            _client.UsersInactive += ClientOnUsersInactive;
+            _client = new JabbRClient(_url);
+            SubscribeToEvents();
+        }
+
+        public event EventHandler<UsersInactiveEventArgs> UsersInactive;
+        public event EventHandler<UserRoomSpecificEventArgs> UserTyping;
+        public event EventHandler<UserRoomSpecificEventArgs> UserLeftRoom;
+        public event EventHandler<UserRoomSpecificEventArgs> UserJoinedRoom;
+        public event EventHandler<UserEventArgs> UserActivityChanged;
+        public event EventHandler<RoomCountEventArgs> RoomCountChanged;
+        public event EventHandler<PrivateMessageEventArgs> PrivateMessageReceived;
+        public event EventHandler<LoggedOutEventArgs> LoggedOut;
+        public event EventHandler<RoomEventArgs> Kicked;
+        public event EventHandler<EventArgs> Disconnected;
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+        public event EventHandler<RoomDetailsEventArgs> JoinedRoom;
+
+        private void OnJoinedRoom(Room roomDetails)
+        {
+            var handler = JoinedRoom;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new RoomDetailsEventArgs(roomDetails)));
         }
 
         private void ClientOnUsersInactive(IEnumerable<User> users)
         {
+            var handler = UsersInactive;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, new UsersInactiveEventArgs(users)));
         }
 
         private void ClientOnUserTyping(User user, string room)
         {
+            var handler = UserTyping;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
         }
 
         private void ClientOnUserLeft(User user, string room)
         {
+            var handler = UserLeftRoom;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
         }
 
         private void ClientOnUserJoined(User user, string room)
         {
+            var handler = UserJoinedRoom;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
         }
 
         private void ClientOnUserActivityChanged(User user)
         {
+            var handler = UserActivityChanged;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new UserEventArgs(user)));
         }
 
         private void ClientOnRoomCountChanged(Room room, int count)
         {
+            var handler = RoomCountChanged;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new RoomCountEventArgs(room, count)));
         }
 
         private void ClientOnPrivateMessage(string from, string to, string message)
         {
+            var handler = PrivateMessageReceived;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new PrivateMessageEventArgs(from, to, message)));
         }
 
         private void ClientOnLoggedOut(IEnumerable<string> rooms)
         {
+            var handler = LoggedOut;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new LoggedOutEventArgs(rooms)));
         }
 
         private void ClientOnKicked(string room)
         {
+            var handler = Kicked;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new RoomEventArgs(room)));
         }
 
         private void ClientOnDisconnected()
         {
+            var handler = Disconnected;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, EventArgs.Empty));
         }
 
         private void ClientOnMessageReceived(Message message, string room)
         {
+            var handler = MessageReceived;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, new MessageReceivedEventArgs(message, room)));
         }
-
-        public static JabbrManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (SyncRoot)
-                    {
-                        if (_instance == null)
-                            _instance = new JabbrManager();
-                    }
-                }
-
-                return _instance;
-            }
-        }
-
+        
         public string Username { get; private set; }
 
         public JabbR.Client.JabbRClient Client
@@ -109,7 +135,7 @@ namespace Jabbr.WPF.Infrastructure
         public void SignIn(string token, Action completAction)
         {
             System.Diagnostics.Debug.WriteLine("start sign in.");
-            //string userId = Authenticate(token);
+            string userId = Authenticate(token);
             System.Diagnostics.Debug.WriteLine("got user id");
             CompleteSignIn(_client.Connect("e14c35c2-5b4a-49f4-be5a-f3a77b325c45"), completAction);
         }
@@ -123,6 +149,36 @@ namespace Jabbr.WPF.Infrastructure
         {
             _client.Disconnect();
             Thread.Sleep(500);
+        }
+
+        private void SubscribeToEvents()
+        {
+            _client.MessageReceived += ClientOnMessageReceived;
+            _client.Disconnected += ClientOnDisconnected;
+            _client.Kicked += ClientOnKicked;
+            _client.LoggedOut += ClientOnLoggedOut;
+            _client.PrivateMessage += ClientOnPrivateMessage;
+            _client.RoomCountChanged += ClientOnRoomCountChanged;
+            _client.UserActivityChanged += ClientOnUserActivityChanged;
+            _client.UserJoined += ClientOnUserJoined;
+            _client.UserLeft += ClientOnUserLeft;
+            _client.UserTyping += ClientOnUserTyping;
+            _client.UsersInactive += ClientOnUsersInactive;
+        }
+
+        private void UnsubcribeFromEvents()
+        {
+            _client.MessageReceived -= ClientOnMessageReceived;
+            _client.Disconnected -= ClientOnDisconnected;
+            _client.Kicked -= ClientOnKicked;
+            _client.LoggedOut -= ClientOnLoggedOut;
+            _client.PrivateMessage -= ClientOnPrivateMessage;
+            _client.RoomCountChanged -= ClientOnRoomCountChanged;
+            _client.UserActivityChanged -= ClientOnUserActivityChanged;
+            _client.UserJoined -= ClientOnUserJoined;
+            _client.UserLeft -= ClientOnUserLeft;
+            _client.UserTyping -= ClientOnUserTyping;
+            _client.UsersInactive -= ClientOnUsersInactive;
         }
 
         private string Authenticate(string token)
@@ -166,18 +222,29 @@ namespace Jabbr.WPF.Infrastructure
         private void CompleteSignIn(Task<LogOnInfo> signInTask, Action  completeAction)
         {
             signInTask.ContinueWith((task) =>
-                                        {
-                                            var loginInfo = task.Result;
-                                            System.Diagnostics.Debug.WriteLine("wtf");
-                                            var userInfo = _client.GetUserInfo().Result;
-                                            System.Diagnostics.Debug.WriteLine("got user info");
+            {
+                var loginInfo = task.Result;
+                System.Diagnostics.Debug.WriteLine("wtf");
+                var userInfo = _client.GetUserInfo().Result;
+                System.Diagnostics.Debug.WriteLine("got user info");
 
-                                            foreach (var room in loginInfo.Rooms)
-                                            {
-                                                _client.JoinRoom(room.Name);
-                                            }
-                                            InvokeOnUi(completeAction);
-                                        });
+                foreach (var room in loginInfo.Rooms)
+                {
+                    string roomName = room.Name;
+                    _client.JoinRoom(roomName).ContinueWith(_ =>
+                    {
+                        _client.GetRoomInfo(roomName).ContinueWith(details =>
+                        {
+                            var roomInfo = details.Result;
+                            InvokeOnUi(() => OnJoinedRoom(roomInfo));
+                        }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
+                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously); ;
+                    }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
+                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously); ;
+                }
+                InvokeOnUi(completeAction);
+            }).ContinueWith(err => { System.Diagnostics.Debug.WriteLine(err.Exception.Message); },
+                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
         }
     }
 }
