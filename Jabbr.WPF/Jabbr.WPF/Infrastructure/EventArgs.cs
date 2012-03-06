@@ -108,4 +108,14 @@ namespace Jabbr.WPF.Infrastructure
             Room = new Room(room);
         }
     }
+
+    public class RoomsReceivedEventArgs : EventArgs
+    {
+        public IEnumerable<Room> Rooms { get; set; }
+
+        public RoomsReceivedEventArgs(IEnumerable<JabbrModels.Room> rooms)
+        {
+            Rooms = rooms.Select(room => new Room(room));
+        }
+    }
 }

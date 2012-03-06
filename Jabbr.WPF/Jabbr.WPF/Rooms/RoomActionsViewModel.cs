@@ -7,11 +7,7 @@ using System.Windows;
 
 namespace Jabbr.WPF.Rooms
 {
-    public class PrivateRoomViewModel : RoomViewModel
+    public class RoomActionsViewModel : PropertyChangedBase
     {
-        public override void SendCommand(string command)
-        {
-            MessageBox.Show(command);
-        }
     }
 }

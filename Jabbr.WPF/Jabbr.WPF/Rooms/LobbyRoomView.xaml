@@ -3,9 +3,56 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:rooms="clr-namespace:Jabbr.WPF.Rooms"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock Text="Lobby Room"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="26" />
+            <RowDefinition />
+            <RowDefinition Height="26" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width=".40*" MaxWidth="250" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- Row 0 -->
+        <ContentControl Grid.Row="0" Grid.Column="1" x:Name="RoomActions" />
+        
+        <!-- Row 1 -->
+        <Border 
+            Grid.Row="1" 
+            Grid.Column="0"
+            BorderBrush="LightGray"
+            BorderThickness="1"
+            Margin="0 5 5 5">
+            <ItemsControl x:Name="Messages" />
+        </Border>
+        <ListBox 
+            Grid.Row="1" 
+            Grid.Column="1"
+            BorderThickness="0"
+            Margin="0 5 0 5"
+            x:Name="Rooms" />
+
+        <!-- Row 2 -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="75" />
+            </Grid.ColumnDefinitions>
+            <TextBox 
+                x:Name="RoomCommand" 
+                Grid.Column="0" 
+                HorizontalAlignment="Stretch" />
+            <Button 
+                Grid.Column="1" 
+                Content="Send" 
+                Margin="5 0 0 0" 
+                HorizontalAlignment="Stretch"
+                cal:Message.Attach="SendCommand(RoomCommand)" />
+        </Grid>
     </Grid>
 </UserControl>

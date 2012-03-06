@@ -10,7 +10,7 @@ namespace Jabbr.WPF.Infrastructure.Models
     {
         public static UserStatus Translate(this JabbrModels.UserStatus userStatus)
         {
-            UserStatus toReturn = UserStatus.Offline;
+            UserStatus toReturn;
 
             switch (userStatus)
             {
@@ -19,6 +19,9 @@ namespace Jabbr.WPF.Infrastructure.Models
                     break;
                 case JabbR.Client.Models.UserStatus.Inactive:
                     toReturn = UserStatus.Inactive;
+                    break;
+                case JabbR.Client.Models.UserStatus.Offline:
+                    toReturn = UserStatus.Offline;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("userStatus");

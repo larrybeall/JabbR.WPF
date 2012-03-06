@@ -85,7 +85,13 @@
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\PasswordHelper.cs" />
     <Compile Include="Authentication\AuthWindowViewModel.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Messages\LobbyMessageView.xaml.cs">
+      <DependentUpon>LobbyMessageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Messages\LobbyMessageViewModel.cs" />
+    <Compile Include="Messages\MessageViewModel.cs" />
     <Compile Include="Rooms\ChatRoomView.xaml.cs">
       <DependentUpon>ChatRoomView.xaml</DependentUpon>
     </Compile>
@@ -110,6 +116,14 @@
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ViewModelFactory.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
+    <Compile Include="Rooms\RoomActionsView.xaml.cs">
+      <DependentUpon>RoomActionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\RoomActionsViewModel.cs" />
+    <Compile Include="Rooms\RoomDetailView.xaml.cs">
+      <DependentUpon>RoomDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\RoomDetailViewModel.cs" />
     <Compile Include="Rooms\RoomViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="Users\UserViewModel.cs" />
@@ -122,6 +136,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
+    <Page Include="Messages\LobbyMessageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Rooms\ChatRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -131,6 +149,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Rooms\PrivateRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\RoomActionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\RoomDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -165,9 +191,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Messages\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
