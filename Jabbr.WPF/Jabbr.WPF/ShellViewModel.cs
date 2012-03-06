@@ -23,7 +23,6 @@ using Caliburn.Micro;
             var viewModel = new AuthWindowViewModel();
             //_windowManager.ShowWindow(viewModel);
             _windowManager.ShowDialog(viewModel);
-            Infrastructure.JabbrManager.Instance.SignIn(null, () => MessageBox.Show("Finished signin"));
         }
     }
 }
