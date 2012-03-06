@@ -2,19 +2,22 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                   Title="Jabbr" Width="600" Height="400">
-
-	<Grid Background="White">
-        <TabControl>
-            <TabItem Header="test">
-                <Button x:Name="Test" Height="24" Width="75" Content="Test" />
-            </TabItem>
-            <TabItem Header="test 2">
-                <Popup>
-                    <TextBlock>this is atest</TextBlock>
-                </Popup>
-            </TabItem>
-            <TabItem Header="test 3">content 3</TabItem>
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
+        Title="Jabbr"
+        Width="600" 
+        Height="400"
+        cal:Message.Attach="[Event Loaded] = [Action OnShellLoaded]">
+    <Window.Resources>
+        <converters:DebugConverter x:Key="debugConverter" />
+    </Window.Resources>
+        <Grid Background="White">
+        <TabControl x:Name="Items">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RoomName}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
         </TabControl>
     </Grid>
 

@@ -98,4 +98,14 @@ namespace Jabbr.WPF.Infrastructure
             Rooms = rooms;
         }
     }
+
+    public class RoomDetailsEventArgs : EventArgs
+    {
+        public Room Room { get; set; }
+
+        public RoomDetailsEventArgs(JabbrModels.Room room)
+        {
+            Room = new Room(room);
+        }
+    }
 }

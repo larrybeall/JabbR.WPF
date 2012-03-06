@@ -85,6 +85,19 @@
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\PasswordHelper.cs" />
     <Compile Include="Authentication\AuthWindowViewModel.cs" />
+    <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Rooms\ChatRoomView.xaml.cs">
+      <DependentUpon>ChatRoomView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\ChatRoomViewModel.cs" />
+    <Compile Include="Rooms\LobbyRoomView.xaml.cs">
+      <DependentUpon>LobbyRoomView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\LobbyRoomViewModel.cs" />
+    <Compile Include="Rooms\PrivateRoomView.xaml.cs">
+      <DependentUpon>PrivateRoomView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\PrivateRoomViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Infrastructure\EventArgs.cs" />
     <Compile Include="Infrastructure\JabbRClient.cs" />
@@ -95,8 +108,11 @@
     <Compile Include="Infrastructure\Models\User.cs" />
     <Compile Include="Infrastructure\Models\UserStatus.cs" />
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
+    <Compile Include="Infrastructure\ViewModelFactory.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
+    <Compile Include="Rooms\RoomViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
+    <Compile Include="Users\UserViewModel.cs" />
     <Page Include="Authentication\AuthWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -106,6 +122,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
+    <Page Include="Rooms\ChatRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\LobbyRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\PrivateRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -137,7 +165,9 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Messages\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
