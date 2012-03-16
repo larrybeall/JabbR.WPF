@@ -44,10 +44,10 @@ namespace Jabbr.WPF.Rooms
 
         public override void SendCommand(string command)
         {
-            bool result = ((ShellViewModel) Parent).SendCommand(command);
-            if (!result)
-                MessageBox.Show("send failed");
-            RoomCommand = null;
+            //bool result = ((ShellViewModel) Parent).SendCommand(command);
+            //if (!result)
+            //    MessageBox.Show("send failed");
+            //RoomCommand = null;
         }
 
         protected override void OnActivate()

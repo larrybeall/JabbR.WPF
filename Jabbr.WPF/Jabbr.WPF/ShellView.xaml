@@ -1,24 +1,48 @@
-﻿<metro:MetroWindow x:Class="Jabbr.WPF.ShellView"
+﻿<Window x:Class="Jabbr.WPF.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:cal="http://www.caliburnproject.org"
         xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        WindowState="Maximized"
         Title="Jabbr"
         Width="600" 
-        Height="400"
-        cal:Message.Attach="[Event Loaded] = [Action OnShellLoaded]">
+        Height="400">
     <Window.Resources>
-        <converters:DebugConverter x:Key="debugConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Icons/MergedResources.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
-        <Grid Background="White">
-        <TabControl x:Name="Items">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding RoomName}" />
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-        </TabControl>
+    <Window.Background>
+        <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
+            <GradientStop Color="#FFDEDEDE"/>
+            <GradientStop Color="White" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <i:Interaction.Behaviors>
+        <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" />
+    </i:Interaction.Behaviors>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Text="JABBR.WPF" FontSize="15" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <metro:WindowCommands Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" />
+        <!--<ContentControl x:Name="ActiveItem"  />-->
+        <metro:MetroContentControl Grid.Row="1">
+            <ContentControl x:Name="ActiveItem" />
+        </metro:MetroContentControl>
     </Grid>
 
-</metro:MetroWindow>
+</Window>
