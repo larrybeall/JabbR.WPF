@@ -5,9 +5,9 @@ using System.Text;
 using Caliburn.Micro;
 using System.Windows;
 
-namespace Jabbr.WPF.Rooms
+namespace Jabbr.WPF.OldRooms
 {
-    public class PrivateRoomViewModel : RoomViewModel
+    public class ChatRoomViewModel : RoomViewModel
     {
         public override void SendCommand(string command)
         {

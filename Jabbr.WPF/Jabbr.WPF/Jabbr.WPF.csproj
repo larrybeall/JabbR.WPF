@@ -96,18 +96,18 @@
     </Compile>
     <Compile Include="Messages\LobbyMessageViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
-    <Compile Include="Rooms\ChatRoomView.xaml.cs">
+    <Compile Include="OldRooms\ChatRoomView.xaml.cs">
       <DependentUpon>ChatRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rooms\ChatRoomViewModel.cs" />
-    <Compile Include="Rooms\LobbyRoomView.xaml.cs">
+    <Compile Include="OldRooms\ChatRoomViewModel.cs" />
+    <Compile Include="OldRooms\LobbyRoomView.xaml.cs">
       <DependentUpon>LobbyRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rooms\LobbyRoomViewModel.cs" />
-    <Compile Include="Rooms\PrivateRoomView.xaml.cs">
+    <Compile Include="OldRooms\LobbyRoomViewModel.cs" />
+    <Compile Include="OldRooms\PrivateRoomView.xaml.cs">
       <DependentUpon>PrivateRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rooms\PrivateRoomViewModel.cs" />
+    <Compile Include="OldRooms\PrivateRoomViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Infrastructure\EventArgs.cs" />
     <Compile Include="Infrastructure\JabbRClient.cs" />
@@ -120,15 +120,27 @@
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
-    <Compile Include="Rooms\RoomActionsView.xaml.cs">
+    <Compile Include="OldRooms\RoomActionsView.xaml.cs">
       <DependentUpon>RoomActionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rooms\RoomActionsViewModel.cs" />
-    <Compile Include="Rooms\RoomDetailView.xaml.cs">
+    <Compile Include="OldRooms\RoomActionsViewModel.cs" />
+    <Compile Include="OldRooms\RoomDetailView.xaml.cs">
       <DependentUpon>RoomDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Rooms\RoomDetailViewModel.cs" />
+    <Compile Include="OldRooms\RoomDetailViewModel.cs" />
+    <Compile Include="OldRooms\RoomViewModel.cs" />
+    <Compile Include="Rooms\ChatWindowView.xaml.cs">
+      <DependentUpon>ChatWindowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\ChatWindowViewModel.cs" />
+    <Compile Include="Rooms\RoomView.xaml.cs">
+      <DependentUpon>RoomView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Rooms\RoomViewModel.cs" />
+    <Compile Include="Rooms\RoomSelectionView.xaml.cs">
+      <DependentUpon>RoomSelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="ShellViewModel.old.cs" />
     <Compile Include="Users\UserViewModel.cs" />
@@ -149,23 +161,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Rooms\ChatRoomView.xaml">
+    <Page Include="OldRooms\ChatRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Rooms\LobbyRoomView.xaml">
+    <Page Include="OldRooms\LobbyRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Rooms\PrivateRoomView.xaml">
+    <Page Include="OldRooms\PrivateRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Rooms\RoomActionsView.xaml">
+    <Page Include="OldRooms\RoomActionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Rooms\RoomDetailView.xaml">
+    <Page Include="OldRooms\RoomDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\ChatWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\RoomSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\RoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

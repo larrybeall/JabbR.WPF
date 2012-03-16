@@ -7,7 +7,7 @@ using System.Windows;
 using Jabbr.WPF.Infrastructure;
 using Jabbr.WPF.Messages;
 
-namespace Jabbr.WPF.Rooms
+namespace Jabbr.WPF.OldRooms
 {
     public class LobbyRoomViewModel : RoomViewModel
     {

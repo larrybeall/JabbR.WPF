@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Jabbr.WPF.Rooms
 {
     /// <summary>
-    /// Interaction logic for RoomDetailView.xaml
+    /// Interaction logic for RoomView.xaml
     /// </summary>
-    public partial class RoomDetailView : UserControl
+    public partial class RoomView : UserControl
     {
-        public RoomDetailView()
+        public RoomView()
         {
             InitializeComponent();
         }
