@@ -10,7 +10,7 @@ using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF
 {
-    public class NinjectBootstrapper : Bootstrapper<IShell>
+    public class NinjectBootstrapper : Bootstrapper<ShellViewModel>
     {
         private IKernel _kernel;
 
@@ -48,7 +48,7 @@ namespace Jabbr.WPF
         {
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
-            _kernel.Bind<IShell>().To<ShellViewModel>().InSingletonScope();
+            _kernel.Bind<ShellViewModel>().ToSelf().InSingletonScope();
             _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
     }
