@@ -41,7 +41,7 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<RoomDetailsEventArgs> JoinedRoom;
         public event EventHandler<RoomsReceivedEventArgs> RoomsReceived;
-        public event EventHandler<UserEventArgs> LoggedIn;
+        public event EventHandler<LoggedInEventArgs> LoggedIn;
         public event EventHandler<RoomEventArgs> LeftRoom;
 
 
@@ -52,14 +52,14 @@ namespace Jabbr.WPF.Infrastructure
                 InvokeOnUi(() => handler(this, new RoomEventArgs(room)));
         }
 
-        private void OnLoggedIn(User user)
+        private void OnLoggedIn(User user, IEnumerable<Room> rooms)
         {
             IsLoggedIn = true;
             Username = user.Name;
 
             var handler = LoggedIn;
             if(handler != null)
-                InvokeOnUi(() => handler(this, new UserEventArgs(user)));
+                InvokeOnUi(() => handler(this, new LoggedInEventArgs(user, rooms)));
         }
 
         private void OnJoinedRoom(Room roomDetails)
@@ -294,8 +294,6 @@ namespace Jabbr.WPF.Infrastructure
                     var loginInfo = task.Result;
                     var userInfo = _client.GetUserInfo().Result;
 
-                    OnLoggedIn(userInfo);
-
                     _client.GetRooms().ContinueWith((rooms) =>
                         {
                             var availableRooms = rooms.Result;
@@ -307,6 +305,7 @@ namespace Jabbr.WPF.Infrastructure
                         string roomName = room.Name;
                         JoinRoom(roomName);
                     }
+                    OnLoggedIn(userInfo, loginInfo.Rooms);
                     InvokeOnUi(completeAction);
                 });
         }

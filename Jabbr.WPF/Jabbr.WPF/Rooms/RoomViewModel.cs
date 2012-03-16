@@ -3,74 +3,88 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Caliburn.Micro;
-using Jabbr.WPF.Messages;
+using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF.Rooms
 {
-    public abstract class RoomViewModel : Screen
+    public class RoomViewModel : Screen
     {
-        private string _roomName;
-        private RoomActionsViewModel _roomActions;
-        private string _roomCommand;
-        private IObservableCollection<MessageViewModel> _messages;
- 
-        public IObservableCollection<MessageViewModel> Messages
+        private readonly JabbrManager _jabbrManager;
+
+        private bool _isPrivate;
+        private int _userCount;
+        private int _unreadMessageCount;
+
+        public RoomViewModel(JabbrManager jabbrManager)
         {
-            get { return _messages; }
+            _jabbrManager = jabbrManager;
+        }
+
+        public int UserCount
+        {
+            get { return _userCount; }
             set
             {
-                if(_messages == value)
+                if (_userCount == value)
                     return;
 
-                _messages = value;
-                NotifyOfPropertyChange(() => Messages);
+                _userCount = value;
+                NotifyOfPropertyChange(() => UserCount);
+            }
+        }
+
+        public bool IsPrivate
+        {
+            get { return _isPrivate; }
+            set
+            {
+                if (_isPrivate == value)
+                    return;
+
+                _isPrivate = value;
+                NotifyOfPropertyChange(() => IsPrivate);
             }
         }
 
         public string RoomName
         {
-            get { return _roomName; }
+            get { return DisplayName; }
             set
             {
-                if(_roomName == value)
+                if (DisplayName == value)
                     return;
 
-                _roomName = value;
+                DisplayName = value;
                 NotifyOfPropertyChange(() => RoomName);
             }
         }
 
-        public RoomActionsViewModel RoomActions
+        public int UnreadMessageCount
         {
-            get { return _roomActions; }
+            get { return _unreadMessageCount; }
             set
             {
-                if(_roomActions == value)
+                if(_unreadMessageCount == value)
                     return;
 
-                _roomActions = value;
-                NotifyOfPropertyChange(() => RoomActions);
+                _unreadMessageCount = value;
+                NotifyOfPropertyChange(() => UnreadMessageCount);
             }
         }
 
-        public string RoomCommand
+        internal void Initialize(RoomDetailsEventArgs roomDetailsEventArgs)
         {
-            get { return _roomCommand; }
-            set
-            {
-                if (_roomCommand == value)
-                    return;
+            _jabbrManager.MessageReceived += JabbrManagerOnMessageReceived;
 
-                _roomCommand = value;
-                NotifyOfPropertyChange(() => RoomCommand);
-            }
+            var roomDetails = roomDetailsEventArgs.Room;
+            RoomName = roomDetails.Name;
+            UserCount = roomDetails.Count;
+            IsPrivate = roomDetails.Private;
         }
 
-        public virtual bool CanSendCommand(string command)
+        private void JabbrManagerOnMessageReceived(object sender, MessageReceivedEventArgs messageReceivedEventArgs)
         {
-            return !string.IsNullOrEmpty(command);
+            
         }
-
-        public abstract void SendCommand(string command);
     }
 }

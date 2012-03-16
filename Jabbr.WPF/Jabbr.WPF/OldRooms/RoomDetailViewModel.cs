@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Caliburn.Micro;
 
-namespace Jabbr.WPF.Rooms
+namespace Jabbr.WPF.OldRooms
 {
     public class RoomDetailViewModel : PropertyChangedBase
     {

@@ -4,7 +4,7 @@ using System.Windows;
 using Caliburn.Micro;
 using Jabbr.WPF.Authentication;
 using Jabbr.WPF.Infrastructure;
-using Jabbr.WPF.Rooms;
+using Jabbr.WPF.OldRooms;
 using System.Linq;
 
 namespace Jabbr.WPF

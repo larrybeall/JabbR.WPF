@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Jabbr.WPF.Rooms
 {
     /// <summary>
-    /// Interaction logic for ChatRoomView.xaml
+    /// Interaction logic for ChatWindowView.xaml
     /// </summary>
-    public partial class ChatRoomView : UserControl
+    public partial class ChatWindowView : UserControl
     {
-        public ChatRoomView()
+        public ChatWindowView()
         {
             InitializeComponent();
         }

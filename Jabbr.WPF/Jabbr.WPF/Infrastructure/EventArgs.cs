@@ -53,6 +53,17 @@ namespace Jabbr.WPF.Infrastructure
         }
     }
 
+    public class LoggedInEventArgs : UserEventArgs
+    {
+        public IEnumerable<Room> Rooms { get; set; }
+
+        public LoggedInEventArgs(JabbrModels.User user, IEnumerable<JabbrModels.Room> rooms)
+            :base(user)
+        {
+            Rooms = rooms.Select(x => new Room(x));
+        }
+    }
+
     public class RoomCountEventArgs : EventArgs
     {
         public Room Room { get; set; }

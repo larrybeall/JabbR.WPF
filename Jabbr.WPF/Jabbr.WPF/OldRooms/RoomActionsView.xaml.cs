@@ -12,14 +12,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Jabbr.WPF.Rooms
+namespace Jabbr.WPF.OldRooms
 {
     /// <summary>
-    /// Interaction logic for LobbyRoomView.xaml
+    /// Interaction logic for RoomActionsView.xaml
     /// </summary>
-    public partial class LobbyRoomView : UserControl
+    public partial class RoomActionsView : UserControl
     {
-        public LobbyRoomView()
+        public RoomActionsView()
         {
             InitializeComponent();
         }

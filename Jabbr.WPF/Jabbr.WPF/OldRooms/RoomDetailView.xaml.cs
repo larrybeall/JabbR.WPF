@@ -12,14 +12,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Jabbr.WPF.Rooms
+namespace Jabbr.WPF.OldRooms
 {
     /// <summary>
-    /// Interaction logic for PrivateRoomView.xaml
+    /// Interaction logic for RoomDetailView.xaml
     /// </summary>
-    public partial class PrivateRoomView : UserControl
+    public partial class RoomDetailView : UserControl
     {
-        public PrivateRoomView()
+        public RoomDetailView()
         {
             InitializeComponent();
         }
