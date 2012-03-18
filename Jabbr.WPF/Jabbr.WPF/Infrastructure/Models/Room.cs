@@ -11,6 +11,7 @@ namespace Jabbr.WPF.Infrastructure.Models
         public string Name { get; set; }
         public int Count { get; set; }
         public bool Private { get; set; }
+        public string Topic { get; set; }
         public IEnumerable<User> Users { get; set; }
         public IEnumerable<string> Owners { get; set; }
         public IEnumerable<Message> RecentMessages { get; set; }
@@ -25,6 +26,7 @@ namespace Jabbr.WPF.Infrastructure.Models
             Count = room.Count;
             Private = room.Private;
             Owners = room.Owners;
+            Topic = room.Topic;
 
             if (room.Users != null)
                 Users = room.Users.Select(user => new User(user));

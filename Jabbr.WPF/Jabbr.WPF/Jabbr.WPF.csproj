@@ -91,6 +91,8 @@
     <Compile Include="Authentication\LoginViewModel.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\LobbyMessageView.xaml.cs">
       <DependentUpon>LobbyMessageView.xaml</DependentUpon>
     </Compile>

@@ -14,7 +14,7 @@ namespace Jabbr.WPF
         private string _url = null;
 
         public JabbRClient(string url)
-            : base(url)
+            : base(url, new LongPollingTransport())
         {
             _url = url;
         }
@@ -44,11 +44,6 @@ namespace Jabbr.WPF
             JObject jsonObject = JObject.Parse(cookieValue);
 
             return (string)jsonObject["userId"];
-        }
-
-        protected override IClientTransport OnCreateTransport()
-        {
-            return new LongPollingTransport();
         }
     }
 }
