@@ -152,7 +152,7 @@ namespace Jabbr.WPF.Authentication
             Username = null;
             Password = null;
             ShowOpenIdPopup = false;
-            IsAuthenticating = false;
+            //IsAuthenticating = false;
         }
     }
 }

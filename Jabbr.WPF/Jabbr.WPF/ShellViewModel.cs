@@ -17,6 +17,9 @@ namespace Jabbr.WPF
         private readonly RoomSelectionViewModel _roomSelectionViewModel;
         private readonly ChatWindowViewModel _chatWindowViewModel;
 
+        private bool _loggedIn;
+        private bool _hasPreviouslyJoinedRooms;
+
         public ShellViewModel(
             ServiceLocator serviceLocator, 
             JabbrManager jabbrManager,
@@ -36,6 +39,8 @@ namespace Jabbr.WPF
         private void Initialize()
         {
             _jabbrManager.LoggedIn += JabbrManagerOnLoggedIn;
+            _jabbrManager.JoinedRoom += JabbrManagerOnJoinedRoom;
+            _jabbrManager.RoomsReceived += JabbrManagerOnRoomsReceived;
 
             Items.Add(_loginViewModel);
             Items.Add(_roomSelectionViewModel);
@@ -44,12 +49,37 @@ namespace Jabbr.WPF
             ActivateItem(_loginViewModel);
         }
 
+        private void JabbrManagerOnRoomsReceived(object sender, RoomsReceivedEventArgs roomsReceivedEventArgs)
+        {
+            _jabbrManager.RoomsReceived -= JabbrManagerOnRoomsReceived;
+
+            if(!_loggedIn)
+                throw new InvalidOperationException();
+
+            if(!_hasPreviouslyJoinedRooms)
+                ActivateItem(_roomSelectionViewModel);
+        }
+
+        private void JabbrManagerOnJoinedRoom(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
+        {
+            _jabbrManager.JoinedRoom -= JabbrManagerOnJoinedRoom;
+
+            if(!_loggedIn)
+                throw new InvalidOperationException();
+
+            if(_hasPreviouslyJoinedRooms)
+                ActivateItem(_chatWindowViewModel);
+        }
+
         private void JabbrManagerOnLoggedIn(object sender, LoggedInEventArgs loggedInEventArgs)
         {
-            if(loggedInEventArgs.Rooms.Any())
-                ActivateItem(_chatWindowViewModel);
+            _loggedIn = true;
+            _hasPreviouslyJoinedRooms = loggedInEventArgs.Rooms.Any();
+
+            if (!_hasPreviouslyJoinedRooms)
+                _jabbrManager.JoinedRoom -= JabbrManagerOnJoinedRoom;
             else
-                ActivateItem(_roomSelectionViewModel);
+                _jabbrManager.RoomsReceived -= JabbrManagerOnRoomsReceived;
         }
     }
 }

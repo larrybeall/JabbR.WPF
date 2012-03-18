@@ -43,7 +43,7 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<RoomsReceivedEventArgs> RoomsReceived;
         public event EventHandler<LoggedInEventArgs> LoggedIn;
         public event EventHandler<RoomEventArgs> LeftRoom;
-
+        public event EventHandler<RoomDetailsEventArgs> RoomTopicChanged;
 
         private void OnLeftRoom(string room)
         {
@@ -74,6 +74,13 @@ namespace Jabbr.WPF.Infrastructure
             var handler = RoomsReceived;
             if (handler != null)
                 InvokeOnUi(() => handler(this, new RoomsReceivedEventArgs(rooms)));
+        }
+
+        private void ClientOnTopicChanged(Room room)
+        {
+            var handler = RoomTopicChanged;
+            if(handler != null)
+                InvokeOnUi(() => handler(this, new RoomDetailsEventArgs(room)));
         }
 
         private void ClientOnUsersInactive(IEnumerable<User> users)
@@ -232,6 +239,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UserLeft += ClientOnUserLeft;
             _client.UserTyping += ClientOnUserTyping;
             _client.UsersInactive += ClientOnUsersInactive;
+            _client.TopicChanged += ClientOnTopicChanged;
         }
 
         private void UnsubcribeFromEvents()
@@ -247,6 +255,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UserLeft -= ClientOnUserLeft;
             _client.UserTyping -= ClientOnUserTyping;
             _client.UsersInactive -= ClientOnUsersInactive;
+            _client.TopicChanged -= ClientOnTopicChanged;
         }
 
         private string Authenticate(string token)
@@ -292,7 +301,12 @@ namespace Jabbr.WPF.Infrastructure
             signInTask.ContinueWith((task) =>
                 {
                     var loginInfo = task.Result;
-                    var userInfo = _client.GetUserInfo().Result;
+
+                    foreach (var room in loginInfo.Rooms)
+                    {
+                        string roomName = room.Name;
+                        JoinRoom(roomName);
+                    }
 
                     _client.GetRooms().ContinueWith((rooms) =>
                         {
@@ -300,11 +314,7 @@ namespace Jabbr.WPF.Infrastructure
                             OnRoomsReceived(availableRooms);
                         });
 
-                    foreach (var room in loginInfo.Rooms)
-                    {
-                        string roomName = room.Name;
-                        JoinRoom(roomName);
-                    }
+                    var userInfo = _client.GetUserInfo().Result;
                     OnLoggedIn(userInfo, loginInfo.Rooms);
                     InvokeOnUi(completeAction);
                 });
