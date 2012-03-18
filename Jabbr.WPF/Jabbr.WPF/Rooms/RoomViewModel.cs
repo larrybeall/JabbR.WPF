@@ -101,12 +101,18 @@ namespace Jabbr.WPF.Rooms
             _jabbrManager.MessageReceived += JabbrManagerOnMessageReceived;
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
+            _jabbrManager.UserJoinedRoom += JabbrManagerOnUserJoinedRoom;
 
             var roomDetails = roomDetailsEventArgs.Room;
             RoomName = roomDetails.Name;
             UserCount = roomDetails.Users.Count();
             IsPrivate = roomDetails.Private;
             Topic = roomDetails.Topic;
+        }
+
+        private void JabbrManagerOnUserJoinedRoom(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
+        {
+            
         }
 
         private void JabbrManagerOnRoomTopicChanged(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
