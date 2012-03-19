@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
+             xmlns:cal="http://www.caliburnproject.org"
              HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -15,6 +17,8 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <converters:DebugConverter x:Key="debugConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -42,5 +46,34 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="2">
+            <TextBlock Text="Owners" />
+            <ListBox ItemsSource="{Binding ActiveItem.Owners}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl cal:View.Model="{Binding}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="Online" />
+            <ListBox ItemsSource="{Binding ActiveItem.ActiveUsers}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl cal:View.Model="{Binding}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="Away" />
+            <ListBox ItemsSource="{Binding ActiveItem.AwayUsers}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl cal:View.Model="{Binding}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+        
     </Grid>
 </UserControl>

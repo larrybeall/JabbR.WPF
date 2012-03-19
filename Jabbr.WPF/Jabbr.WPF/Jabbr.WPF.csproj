@@ -92,6 +92,7 @@
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Infrastructure\AutoRefreshCollectionViewSource.cs" />
     <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\LobbyMessageView.xaml.cs">
       <DependentUpon>LobbyMessageView.xaml</DependentUpon>
@@ -145,6 +146,9 @@
     <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="ShellViewModel.old.cs" />
+    <Compile Include="Users\UserView.xaml.cs">
+      <DependentUpon>UserView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Users\UserViewModel.cs" />
     <Page Include="Authentication\AuthWindowView.xaml">
       <SubType>Designer</SubType>
@@ -198,6 +202,10 @@
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Users\UserView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
