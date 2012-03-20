@@ -11,14 +11,19 @@ namespace Jabbr.WPF.Users
     public class UserViewModel : PropertyChangedBase
     {
         private const string GravatarUrlFormat = "http://www.gravatar.com/avatar/{0}?d=mm&s=75";
+        private const string OwnersGroup = "Owners";
+        private const string OnlineGroup = "Online";
+        private const string AwayGroup = "Away";
 
         private readonly JabbrManager _jabbrManager;
 
         private bool _isOwner;
         private bool _isAway;
+        private bool _isAfk;
         private string _name;
-        private string _notes;
+        private string _note;
         private string _gravatar;
+        private string _group;
 
         public UserViewModel(JabbrManager jabbrManager)
         {
@@ -35,6 +40,8 @@ namespace Jabbr.WPF.Users
 
                 _isOwner = value;
                 NotifyOfPropertyChange(() => IsOwner);
+
+                SetGroup();
             }
         }
 
@@ -48,6 +55,21 @@ namespace Jabbr.WPF.Users
                 
                 _isAway = value;
                 NotifyOfPropertyChange(() => IsAway);
+
+                SetGroup();
+            }
+        }
+
+        public bool IsAfk
+        {
+            get { return _isAfk; }
+            set
+            {
+                if(_isAfk == value)
+                    return;
+
+                _isAfk = value;
+                NotifyOfPropertyChange(() => IsAfk);
             }
         }
 
@@ -64,16 +86,16 @@ namespace Jabbr.WPF.Users
             }
         }
 
-        public string Notes
+        public string Note
         {
-            get { return _notes; }
+            get { return _note; }
             set
             {
-                if(_notes == value)
+                if(_note == value)
                     return;
 
-                _notes = value;
-                NotifyOfPropertyChange(() => Notes);
+                _note = value;
+                NotifyOfPropertyChange(() => Note);
             }
         }
 
@@ -90,6 +112,30 @@ namespace Jabbr.WPF.Users
             }
         }
 
+        public string Group
+        {
+            get { return _group; }
+            set
+            {
+                if(_group == value)
+                    return;
+
+                _group = value;
+                NotifyOfPropertyChange(() => Group);
+            }
+        }
+
+        private void SetGroup()
+        {
+            if (IsOwner)
+            {
+                Group = OwnersGroup;
+                return;
+            }
+
+            Group = IsAway ? AwayGroup : OnlineGroup;
+        }
+
         internal void Initialize(User user, bool isOwner)
         {
             _jabbrManager.UserActivityChanged += JabbrManagerOnUserActivityChanged;
@@ -97,8 +143,25 @@ namespace Jabbr.WPF.Users
             IsOwner = isOwner;
             Name = user.Name;
             IsAway = user.Status == UserStatus.Inactive || user.IsAfk;
-            Notes = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
+            Note = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
             Gravatar = string.Format(GravatarUrlFormat, user.Hash ?? "00000000000000000000000000000000");
+        }
+
+        internal void SetNote(User user)
+        {
+            IsAfk = user.IsAfk;
+
+            if (IsAfk)
+            {
+                if (string.IsNullOrEmpty(user.AfkNote))
+                    Note = "AFK";
+                else
+                    Note = "AFK " + user.AfkNote.Trim();
+                
+                IsAway = true;
+            }
+            else
+                Note = user.Note;
         }
 
         private void JabbrManagerOnUserActivityChanged(object sender, UserEventArgs userEventArgs)
@@ -107,7 +170,7 @@ namespace Jabbr.WPF.Users
             if(!userName.Equals(Name))
                 return;
 
-            IsAway = userEventArgs.User.IsAfk || userEventArgs.User.Status == UserStatus.Inactive;
+            IsAway = userEventArgs.User.Status == UserStatus.Inactive;
         }
     }
 }

@@ -44,6 +44,7 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<LoggedInEventArgs> LoggedIn;
         public event EventHandler<RoomEventArgs> LeftRoom;
         public event EventHandler<RoomDetailsEventArgs> RoomTopicChanged;
+        public event EventHandler<UserRoomSpecificEventArgs> NoteChanged;
 
         private void OnLeftRoom(string room)
         {
@@ -162,6 +163,13 @@ namespace Jabbr.WPF.Infrastructure
             if (handler != null)
                 InvokeOnUi(() => handler(this, new MessageReceivedEventArgs(message, room)));
         }
+
+        private void ClientOnNoteChanged(User user, string room)
+        {
+            var handler = NoteChanged;
+            if (handler != null)
+                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
+        }
         
         public string Username { get; private set; }
         public bool IsLoggedIn { get; private set; }
@@ -240,6 +248,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UserTyping += ClientOnUserTyping;
             _client.UsersInactive += ClientOnUsersInactive;
             _client.TopicChanged += ClientOnTopicChanged;
+            _client.NoteChanged += ClientOnNoteChanged;
         }
 
         private void UnsubcribeFromEvents()
@@ -256,6 +265,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UserTyping -= ClientOnUserTyping;
             _client.UsersInactive -= ClientOnUsersInactive;
             _client.TopicChanged -= ClientOnTopicChanged;
+            _client.NoteChanged -= ClientOnNoteChanged;
         }
 
         private string Authenticate(string token)

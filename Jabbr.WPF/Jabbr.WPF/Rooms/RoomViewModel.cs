@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
 using Caliburn.Micro;
 using Jabbr.WPF.Infrastructure;
 using Jabbr.WPF.Messages;
@@ -17,9 +18,7 @@ namespace Jabbr.WPF.Rooms
         private readonly ServiceLocator _serviceLocator;
         private readonly IObservableCollection<ChatMessageViewModel> _messages;
         private readonly IObservableCollection<UserViewModel> _users;
-        private readonly AutoRefreshCollectionViewSource _ownerUsersSource;
-        private readonly AutoRefreshCollectionViewSource _activeUsersSource;
-        private readonly AutoRefreshCollectionViewSource _awayUsersSource;
+        private readonly AutoRefreshCollectionViewSource _usersSource;
         private IEnumerable<string> _owners; 
 
         private bool _isPrivate;
@@ -33,13 +32,9 @@ namespace Jabbr.WPF.Rooms
             _serviceLocator = serviceLocator;
             _messages = new BindableCollection<ChatMessageViewModel>();
             _users = new BindableCollection<UserViewModel>();
-            _ownerUsersSource = new AutoRefreshCollectionViewSource {Source = _users};
-            _activeUsersSource = new AutoRefreshCollectionViewSource {Source = _users};
-            _awayUsersSource = new AutoRefreshCollectionViewSource {Source = _users};
+            _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
 
-            Owners.Filter = FilterOwnerUsers;
-            ActiveUsers.Filter = FilterActiveUsers;
-            AwayUsers.Filter = FilterAwayUsers;
+            Users.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
         }
 
         public int UserCount
@@ -112,19 +107,9 @@ namespace Jabbr.WPF.Rooms
             get { return _messages; }
         }
 
-        public ICollectionView Owners
+        public ICollectionView Users
         {
-            get { return _ownerUsersSource.View; }
-        }
-
-        public ICollectionView ActiveUsers
-        {
-            get { return _activeUsersSource.View; }
-        }
-
-        public ICollectionView AwayUsers
-        {
-            get { return _awayUsersSource.View; }
+            get { return _usersSource.View; }
         }
 
         internal void Initialize(RoomDetailsEventArgs roomDetailsEventArgs)
@@ -133,6 +118,7 @@ namespace Jabbr.WPF.Rooms
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
             _jabbrManager.UserJoinedRoom += JabbrManagerOnUserJoinedRoom;
+            _jabbrManager.NoteChanged += JabbrManagerOnNoteChanged;
 
             var roomDetails = roomDetailsEventArgs.Room;
             RoomName = roomDetails.Name;
@@ -156,9 +142,26 @@ namespace Jabbr.WPF.Rooms
             _users.Add(userVm);
         }
 
+        private bool VerifyRoomName(string roomName)
+        {
+            return roomName.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private void JabbrManagerOnNoteChanged(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
+        {
+            if(!VerifyRoomName(userRoomSpecificEventArgs.Room))
+                return;
+
+            var userVm = _users.SingleOrDefault(x => x.Name.Equals(userRoomSpecificEventArgs.User.Name));
+            if(userVm == null)
+                return;
+
+            userVm.SetNote(userRoomSpecificEventArgs.User);
+        }
+
         private void JabbrManagerOnUserJoinedRoom(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
         {
-            if(!userRoomSpecificEventArgs.Room.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase))
+            if(!VerifyRoomName(userRoomSpecificEventArgs.Room))
                 return;
 
             string userName = userRoomSpecificEventArgs.User.Name;
@@ -170,19 +173,19 @@ namespace Jabbr.WPF.Rooms
 
         private void JabbrManagerOnRoomTopicChanged(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
         {
-            if (RoomName.Equals(roomDetailsEventArgs.Room.Name, StringComparison.InvariantCultureIgnoreCase))
+            if(VerifyRoomName(roomDetailsEventArgs.Room.Name))
                 Topic = roomDetailsEventArgs.Room.Topic;
         }
 
         private void JabbrManagerOnRoomCountChanged(object sender, RoomCountEventArgs roomCountEventArgs)
         {
-            if (RoomName.Equals(roomCountEventArgs.Room.Name, StringComparison.InvariantCultureIgnoreCase))
+            if(VerifyRoomName(roomCountEventArgs.Room.Name))
                 UserCount = roomCountEventArgs.Count;
         }
 
         private void JabbrManagerOnMessageReceived(object sender, MessageReceivedEventArgs messageReceivedEventArgs)
         {
-            if(!RoomName.Equals(messageReceivedEventArgs.Room, StringComparison.InvariantCultureIgnoreCase))
+            if(!VerifyRoomName(messageReceivedEventArgs.Room))
                 return;
 
             var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
