@@ -11,9 +11,6 @@ namespace Jabbr.WPF.Users
     public class UserViewModel : PropertyChangedBase
     {
         private const string GravatarUrlFormat = "http://www.gravatar.com/avatar/{0}?d=mm&s=75";
-        private const string OwnersGroup = "Owners";
-        private const string OnlineGroup = "Online";
-        private const string AwayGroup = "Away";
 
         private readonly JabbrManager _jabbrManager;
 
@@ -23,7 +20,7 @@ namespace Jabbr.WPF.Users
         private string _name;
         private string _note;
         private string _gravatar;
-        private string _group;
+        private GroupType _group;
 
         public UserViewModel(JabbrManager jabbrManager)
         {
@@ -112,7 +109,7 @@ namespace Jabbr.WPF.Users
             }
         }
 
-        public string Group
+        public GroupType Group
         {
             get { return _group; }
             set
@@ -129,11 +126,11 @@ namespace Jabbr.WPF.Users
         {
             if (IsOwner)
             {
-                Group = OwnersGroup;
+                Group = GroupType.Owners;
                 return;
             }
 
-            Group = IsAway ? AwayGroup : OnlineGroup;
+            Group = IsAway ? GroupType.Away : GroupType.Online;
         }
 
         internal void Initialize(User user, bool isOwner)
@@ -145,6 +142,9 @@ namespace Jabbr.WPF.Users
             IsAway = user.Status == UserStatus.Inactive || user.IsAfk;
             Note = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
             Gravatar = string.Format(GravatarUrlFormat, user.Hash ?? "00000000000000000000000000000000");
+
+            if(!IsAway)
+                SetGroup();
         }
 
         internal void SetNote(User user)

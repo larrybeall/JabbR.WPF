@@ -181,10 +181,8 @@ namespace Jabbr.WPF.Infrastructure
 
         public void SignIn(string token, Action completAction)
         {
-            System.Diagnostics.Debug.WriteLine("start sign in.");
             string userId = Authenticate(token);
-            System.Diagnostics.Debug.WriteLine("got user id");
-            CompleteSignIn(_client.Connect("e14c35c2-5b4a-49f4-be5a-f3a77b325c45"), completAction);
+            CompleteSignIn(_client.Connect(userId), completAction);
         }
 
         public void SignInStandard(string username, string password, Action completeAction)

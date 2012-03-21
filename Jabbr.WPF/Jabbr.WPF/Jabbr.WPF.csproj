@@ -91,6 +91,7 @@
     <Compile Include="Authentication\LoginViewModel.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Converters\GroupTypeConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Infrastructure\AutoRefreshCollectionViewSource.cs" />
     <Compile Include="Messages\ChatMessageViewModel.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="ShellViewModel.old.cs" />
+    <Compile Include="Users\GroupType.cs" />
     <Compile Include="Users\UserView.xaml.cs">
       <DependentUpon>UserView.xaml</DependentUpon>
     </Compile>
