@@ -12,9 +12,9 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <TextBlock FontSize="24" HorizontalAlignment="Left" Grid.Row="0" x:Name="RoomName" />
+        <TextBlock FontSize="18" HorizontalAlignment="Left" Grid.Row="0" x:Name="RoomName" />
         <TextBlock 
-            FontSize="24" 
+            FontSize="18" 
             HorizontalAlignment="Right" 
             Grid.Row="0" 
             Text="{Binding UnreadMessageCount, Converter={StaticResource stringFormatter}, ConverterParameter='({0})'}">
@@ -29,11 +29,12 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        <TextBlock FontSize="16" Grid.Row="1" Text="{Binding UserCount, Converter={StaticResource stringFormatter}, ConverterParameter='Users: {0}'}" />
-        <TextBlock FontSize="16" Grid.Row="2" x:Name="Topic">
+        <TextBlock FontSize="14" Grid.Row="1" Text="{Binding UserCount, Converter={StaticResource stringFormatter}, ConverterParameter='Users: {0}'}" />
+        <TextBlock FontSize="12" Grid.Row="2" x:Name="Topic">
             <TextBlock.Style>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Setter Property="Visibility" Value="Visible" />
+                    <Setter Property="FontStyle" Value="Italic"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Topic}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />

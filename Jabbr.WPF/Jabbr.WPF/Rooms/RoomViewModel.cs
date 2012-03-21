@@ -34,7 +34,9 @@ namespace Jabbr.WPF.Rooms
             _users = new BindableCollection<UserViewModel>();
             _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
 
-            Users.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            _usersSource.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            _usersSource.SortDescriptions.Add(new SortDescription("Group", ListSortDirection.Ascending));
+            _usersSource.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
         }
 
         public int UserCount

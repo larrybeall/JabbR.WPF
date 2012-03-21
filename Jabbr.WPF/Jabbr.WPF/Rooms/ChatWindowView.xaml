@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
             
             <converters:DebugConverter x:Key="debugConverter" />
+            <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -43,8 +44,14 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="BorderThickness" Value="0" />
                 </Style>
             </ListBox.ItemContainerStyle>
+            <ListBox.Style>
+                <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Style>
+            </ListBox.Style>
         </ListBox>
         <ItemsControl
             Grid.Row="1"
@@ -52,11 +59,22 @@
             ItemsSource="{Binding ActiveItem.Users}">
             <ItemsControl.GroupStyle>
                 <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="GroupItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GroupItem">
+                                        <Expander IsExpanded="True">
+                                            <Expander.Header>
+                                                <TextBlock FontSize="18" Text="{Binding Name, Converter={StaticResource groupTypeConverter}}"/>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
                 </GroupStyle>
             </ItemsControl.GroupStyle>
             <ItemsControl.ItemTemplate>
@@ -64,35 +82,11 @@
                     <ContentControl cal:View.Model="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <!--<StackPanel
-            Grid.Row="1"
-            Grid.Column="2">
-            <TextBlock Text="Owners" />
-            <ListBox ItemsSource="{Binding ActiveItem.Owners}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl cal:View.Model="{Binding}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBlock Text="Online" />
-            <ListBox ItemsSource="{Binding ActiveItem.ActiveUsers}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl cal:View.Model="{Binding}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBlock Text="Away" />
-            <ListBox ItemsSource="{Binding ActiveItem.AwayUsers}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl cal:View.Model="{Binding}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>-->
-        
     </Grid>
 </UserControl>
