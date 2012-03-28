@@ -9,6 +9,7 @@ using Jabbr.WPF.Messages;
 using Jabbr.WPF.Users;
 using System.ComponentModel;
 using Jabbr.WPF.Infrastructure.Models;
+using System.Windows;
 
 namespace Jabbr.WPF.Rooms
 {
@@ -133,6 +134,11 @@ namespace Jabbr.WPF.Rooms
             {
                 AddUser(user);
             }
+
+            foreach (var recentMessage in roomDetailsEventArgs.Room.RecentMessages)
+            {
+                ProcessMessage(recentMessage, true);
+            }
         }
 
         private void AddUser(User user)
@@ -190,39 +196,44 @@ namespace Jabbr.WPF.Rooms
             if(!VerifyRoomName(messageReceivedEventArgs.Room))
                 return;
 
-            var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
-            // TODO: set is room visible properly
-            msgVm.Initialize(messageReceivedEventArgs, false);
-            Messages.Add(msgVm);
+            ProcessMessage(messageReceivedEventArgs.Message);
+        }
 
+        private void ProcessMessage(Jabbr.WPF.Infrastructure.Models.Message message, bool isInitializing = false)
+        {
+            var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
+            
+            msgVm.Initialize(message, IsRoomVisible(isInitializing));
+            Messages.Add(msgVm);
+            UpdateUnreadMessageCount();
+        }
+
+        private bool IsRoomVisible(bool isRoomInitializing = false)
+        {
+            if (Application.Current.MainWindow.IsActive == false || Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                return false;
+
+            if (isRoomInitializing)
+                return true;
+
+            return IsActive;
+        }
+
+        private void UpdateUnreadMessageCount()
+        {
             UnreadMessageCount = Messages.Count(msg => !msg.Seen);
         }
 
-        private bool FilterOwnerUsers(object data)
+        protected override void OnActivate()
         {
-            UserViewModel userVm = data as UserViewModel;
-            if (userVm == null)
-                return false;
+            base.OnActivate();
 
-            return userVm.IsOwner;
-        }
-
-        private bool FilterAwayUsers(object data)
-        {
-            UserViewModel userVm = data as UserViewModel;
-            if (userVm == null)
-                return false;
-
-            return !userVm.IsOwner && userVm.IsAway;
-        }
-
-        private bool FilterActiveUsers(object data)
-        {
-            UserViewModel userVm = data as UserViewModel;
-            if (userVm == null)
-                return false;
-
-            return !userVm.IsOwner && !userVm.IsAway;
+            var unseenMessages = Messages.Where(x => x.Seen == false).ToList();
+            foreach (var chatMessageViewModel in unseenMessages)
+            {
+                chatMessageViewModel.Seen = true;
+            }
+            UpdateUnreadMessageCount();
         }
     }
 }

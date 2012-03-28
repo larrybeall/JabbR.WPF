@@ -24,12 +24,11 @@ namespace Jabbr.WPF.Messages
             }
         }
 
-        internal void Initialize(MessageReceivedEventArgs messageReceivedEventArgs, bool isRoomVisible)
+        internal void Initialize(Message message, bool isRoomVisible)
         {
-            var msg = messageReceivedEventArgs.Message;
-            Content = msg.Content;
+            Content = message.Content;
             Seen = isRoomVisible;
-            MessageTime = msg.When.LocalDateTime;
+            MessageTime = message.When.LocalDateTime;
         }
     }
 }

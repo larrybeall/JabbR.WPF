@@ -310,6 +310,10 @@ namespace Jabbr.WPF.Infrastructure
                 {
                     var loginInfo = task.Result;
 
+                    var userInfo = _client.GetUserInfo().Result;
+                    OnLoggedIn(userInfo, loginInfo.Rooms);
+                    InvokeOnUi(completeAction);
+
                     foreach (var room in loginInfo.Rooms)
                     {
                         string roomName = room.Name;
@@ -321,10 +325,6 @@ namespace Jabbr.WPF.Infrastructure
                             var availableRooms = rooms.Result;
                             OnRoomsReceived(availableRooms);
                         });
-
-                    var userInfo = _client.GetUserInfo().Result;
-                    OnLoggedIn(userInfo, loginInfo.Rooms);
-                    InvokeOnUi(completeAction);
                 });
         }
     }
