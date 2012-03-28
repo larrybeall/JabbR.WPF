@@ -54,6 +54,16 @@
             </ListBox.Style>
         </ListBox>
         <ItemsControl
+            ItemsSource="{Binding ActiveItem.Messages}"
+            Grid.Row="1"
+            Grid.Column="1">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl cal:View.Model="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl
             Grid.Row="1"
             Grid.Column="2"
             ItemsSource="{Binding ActiveItem.Users}">
