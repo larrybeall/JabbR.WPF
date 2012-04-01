@@ -5,8 +5,9 @@
              xmlns:converters="clr-namespace:Jabbr.WPF.Converters">
     <UserControl.Resources>
         <converters:HtmlToXamlConverter x:Key="htmlToXamlConverter" />
+        <converters:DebugConverter x:Key="debugConverter" />
     </UserControl.Resources>
     <Grid>
-        <TextBlock props:BindableInlines.BindableInlines="{Binding Content}" />
+        <TextBlock props:BindableInlines.BindableInlines="{Binding Content, Mode=OneWay, Converter={StaticResource debugConverter}}" />
     </Grid>
 </UserControl>

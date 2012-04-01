@@ -15,8 +15,9 @@ namespace Jabbr.WPF.Messages
         private InlineCollection _content;
         private DateTime _messageDateTime;
         private string _messageId;
-        private UserViewModel _user;
         private bool _hasBeenSeen;
+        private string _username;
+        private string _gravatarHash;
 
         public string RawContent { get; set; }
 
@@ -59,19 +60,6 @@ namespace Jabbr.WPF.Messages
             }
         }
 
-        public UserViewModel User
-        {
-            get { return _user; }
-            set
-            {
-                if(_user == value)
-                    return;
-
-                _user = value;
-                NotifyOfPropertyChange(() => User);
-            }
-        }
-
         public bool HasBeenSeen
         {
             get { return _hasBeenSeen; }
@@ -82,6 +70,32 @@ namespace Jabbr.WPF.Messages
 
                 _hasBeenSeen = value;
                 NotifyOfPropertyChange(() => HasBeenSeen);
+            }
+        }
+
+        public string Username
+        {
+            get { return _username; }
+            set
+            {
+                if(_username == value)
+                    return;
+
+                _username = value;
+                NotifyOfPropertyChange(() => Username);
+            }
+        }
+
+        public string GravatarHash
+        {
+            get { return _gravatarHash; }
+            set
+            {
+                if(_gravatarHash == value)
+                    return;
+
+                _gravatarHash = value;
+                NotifyOfPropertyChange(() => GravatarHash);
             }
         }
     }

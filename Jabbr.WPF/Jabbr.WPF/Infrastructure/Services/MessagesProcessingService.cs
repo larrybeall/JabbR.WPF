@@ -35,7 +35,29 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public void ProcessMessageAsync(string room, Message message)
         {
-            InternalProcessMessage(room, message);
+            Task<MessageProcessedEventArgs> task = new Task<MessageProcessedEventArgs>(() =>
+            {
+                var msgVm = CreateMessageViewModel(message);
+
+                return new MessageProcessedEventArgs(msgVm, room);
+            });
+
+            task.ContinueWith((completedTask) => OnMessageProcessed(completedTask.Result, _uiContext),
+                                TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((errorTask) =>
+            {
+                AggregateException exception = errorTask.Exception;
+
+                if (exception == null)
+                    return;
+
+                foreach (var innerException in exception.InnerExceptions)
+                {
+                    System.Diagnostics.Trace.WriteLine(innerException.Message);
+                }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            task.Start();
         }
 
         public ChatMessageViewModel ProcessMessage(JabbrModels.Message message)
@@ -46,53 +68,27 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public ChatMessageViewModel ProcessMessage(Message message)
         {
-            var task = InternalProcessMessage(null, message, true);
-            task.Wait();
-
-            return task.Result.MessageViewModel;
+            return CreateMessageViewModel(message);
         }
 
-        private Task<MessageProcessedEventArgs> InternalProcessMessage(string room, Message message, bool processSynchronously = false)
+        private ChatMessageViewModel CreateMessageViewModel(Message message)
         {
-            Task<MessageProcessedEventArgs> task = new Task<MessageProcessedEventArgs>(() =>
-            {
-                string content = ProcessEmoji(message.Content);
-                var inlines = ParseMessage(content);
-                var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
-                var usrVm = _serviceLocator.GetViewModel<UserViewModel>();
+            string content = ProcessEmoji(message.Content);
+            var inlines = ParseMessage(content);
+            var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
 
-                usrVm.Initialize(message.User, false);
+            msgVm.IsNotifying = false;
 
-                msgVm.Content = inlines;
-                msgVm.RawContent = message.Content;
-                msgVm.MessageDateTime = message.When.LocalDateTime;
-                msgVm.MessageId = message.Id;
-                msgVm.User = usrVm;
+            msgVm.Content = inlines;
+            msgVm.RawContent = message.Content;
+            msgVm.MessageDateTime = message.When.LocalDateTime;
+            msgVm.MessageId = message.Id;
+            msgVm.Username = message.User.Name;
+            msgVm.GravatarHash = message.User.Hash;
 
-                return new MessageProcessedEventArgs(msgVm, room);
-            });
+            msgVm.IsNotifying = true;
 
-            if (!processSynchronously)
-            {
-                task.ContinueWith((completedTask) => OnMessageProcessed(completedTask.Result, _uiContext),
-                                  TaskContinuationOptions.OnlyOnRanToCompletion);
-                task.ContinueWith((errorTask) =>
-                {
-                    AggregateException exception = errorTask.Exception;
-
-                    if (exception == null)
-                        return;
-
-                    foreach (var innerException in exception.InnerExceptions)
-                    {
-                        System.Diagnostics.Trace.WriteLine(innerException.Message);
-                    }
-                }, TaskContinuationOptions.OnlyOnFaulted);
-            }
-
-            task.Start();
-
-            return task;
+            return msgVm;
         }
 
         private static string ProcessEmoji(string content)
