@@ -7,6 +7,6 @@
         <converters:HtmlToXamlConverter x:Key="htmlToXamlConverter" />
     </UserControl.Resources>
     <Grid>
-        <TextBlock props:BindableInlines.BindableInlines="{Binding Content, Converter={StaticResource htmlToXamlConverter}}" />
+        <TextBlock props:BindableInlines.BindableInlines="{Binding Content}" />
     </Grid>
 </UserControl>

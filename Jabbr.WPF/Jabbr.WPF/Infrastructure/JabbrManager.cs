@@ -8,6 +8,9 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
+using JabbR.Client;
+using SignalR.Client.Transports;
+using Jabbr.WPF.Infrastructure.Services;
 
 namespace Jabbr.WPF.Infrastructure
 {
@@ -19,12 +22,14 @@ namespace Jabbr.WPF.Infrastructure
         private readonly JabbR.Client.JabbRClient _client;
         private readonly string _url;
         private readonly SynchronizationContext _uiContext;
+        private readonly MessageProcessingService _messageProcessingService;
 
-        public JabbrManager()
+        public JabbrManager(MessageProcessingService messageProcessingService)
         {
             _uiContext = SynchronizationContext.Current;
             _url = "http://jabbr.net";
-            _client = new JabbRClient(_url);
+            _client = new JabbRClient(_url, new LongPollingTransport());
+            _messageProcessingService = messageProcessingService;
             SubscribeToEvents();
         }
 
@@ -38,7 +43,6 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<LoggedOutEventArgs> LoggedOut;
         public event EventHandler<RoomEventArgs> Kicked;
         public event EventHandler<EventArgs> Disconnected;
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<RoomDetailsEventArgs> JoinedRoom;
         public event EventHandler<RoomsReceivedEventArgs> RoomsReceived;
         public event EventHandler<LoggedInEventArgs> LoggedIn;
@@ -159,9 +163,7 @@ namespace Jabbr.WPF.Infrastructure
 
         private void ClientOnMessageReceived(Message message, string room)
         {
-            var handler = MessageReceived;
-            if (handler != null)
-                InvokeOnUi(() => handler(this, new MessageReceivedEventArgs(message, room)));
+            _messageProcessingService.ProcessMessageAsync(room, message);
         }
 
         private void ClientOnNoteChanged(User user, string room)

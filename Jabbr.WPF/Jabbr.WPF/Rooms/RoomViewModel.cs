@@ -10,6 +10,7 @@ using Jabbr.WPF.Users;
 using System.ComponentModel;
 using Jabbr.WPF.Infrastructure.Models;
 using System.Windows;
+using Jabbr.WPF.Infrastructure.Services;
 
 namespace Jabbr.WPF.Rooms
 {
@@ -17,6 +18,7 @@ namespace Jabbr.WPF.Rooms
     {
         private readonly JabbrManager _jabbrManager;
         private readonly ServiceLocator _serviceLocator;
+        private readonly MessageProcessingService _messageProcessingService;
         private readonly IObservableCollection<ChatMessageViewModel> _messages;
         private readonly IObservableCollection<UserViewModel> _users;
         private readonly AutoRefreshCollectionViewSource _usersSource;
@@ -27,10 +29,11 @@ namespace Jabbr.WPF.Rooms
         private int _unreadMessageCount;
         private string _topic;
 
-        public RoomViewModel(JabbrManager jabbrManager, ServiceLocator serviceLocator)
+        public RoomViewModel(JabbrManager jabbrManager, ServiceLocator serviceLocator, MessageProcessingService messageProcessingService)
         {
             _jabbrManager = jabbrManager;
             _serviceLocator = serviceLocator;
+            _messageProcessingService = messageProcessingService;
             _messages = new BindableCollection<ChatMessageViewModel>();
             _users = new BindableCollection<UserViewModel>();
             _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
@@ -117,7 +120,6 @@ namespace Jabbr.WPF.Rooms
 
         internal void Initialize(RoomDetailsEventArgs roomDetailsEventArgs)
         {
-            _jabbrManager.MessageReceived += JabbrManagerOnMessageReceived;
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
             _jabbrManager.UserJoinedRoom += JabbrManagerOnUserJoinedRoom;
@@ -201,10 +203,15 @@ namespace Jabbr.WPF.Rooms
 
         private void ProcessMessage(Jabbr.WPF.Infrastructure.Models.Message message, bool isInitializing = false)
         {
-            var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
-            
-            msgVm.Initialize(message, IsRoomVisible(isInitializing));
-            Messages.Add(msgVm);
+            var msgVm = _messageProcessingService.ProcessMessage(message);
+            ProcessMessage(msgVm, isInitializing);
+        }
+
+        private void ProcessMessage(ChatMessageViewModel viewModel, bool isInitializing = false)
+        {
+            viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
+
+            Messages.Add(viewModel);
             UpdateUnreadMessageCount();
         }
 
@@ -221,17 +228,17 @@ namespace Jabbr.WPF.Rooms
 
         private void UpdateUnreadMessageCount()
         {
-            UnreadMessageCount = Messages.Count(msg => !msg.Seen);
+            UnreadMessageCount = Messages.Count(msg => !msg.HasBeenSeen);
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
 
-            var unseenMessages = Messages.Where(x => x.Seen == false).ToList();
+            var unseenMessages = Messages.Where(x => x.HasBeenSeen == false).ToList();
             foreach (var chatMessageViewModel in unseenMessages)
             {
-                chatMessageViewModel.Seen = true;
+                chatMessageViewModel.HasBeenSeen = true;
             }
             UpdateUnreadMessageCount();
         }

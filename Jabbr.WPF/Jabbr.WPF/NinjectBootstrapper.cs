@@ -7,6 +7,7 @@ using Ninject;
 using System.Reflection;
 using System.IO;
 using Jabbr.WPF.Infrastructure;
+using Jabbr.WPF.Infrastructure.Services;
 
 namespace Jabbr.WPF
 {
@@ -49,6 +50,9 @@ namespace Jabbr.WPF
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             _kernel.Bind<ShellViewModel>().ToSelf().InSingletonScope();
+
+            _kernel.Bind<MessageProcessingService>().ToSelf().InSingletonScope();
+
             _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
     }
