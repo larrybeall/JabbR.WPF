@@ -86,7 +86,6 @@
     <Compile Include="AttachedProperties\BindableInlines.cs" />
     <Compile Include="AttachedProperties\PasswordHelper.cs" />
     <Compile Include="AttachedProperties\TextBlockHelper.cs" />
-    <Compile Include="Authentication\AuthWindowViewModel.cs" />
     <Compile Include="Authentication\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -104,14 +103,6 @@
     </Compile>
     <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
-    <Compile Include="OldRooms\ChatRoomView.xaml.cs">
-      <DependentUpon>ChatRoomView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OldRooms\ChatRoomViewModel.cs" />
-    <Compile Include="OldRooms\PrivateRoomView.xaml.cs">
-      <DependentUpon>PrivateRoomView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OldRooms\PrivateRoomViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Infrastructure\EventArgs.cs" />
     <Compile Include="Infrastructure\JabbrManager.cs" />
@@ -123,15 +114,6 @@
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
-    <Compile Include="OldRooms\RoomActionsView.xaml.cs">
-      <DependentUpon>RoomActionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OldRooms\RoomActionsViewModel.cs" />
-    <Compile Include="OldRooms\RoomDetailView.xaml.cs">
-      <DependentUpon>RoomDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OldRooms\RoomDetailViewModel.cs" />
-    <Compile Include="OldRooms\RoomViewModel.cs" />
     <Compile Include="Rooms\ChatWindowView.xaml.cs">
       <DependentUpon>ChatWindowView.xaml</DependentUpon>
     </Compile>
@@ -145,16 +127,11 @@
     </Compile>
     <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
-    <Compile Include="ShellViewModel.old.cs" />
     <Compile Include="Users\GroupType.cs" />
     <Compile Include="Users\UserView.xaml.cs">
       <DependentUpon>UserView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Users\UserViewModel.cs" />
-    <Page Include="Authentication\AuthWindowView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -165,22 +142,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Messages\ChatMessageView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OldRooms\ChatRoomView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OldRooms\PrivateRoomView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OldRooms\RoomActionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OldRooms\RoomDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
