@@ -11,6 +11,7 @@ using HtmlToXamlConversion;
 using System.Threading.Tasks;
 using Jabbr.WPF.Users;
 using JabbrModels = JabbR.Client.Models;
+using System.Text.RegularExpressions;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -18,11 +19,13 @@ namespace Jabbr.WPF.Infrastructure.Services
     {
         private readonly SynchronizationContext _uiContext;
         private readonly ServiceLocator _serviceLocator;
+        private readonly Regex _tagRegex;
 
         public MessageProcessingService(ServiceLocator serviceLocator)
         {
             _uiContext = SynchronizationContext.Current;
             _serviceLocator = serviceLocator;
+            _tagRegex = new Regex(@"<[^>]+>");
         }
 
         public event EventHandler<MessageProcessedEventArgs> MessageProcessed;
@@ -74,17 +77,18 @@ namespace Jabbr.WPF.Infrastructure.Services
         private ChatMessageViewModel CreateMessageViewModel(Message message)
         {
             string content = ProcessEmoji(message.Content);
-            var inlines = ParseMessage(content);
             var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
 
             msgVm.IsNotifying = false;
 
-            msgVm.Content = inlines;
             msgVm.RawContent = message.Content;
             msgVm.MessageDateTime = message.When.LocalDateTime;
             msgVm.MessageId = message.Id;
             msgVm.Username = message.User.Name;
             msgVm.GravatarHash = message.User.Hash;
+
+            var xaml = ConvertToXaml(content);
+            msgVm.RichContent = CreateInlineArray(xaml);
 
             msgVm.IsNotifying = true;
 
@@ -96,16 +100,12 @@ namespace Jabbr.WPF.Infrastructure.Services
             return content;
         }
 
-        private static InlineCollection ParseMessage(string content)
+        private static string ConvertToXaml(string content)
         {
             if (string.IsNullOrEmpty(content))
                 return null;
 
-            string xamlString = HtmlToXamlConverter.ConvertHtmlToXaml(content, false);
-            var parsedXaml = XamlReader.Parse(xamlString);
-            var xamlLines = ((Paragraph)((Section)parsedXaml).Blocks.FirstBlock).Inlines;
-
-            return xamlLines;
+            return HtmlToXamlConverter.ConvertHtmlToXaml(content, false);
         }
 
         private void OnMessageProcessed(MessageProcessedEventArgs args, SynchronizationContext context = null)
@@ -119,6 +119,31 @@ namespace Jabbr.WPF.Infrastructure.Services
             var handler = MessageProcessed;
             if (handler != null)
                 handler(this, args);
+        }
+
+        private static bool ContentContainsHtml(string content, Regex tagRegex)
+        {
+            if (string.IsNullOrEmpty(content))
+                return false;
+
+            return tagRegex.IsMatch(content);
+        }
+
+        private static Inline[] CreateInlineArray(string xamlString)
+        {
+            try
+            {
+                var parsedXaml = XamlReader.Parse(xamlString);
+                var inlineCollection = ((Paragraph)((Section)parsedXaml).Blocks.FirstBlock).Inlines;
+                Inline[] inlines = new Inline[inlineCollection.Count];
+                inlineCollection.CopyTo(inlines, 0);
+
+                return inlines;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
