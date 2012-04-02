@@ -10,54 +10,16 @@ using System.Windows.Documents;
 
 namespace Jabbr.WPF.Messages
 {
-    public class ChatMessageViewModel : PropertyChangedBase
+    public class ChatMessageViewModel : MessageViewModel
     {
-        private InlineCollection _content;
-        private DateTime _messageDateTime;
-        private string _messageId;
         private bool _hasBeenSeen;
         private string _username;
         private string _gravatarHash;
 
-        public string RawContent { get; set; }
-
-        public InlineCollection Content
+        public ChatMessageViewModel()
+            :base(true)
         {
-            get { return _content; }
-            set
-            {
-                if(_content == value)
-                    return;
-
-                _content = value;
-                NotifyOfPropertyChange(() => Content);
-            }
-        }
-
-        public DateTime MessageDateTime
-        {
-            get { return _messageDateTime; }
-            set
-            {
-                if(_messageDateTime == value)
-                    return;
-
-                _messageDateTime = value;
-                NotifyOfPropertyChange(() => MessageDateTime);
-            }
-        }
-
-        public string MessageId
-        {
-            get { return _messageId; }
-            set
-            {
-                if(_messageId == value)
-                    return;
-
-                _messageId = value;
-                NotifyOfPropertyChange(() => MessageId);
-            }
+            
         }
 
         public bool HasBeenSeen

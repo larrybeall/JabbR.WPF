@@ -124,6 +124,7 @@ namespace Jabbr.WPF.Rooms
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
             _jabbrManager.UserJoinedRoom += JabbrManagerOnUserJoinedRoom;
             _jabbrManager.NoteChanged += JabbrManagerOnNoteChanged;
+            _messageProcessingService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
 
             var roomDetails = roomDetailsEventArgs.Room;
             RoomName = roomDetails.Name;
@@ -141,6 +142,14 @@ namespace Jabbr.WPF.Rooms
             {
                 ProcessMessage(recentMessage, true);
             }
+        }
+
+        private void MessageProcessingServiceOnMessageProcessed(object sender, MessageProcessedEventArgs messageProcessedEventArgs)
+        {
+            if (!VerifyRoomName(messageProcessedEventArgs.Room))
+                return;
+
+            ProcessMessage(messageProcessedEventArgs.MessageViewModel);
         }
 
         private void AddUser(User user)
@@ -191,14 +200,6 @@ namespace Jabbr.WPF.Rooms
         {
             if(VerifyRoomName(roomCountEventArgs.Room.Name))
                 UserCount = roomCountEventArgs.Count;
-        }
-
-        private void JabbrManagerOnMessageReceived(object sender, MessageReceivedEventArgs messageReceivedEventArgs)
-        {
-            if(!VerifyRoomName(messageReceivedEventArgs.Room))
-                return;
-
-            ProcessMessage(messageReceivedEventArgs.Message);
         }
 
         private void ProcessMessage(Jabbr.WPF.Infrastructure.Models.Message message, bool isInitializing = false)

@@ -84,9 +84,9 @@ namespace Jabbr.WPF
         private void Initialize()
         {
             DisplayName = "JabbR.WPF";
-            var lobby = _serviceLocator.GetViewModel<LobbyRoomViewModel>();
-            lobby.NotifyOfPropertyChange("RoomName");
-            ActivateItem(lobby);
+            //var lobby = _serviceLocator.GetViewModel<LobbyRoomViewModel>();
+            //lobby.NotifyOfPropertyChange("RoomName");
+            //ActivateItem(lobby);
         }
 
         public void OnShellLoaded()

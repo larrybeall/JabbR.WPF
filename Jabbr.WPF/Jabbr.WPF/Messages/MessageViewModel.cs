@@ -3,37 +3,84 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Caliburn.Micro;
+using System.Windows.Documents;
 
 namespace Jabbr.WPF.Messages
 {
-    public abstract class MessageViewModel : PropertyChangedBase
+    public abstract class MessageViewModel : ViewAware
     {
-        private string _content;
-        private DateTime _messageTime;
+        private Inline[] _richContent;
+        private DateTime _messageDateTime;
+        private string _messageId;
+        private string _rawContent;
 
-        public string Content
+        public MessageViewModel()
+            :base(false)
         {
-            get { return _content; }
+            
+        }
+
+        public MessageViewModel(bool cacheViews)
+            : base(cacheViews)
+        {
+            
+        }
+
+        public string RawContent
+        {
+            get { return _rawContent; }
             set
             {
-                if(_content == value)
+                if (_rawContent == value)
                     return;
 
-                _content = value;
-                NotifyOfPropertyChange(() => Content);
+                _rawContent = value;
+                NotifyOfPropertyChange(() => RawContent);
             }
         }
 
-        public DateTime MessageTime
+        public Inline[] RichContent
         {
-            get { return _messageTime; }
+            get { return _richContent; }
             set
             {
-                if(_messageTime == value)
+                if (_richContent == value)
                     return;
 
-                _messageTime = value;
-                NotifyOfPropertyChange(() => MessageTime);
+                _richContent = value;
+                NotifyOfPropertyChange(() => RichContent);
+                NotifyOfPropertyChange(() => HasRichContent);
+            }
+        }
+
+        public bool HasRichContent
+        {
+            get { return RichContent != null; }
+        }
+
+        public DateTime MessageDateTime
+        {
+            get { return _messageDateTime; }
+            set
+            {
+                if (_messageDateTime == value)
+                    return;
+
+                _messageDateTime = value;
+                NotifyOfPropertyChange(() => MessageDateTime);
+            }
+        }
+
+        public string MessageId
+        {
+            get { return _messageId; }
+            set
+            {
+                if (_messageId == value)
+                    return;
+
+                _messageId = value;
+                NotifyOfPropertyChange(() => MessageId);
             }
         }
     }

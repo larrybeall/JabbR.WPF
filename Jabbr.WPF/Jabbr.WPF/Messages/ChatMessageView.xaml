@@ -8,6 +8,7 @@
         <converters:DebugConverter x:Key="debugConverter" />
     </UserControl.Resources>
     <Grid>
-        <TextBlock props:BindableInlines.BindableInlines="{Binding Content, Mode=OneWay, Converter={StaticResource debugConverter}}" />
+        <TextBlock props:TextBlockHelper.BindableInlines="{Binding RichContent}" />
+        <!--<TextBlock Text="{Binding RawContent}" />-->
     </Grid>
 </UserControl>
