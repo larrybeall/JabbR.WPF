@@ -9,18 +9,18 @@ namespace Jabbr.WPF.Messages
 {
     public abstract class MessageViewModel : ViewAware
     {
-        private Inline[] _richContent;
+        private string _richContent;
         private DateTime _messageDateTime;
         private string _messageId;
         private string _rawContent;
 
-        public MessageViewModel()
+        protected MessageViewModel()
             :base(false)
         {
             
         }
 
-        public MessageViewModel(bool cacheViews)
+        protected MessageViewModel(bool cacheViews)
             : base(cacheViews)
         {
             
@@ -39,7 +39,7 @@ namespace Jabbr.WPF.Messages
             }
         }
 
-        public Inline[] RichContent
+        public string RichContent
         {
             get { return _richContent; }
             set

@@ -8,7 +8,6 @@
         <converters:DebugConverter x:Key="debugConverter" />
     </UserControl.Resources>
     <Grid>
-        <TextBlock props:TextBlockHelper.BindableInlines="{Binding RichContent}" />
-        <!--<TextBlock Text="{Binding RawContent}" />-->
+        <TextBlock props:TextBlockHelper.XamlString="{Binding RichContent}" />
     </Grid>
 </UserControl>

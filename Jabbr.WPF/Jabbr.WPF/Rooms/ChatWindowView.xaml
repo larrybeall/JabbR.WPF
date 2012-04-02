@@ -40,19 +40,20 @@
         <TextBlock Grid.Column="2" Grid.Row="0" FontSize="32" Text="Users" />
         
         <!-- row 1-->
-        <ListBox x:Name="Items" Grid.Row="1" Grid.Column="0">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <ListView x:Name="Items" Grid.Row="1" Grid.Column="0">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="BorderThickness" Value="0" />
                 </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.Style>
-                <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                </ListView.ItemContainerStyle>
+            <ListView.Style>
+                <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
                     <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent" />
                 </Style>
-            </ListBox.Style>
-        </ListBox>
+            </ListView.Style>
+        </ListView>
         <ItemsControl
             ItemsSource="{Binding ActiveItem.Messages}"
             Grid.Row="1"

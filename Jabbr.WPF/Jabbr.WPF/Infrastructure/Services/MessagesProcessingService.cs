@@ -86,9 +86,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             msgVm.MessageId = message.Id;
             msgVm.Username = message.User.Name;
             msgVm.GravatarHash = message.User.Hash;
-
-            var xaml = ConvertToXaml(content);
-            msgVm.RichContent = CreateInlineArray(xaml);
+            msgVm.RichContent = ConvertToXaml(content);
 
             msgVm.IsNotifying = true;
 
