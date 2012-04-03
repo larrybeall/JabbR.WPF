@@ -7,20 +7,23 @@
         <converters:HtmlToXamlConverter x:Key="htmlToXamlConverter" />
         <converters:DebugConverter x:Key="debugConverter" />
         <converters:DateTimeConverter x:Key="dateTimeConverter" />
+        <SolidColorBrush x:Key="accentColor" Color="{DynamicResource AccentColor3}" />
     </UserControl.Resources>
-    <Border BorderThickness="0 1 0 0" >
+    <Border BorderThickness="0 1 0 0" BorderBrush="{DynamicResource accentColor}" >
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="180" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="95" />
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Image />
-                <TextBlock Text="{Binding User.Name}" />
-            </StackPanel>
-            <TextBlock Grid.Column="1" props:TextBlockHelper.XamlString="{Binding RichContent}" />
-            <TextBlock Grid.Column="2" Text="{Binding MessageDateTime, Converter={StaticResource dateTimeConverter}, ConverterParameter='T'}" />
+            <Border Grid.Column="0" Background="{DynamicResource accentColor}">
+                <StackPanel Orientation="Horizontal" Margin="4">
+                    <Image />
+                    <TextBlock Text="{Binding User.Name}" />
+                </StackPanel>
+            </Border>
+            <TextBlock Grid.Column="1" props:TextBlockHelper.XamlString="{Binding RichContent}" TextWrapping="Wrap" Margin="4" />
+            <TextBlock Grid.Column="2" Text="{Binding MessageDateTime, Converter={StaticResource dateTimeConverter}, ConverterParameter='T'}" Margin="4" />
         </Grid>
     </Border>
 </UserControl>
