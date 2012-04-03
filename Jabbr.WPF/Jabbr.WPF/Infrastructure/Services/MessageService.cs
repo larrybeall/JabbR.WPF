@@ -15,16 +15,18 @@ using System.Text.RegularExpressions;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
-    public class MessageProcessingService
+    public class MessageService
     {
         private readonly SynchronizationContext _uiContext;
         private readonly ServiceLocator _serviceLocator;
+        private readonly UserService _userService;
         private readonly Regex _tagRegex;
 
-        public MessageProcessingService(ServiceLocator serviceLocator)
+        public MessageService(ServiceLocator serviceLocator, UserService userService)
         {
             _uiContext = SynchronizationContext.Current;
             _serviceLocator = serviceLocator;
+            _userService = userService;
             _tagRegex = new Regex(@"<[^>]+>");
         }
 
@@ -47,18 +49,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             task.ContinueWith((completedTask) => OnMessageProcessed(completedTask.Result, _uiContext),
                                 TaskContinuationOptions.OnlyOnRanToCompletion);
-            task.ContinueWith((errorTask) =>
-            {
-                AggregateException exception = errorTask.Exception;
-
-                if (exception == null)
-                    return;
-
-                foreach (var innerException in exception.InnerExceptions)
-                {
-                    System.Diagnostics.Trace.WriteLine(innerException.Message);
-                }
-            }, TaskContinuationOptions.OnlyOnFaulted);
+            task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
 
             task.Start();
         }
@@ -74,19 +65,50 @@ namespace Jabbr.WPF.Infrastructure.Services
             return CreateMessageViewModel(message);
         }
 
+        public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<Message> messages)
+        {
+            List<Task<ChatMessageViewModel>> parsingTasks = new List<Task<ChatMessageViewModel>>();
+            foreach (var message in messages)
+            {
+                Message toProcess = message;
+                var task = Task.Factory.StartNew<ChatMessageViewModel>(() => CreateMessageViewModel(toProcess));
+                task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
+
+                parsingTasks.Add(task);
+            }
+
+            var waitTasks = parsingTasks.ToArray();
+            Task.WaitAll(waitTasks);
+
+            return parsingTasks.Select(x => x.Result);
+        }
+
+        private void ProcessTaskExceptions(Task errorTask)
+        {
+            AggregateException exception = errorTask.Exception;
+
+            if (exception == null)
+                return;
+
+            foreach (var innerException in exception.InnerExceptions)
+            {
+                System.Diagnostics.Trace.WriteLine(innerException.Message);
+            }
+        }
+
         private ChatMessageViewModel CreateMessageViewModel(Message message)
         {
             string content = ProcessEmoji(message.Content);
             var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
+            var userVm = _userService.GetUserViewModel(message.User);
 
             msgVm.IsNotifying = false;
 
             msgVm.RawContent = message.Content;
             msgVm.MessageDateTime = message.When.LocalDateTime;
             msgVm.MessageId = message.Id;
-            msgVm.Username = message.User.Name;
-            msgVm.GravatarHash = message.User.Hash;
             msgVm.RichContent = ConvertToXaml(content);
+            msgVm.User = userVm;
 
             msgVm.IsNotifying = true;
 
