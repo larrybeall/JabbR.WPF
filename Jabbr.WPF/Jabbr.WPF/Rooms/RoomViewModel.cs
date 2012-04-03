@@ -18,10 +18,12 @@ namespace Jabbr.WPF.Rooms
     {
         private readonly JabbrManager _jabbrManager;
         private readonly ServiceLocator _serviceLocator;
-        private readonly MessageProcessingService _messageProcessingService;
+        private readonly MessageService _messageService;
+        private readonly UserService _userService;
         private readonly IObservableCollection<ChatMessageViewModel> _messages;
-        private readonly IObservableCollection<UserViewModel> _users;
+        private readonly IObservableCollection<IUserViewModel> _users;
         private readonly AutoRefreshCollectionViewSource _usersSource;
+        private readonly AutoRefreshCollectionViewSource _messagesSource;
         private IEnumerable<string> _owners; 
 
         private bool _isPrivate;
@@ -29,18 +31,26 @@ namespace Jabbr.WPF.Rooms
         private int _unreadMessageCount;
         private string _topic;
 
-        public RoomViewModel(JabbrManager jabbrManager, ServiceLocator serviceLocator, MessageProcessingService messageProcessingService)
+        public RoomViewModel(
+            JabbrManager jabbrManager, 
+            ServiceLocator serviceLocator, 
+            MessageService messageService,
+            UserService userService)
         {
             _jabbrManager = jabbrManager;
             _serviceLocator = serviceLocator;
-            _messageProcessingService = messageProcessingService;
+            _messageService = messageService;
+            _userService = userService;
             _messages = new BindableCollection<ChatMessageViewModel>();
-            _users = new BindableCollection<UserViewModel>();
+            _users = new BindableCollection<IUserViewModel>();
             _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
+            _messagesSource = new AutoRefreshCollectionViewSource {Source = _messages};
 
             _usersSource.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             _usersSource.SortDescriptions.Add(new SortDescription("Group", ListSortDirection.Ascending));
             _usersSource.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+
+            _messagesSource.SortDescriptions.Add(new SortDescription("MessageDateTime", ListSortDirection.Ascending));
         }
 
         public int UserCount
@@ -108,9 +118,9 @@ namespace Jabbr.WPF.Rooms
             }
         }
 
-        public IObservableCollection<ChatMessageViewModel> Messages
+        public ICollectionView Messages
         {
-            get { return _messages; }
+            get { return _messagesSource.View; }
         }
 
         public ICollectionView Users
@@ -122,9 +132,8 @@ namespace Jabbr.WPF.Rooms
         {
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
-            _jabbrManager.UserJoinedRoom += JabbrManagerOnUserJoinedRoom;
-            _jabbrManager.NoteChanged += JabbrManagerOnNoteChanged;
-            _messageProcessingService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
+            _userService.UserJoined += UserServiceOnUserJoined;
+            _messageService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
 
             var roomDetails = roomDetailsEventArgs.Room;
             RoomName = roomDetails.Name;
@@ -138,10 +147,22 @@ namespace Jabbr.WPF.Rooms
                 AddUser(user);
             }
 
-            foreach (var recentMessage in roomDetailsEventArgs.Room.RecentMessages)
+            var messageViewModels = _messageService.ProcessMessages(roomDetails.RecentMessages);
+            foreach (var chatMessageViewModel in messageViewModels)
             {
-                ProcessMessage(recentMessage, true);
+                ProcessMessage(chatMessageViewModel, true);
             }
+        }
+
+        private void UserServiceOnUserJoined(object sender, UserJoinedEventArgs userJoinedEventArgs)
+        {
+            if (!VerifyRoomName(userJoinedEventArgs.Room))
+                return;
+
+            if(_users.Contains(userJoinedEventArgs.UserViewModel))
+                return;
+
+            AddUser(userJoinedEventArgs.UserViewModel);
         }
 
         private void MessageProcessingServiceOnMessageProcessed(object sender, MessageProcessedEventArgs messageProcessedEventArgs)
@@ -154,9 +175,18 @@ namespace Jabbr.WPF.Rooms
 
         private void AddUser(User user)
         {
-            var userVm = _serviceLocator.GetViewModel<UserViewModel>();
-            bool isOwner = _owners.Any(x => x.Equals(user.Name));
-            userVm.Initialize(user, isOwner);
+            var userVm = _userService.GetUserViewModel(user);
+
+            AddUser(userVm);
+        }
+
+        private void AddUser(IUserViewModel userViewModel)
+        {
+            var userVm = userViewModel;
+            if (_owners.Any(x => x.Equals(userVm.Name)))
+            {
+                userVm = new OwnerViewModel(userViewModel);
+            }
 
             _users.Add(userVm);
         }
@@ -166,28 +196,9 @@ namespace Jabbr.WPF.Rooms
             return roomName.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private void JabbrManagerOnNoteChanged(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
-        {
-            if(!VerifyRoomName(userRoomSpecificEventArgs.Room))
-                return;
-
-            var userVm = _users.SingleOrDefault(x => x.Name.Equals(userRoomSpecificEventArgs.User.Name));
-            if(userVm == null)
-                return;
-
-            userVm.SetNote(userRoomSpecificEventArgs.User);
-        }
-
         private void JabbrManagerOnUserJoinedRoom(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
         {
-            if(!VerifyRoomName(userRoomSpecificEventArgs.Room))
-                return;
-
-            string userName = userRoomSpecificEventArgs.User.Name;
-            if(_users.Any(x => x.Name.Equals(userName, StringComparison.InvariantCultureIgnoreCase)))
-                return;
-
-            AddUser(userRoomSpecificEventArgs.User);
+            
         }
 
         private void JabbrManagerOnRoomTopicChanged(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
@@ -204,7 +215,7 @@ namespace Jabbr.WPF.Rooms
 
         private void ProcessMessage(Jabbr.WPF.Infrastructure.Models.Message message, bool isInitializing = false)
         {
-            var msgVm = _messageProcessingService.ProcessMessage(message);
+            var msgVm = _messageService.ProcessMessage(message);
             ProcessMessage(msgVm, isInitializing);
         }
 
@@ -212,7 +223,7 @@ namespace Jabbr.WPF.Rooms
         {
             viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
 
-            Messages.Add(viewModel);
+            _messages.Add(viewModel);
             UpdateUnreadMessageCount();
         }
 
@@ -229,14 +240,14 @@ namespace Jabbr.WPF.Rooms
 
         private void UpdateUnreadMessageCount()
         {
-            UnreadMessageCount = Messages.Count(msg => !msg.HasBeenSeen);
+            UnreadMessageCount = _messages.Count(msg => !msg.HasBeenSeen);
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
 
-            var unseenMessages = Messages.Where(x => x.HasBeenSeen == false).ToList();
+            var unseenMessages = _messages.Where(x => x.HasBeenSeen == false).ToList();
             foreach (var chatMessageViewModel in unseenMessages)
             {
                 chatMessageViewModel.HasBeenSeen = true;

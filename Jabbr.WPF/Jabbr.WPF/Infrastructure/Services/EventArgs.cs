@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jabbr.WPF.Messages;
+using Jabbr.WPF.Users;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -28,6 +29,17 @@ namespace Jabbr.WPF.Infrastructure.Services
         {
             Room = room;
             MessageViewModel = message;
+        }
+    }
+
+    public class UserJoinedEventArgs : RoomEventArgs
+    {
+        public IUserViewModel UserViewModel { get; set; }
+
+        public UserJoinedEventArgs(IUserViewModel userViewModel, string room)
+        {
+            Room = room;
+            UserViewModel = userViewModel;
         }
     }
 }

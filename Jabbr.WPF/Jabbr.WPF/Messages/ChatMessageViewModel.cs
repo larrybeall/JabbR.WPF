@@ -13,8 +13,7 @@ namespace Jabbr.WPF.Messages
     public class ChatMessageViewModel : MessageViewModel
     {
         private bool _hasBeenSeen;
-        private string _username;
-        private string _gravatarHash;
+        private IUserViewModel _user;
 
         public ChatMessageViewModel()
             :base(true)
@@ -35,29 +34,16 @@ namespace Jabbr.WPF.Messages
             }
         }
 
-        public string Username
+        public IUserViewModel User
         {
-            get { return _username; }
+            get { return _user; }
             set
             {
-                if(_username == value)
+                if(_user == value)
                     return;
 
-                _username = value;
-                NotifyOfPropertyChange(() => Username);
-            }
-        }
-
-        public string GravatarHash
-        {
-            get { return _gravatarHash; }
-            set
-            {
-                if(_gravatarHash == value)
-                    return;
-
-                _gravatarHash = value;
-                NotifyOfPropertyChange(() => GravatarHash);
+                _user = value;
+                NotifyOfPropertyChange(() => User);
             }
         }
     }

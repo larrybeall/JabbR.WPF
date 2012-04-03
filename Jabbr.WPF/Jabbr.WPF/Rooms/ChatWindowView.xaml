@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:users="clr-namespace:Jabbr.WPF.Users"
              HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -90,7 +91,7 @@
             </ItemsControl.GroupStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl cal:View.Model="{Binding}" />
+                    <users:UserView cal:View.Context="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

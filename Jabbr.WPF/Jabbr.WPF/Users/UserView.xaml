@@ -7,7 +7,7 @@
             <ImageBrush ImageSource="{Binding Gravatar}" />
         </Border.Background>
         <Border Background="{DynamicResource AccentColorBrush}" VerticalAlignment="Bottom">
-            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" x:Name="Name"/>
+            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="{Binding Name}" />
         </Border>
     </Border>
 </UserControl>

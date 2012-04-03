@@ -96,8 +96,10 @@
     <Compile Include="Converters\HtmlToXamlConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Infrastructure\AutoRefreshCollectionViewSource.cs" />
+    <Compile Include="Infrastructure\Services\BaseService.cs" />
     <Compile Include="Infrastructure\Services\EventArgs.cs" />
-    <Compile Include="Infrastructure\Services\MessagesProcessingService.cs" />
+    <Compile Include="Infrastructure\Services\MessageService.cs" />
+    <Compile Include="Infrastructure\Services\UserService.cs" />
     <Compile Include="Messages\ChatMessageView.xaml.cs">
       <DependentUpon>ChatMessageView.xaml</DependentUpon>
     </Compile>
@@ -128,6 +130,8 @@
     <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="Users\GroupType.cs" />
+    <Compile Include="Users\IUserViewModel.cs" />
+    <Compile Include="Users\OwnerViewModel.cs" />
     <Compile Include="Users\UserView.xaml.cs">
       <DependentUpon>UserView.xaml</DependentUpon>
     </Compile>
@@ -137,6 +141,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
+    <Compile Include="Users\UserViewModelBase.cs" />
     <Page Include="Authentication\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

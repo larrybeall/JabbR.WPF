@@ -22,22 +22,22 @@ namespace Jabbr.WPF.Infrastructure
         private readonly JabbR.Client.JabbRClient _client;
         private readonly string _url;
         private readonly SynchronizationContext _uiContext;
-        private readonly MessageProcessingService _messageProcessingService;
+        private readonly MessageService _messageService;
+        private readonly UserService _userService;
 
-        public JabbrManager(MessageProcessingService messageProcessingService)
+        public JabbrManager(MessageService messageService, UserService userService)
         {
             _uiContext = SynchronizationContext.Current;
             _url = "http://jabbr.net";
             _client = new JabbRClient(_url, new LongPollingTransport());
-            _messageProcessingService = messageProcessingService;
+            _messageService = messageService;
+            _userService = userService;
             SubscribeToEvents();
         }
 
         public event EventHandler<UsersInactiveEventArgs> UsersInactive;
         public event EventHandler<UserRoomSpecificEventArgs> UserTyping;
         public event EventHandler<UserRoomSpecificEventArgs> UserLeftRoom;
-        public event EventHandler<UserRoomSpecificEventArgs> UserJoinedRoom;
-        public event EventHandler<UserEventArgs> UserActivityChanged;
         public event EventHandler<RoomCountEventArgs> RoomCountChanged;
         public event EventHandler<PrivateMessageEventArgs> PrivateMessageReceived;
         public event EventHandler<LoggedOutEventArgs> LoggedOut;
@@ -48,7 +48,6 @@ namespace Jabbr.WPF.Infrastructure
         public event EventHandler<LoggedInEventArgs> LoggedIn;
         public event EventHandler<RoomEventArgs> LeftRoom;
         public event EventHandler<RoomDetailsEventArgs> RoomTopicChanged;
-        public event EventHandler<UserRoomSpecificEventArgs> NoteChanged;
 
         private void OnLeftRoom(string room)
         {
@@ -111,16 +110,12 @@ namespace Jabbr.WPF.Infrastructure
 
         private void ClientOnUserJoined(User user, string room)
         {
-            var handler = UserJoinedRoom;
-            if(handler != null)
-                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
+            _userService.ProcessUserJoined(user, room);
         }
 
         private void ClientOnUserActivityChanged(User user)
         {
-            var handler = UserActivityChanged;
-            if(handler != null)
-                InvokeOnUi(() => handler(this, new UserEventArgs(user)));
+            _userService.ProcessUserActivityChanged(user);
         }
 
         private void ClientOnRoomCountChanged(Room room, int count)
@@ -163,14 +158,17 @@ namespace Jabbr.WPF.Infrastructure
 
         private void ClientOnMessageReceived(Message message, string room)
         {
-            _messageProcessingService.ProcessMessageAsync(room, message);
+            _messageService.ProcessMessageAsync(room, message);
         }
 
         private void ClientOnNoteChanged(User user, string room)
         {
-            var handler = NoteChanged;
-            if (handler != null)
-                InvokeOnUi(() => handler(this, new UserRoomSpecificEventArgs(user, room)));
+            InvokeOnUi(() => _userService.ProcessNoteChanged(user));
+        }
+
+        private void ClientOnUsernameChanged(string oldUsername, User user, string room)
+        {
+            _userService.ProcessUsernameChange(user, oldUsername);
         }
         
         public string Username { get; private set; }
@@ -249,6 +247,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UsersInactive += ClientOnUsersInactive;
             _client.TopicChanged += ClientOnTopicChanged;
             _client.NoteChanged += ClientOnNoteChanged;
+            _client.UsernameChanged += ClientOnUsernameChanged;
         }
 
         private void UnsubcribeFromEvents()
@@ -266,6 +265,7 @@ namespace Jabbr.WPF.Infrastructure
             _client.UsersInactive -= ClientOnUsersInactive;
             _client.TopicChanged -= ClientOnTopicChanged;
             _client.NoteChanged -= ClientOnNoteChanged;
+            _client.UsernameChanged -= ClientOnUsernameChanged;
         }
 
         private string Authenticate(string token)

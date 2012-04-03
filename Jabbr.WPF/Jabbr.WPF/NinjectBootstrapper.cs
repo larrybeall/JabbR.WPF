@@ -51,7 +51,8 @@ namespace Jabbr.WPF
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             _kernel.Bind<ShellViewModel>().ToSelf().InSingletonScope();
 
-            _kernel.Bind<MessageProcessingService>().ToSelf().InSingletonScope();
+            _kernel.Bind<UserService>().ToSelf().InSingletonScope();
+            _kernel.Bind<MessageService>().ToSelf().InSingletonScope();
 
             _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
