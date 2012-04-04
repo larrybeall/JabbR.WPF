@@ -27,81 +27,19 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public event EventHandler<UserJoinedEventArgs> UserJoined;
 
-        public IUserViewModel GetUserViewModel(string name)
-        {
-            return InternalGetUserViewModel(name);
-        }
-
-        public IUserViewModel GetUserViewModel(JabbrModels.User user)
-        {
-            return InternalGetOrCacheUserViewModel(user);
-        }
-
-        public IUserViewModel GetUserViewModel(User user)
-        {
-            return InternalGetOrCacheUserViewModel(user);
-        }
-
-        public void ProcessNoteChanged(JabbrModels.User user)
-        {
-            var userVm = InternalGetUserViewModel(user.Name);
-
-            if(userVm == null)
-                return;
-
-            userVm.SetNote(user.IsAfk, user.AfkNote, user.Note);
-        }
-
-        public void ProcessUserJoined(JabbrModels.User user, string room)
-        {
-            UserViewModel userVm = InternalGetOrCacheUserViewModel(user);
-
-            PostOnUi(() =>
-            {
-                var handler = UserJoined;
-                if(handler != null)
-                    handler(this, new UserJoinedEventArgs(userVm, room));
-            });
-        }
-
-        public void ProcessUsernameChange(JabbrModels.User user, string oldUsername)
-        {
-            UserViewModel userVm = InternalGetUserViewModel(oldUsername);
-
-            if(userVm == null)
-                return;
-
-            PostOnUi(() =>
-            {
-                userVm.Name = user.Name;
-            });
-        }
-
-        public void ProcessUserActivityChanged(JabbrModels.User user)
-        {
-            var userVm = InternalGetUserViewModel(user.Name);
-            if(userVm == null)
-                return;
-
-            PostOnUi(() =>
-            {
-                userVm.IsAway = user.Status == JabbrModels.UserStatus.Inactive;
-            });
-        }
-
-        private UserViewModel InternalGetUserViewModel(string name)
+        public UserViewModel GetUserViewModel(string name)
         {
             return _users.SingleOrDefault(x => x.Name == name);
         }
 
-        private UserViewModel InternalGetOrCacheUserViewModel(JabbrModels.User user)
+        public UserViewModel GetUserViewModel(JabbrModels.User user)
         {
-            return InternalGetOrCacheUserViewModel(new User(user));
+            return GetUserViewModel(new User(user));
         }
 
-        private UserViewModel InternalGetOrCacheUserViewModel(User user)
+        public UserViewModel GetUserViewModel(User user)
         {
-            UserViewModel toReturn = InternalGetUserViewModel(user.Name);
+            UserViewModel toReturn = GetUserViewModel(user.Name);
 
             if (toReturn != null)
                 return toReturn;
@@ -110,7 +48,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             {
                 // need to perform lookup a second time after we have acquired a lock
                 // as the value could have changed
-                toReturn = InternalGetUserViewModel(user.Name);
+                toReturn = GetUserViewModel(user.Name);
                 if (toReturn != null)
                     return toReturn;
 
@@ -129,6 +67,53 @@ namespace Jabbr.WPF.Infrastructure.Services
             }
 
             return toReturn;
+        }
+
+        public void ProcessNoteChanged(JabbrModels.User user)
+        {
+            var userVm = GetUserViewModel(user.Name);
+
+            if(userVm == null)
+                return;
+
+            userVm.SetNote(user.IsAfk, user.AfkNote, user.Note);
+        }
+
+        public void ProcessUserJoined(JabbrModels.User user, string room)
+        {
+            UserViewModel userVm = GetUserViewModel(user);
+
+            PostOnUi(() =>
+            {
+                var handler = UserJoined;
+                if(handler != null)
+                    handler(this, new UserJoinedEventArgs(userVm, room));
+            });
+        }
+
+        public void ProcessUsernameChange(JabbrModels.User user, string oldUsername)
+        {
+            UserViewModel userVm = GetUserViewModel(oldUsername);
+
+            if(userVm == null)
+                return;
+
+            PostOnUi(() =>
+            {
+                userVm.Name = user.Name;
+            });
+        }
+
+        public void ProcessUserActivityChanged(JabbrModels.User user)
+        {
+            var userVm = GetUserViewModel(user.Name);
+            if(userVm == null)
+                return;
+
+            PostOnUi(() =>
+            {
+                userVm.IsAway = user.Status == JabbrModels.UserStatus.Inactive;
+            });
         }
     }
 }
