@@ -130,8 +130,7 @@
     <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="Users\GroupType.cs" />
-    <Compile Include="Users\IUserViewModel.cs" />
-    <Compile Include="Users\OwnerViewModel.cs" />
+    <Compile Include="Users\RoomUserViewModel.cs" />
     <Compile Include="Users\UserView.xaml.cs">
       <DependentUpon>UserView.xaml</DependentUpon>
     </Compile>
@@ -141,7 +140,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
-    <Compile Include="Users\UserViewModelBase.cs" />
     <Page Include="Authentication\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

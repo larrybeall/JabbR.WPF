@@ -34,9 +34,9 @@ namespace Jabbr.WPF.Infrastructure.Services
 
     public class UserJoinedEventArgs : RoomEventArgs
     {
-        public IUserViewModel UserViewModel { get; set; }
+        public UserViewModel UserViewModel { get; set; }
 
-        public UserJoinedEventArgs(IUserViewModel userViewModel, string room)
+        public UserJoinedEventArgs(UserViewModel userViewModel, string room)
         {
             Room = room;
             UserViewModel = userViewModel;

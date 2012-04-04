@@ -21,7 +21,7 @@ namespace Jabbr.WPF.Rooms
         private readonly MessageService _messageService;
         private readonly UserService _userService;
         private readonly IObservableCollection<ChatMessageViewModel> _messages;
-        private readonly IObservableCollection<IUserViewModel> _users;
+        private readonly IObservableCollection<RoomUserViewModel> _users;
         private readonly AutoRefreshCollectionViewSource _usersSource;
         private readonly AutoRefreshCollectionViewSource _messagesSource;
         private IEnumerable<string> _owners; 
@@ -42,7 +42,7 @@ namespace Jabbr.WPF.Rooms
             _messageService = messageService;
             _userService = userService;
             _messages = new BindableCollection<ChatMessageViewModel>();
-            _users = new BindableCollection<IUserViewModel>();
+            _users = new BindableCollection<RoomUserViewModel>();
             _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
             _messagesSource = new AutoRefreshCollectionViewSource {Source = _messages};
 
@@ -159,7 +159,7 @@ namespace Jabbr.WPF.Rooms
             if (!VerifyRoomName(userJoinedEventArgs.Room))
                 return;
 
-            if(_users.Contains(userJoinedEventArgs.UserViewModel))
+            if(_users.Any(usr => usr.User == userJoinedEventArgs.UserViewModel))
                 return;
 
             AddUser(userJoinedEventArgs.UserViewModel);
@@ -180,13 +180,10 @@ namespace Jabbr.WPF.Rooms
             AddUser(userVm);
         }
 
-        private void AddUser(IUserViewModel userViewModel)
+        private void AddUser(UserViewModel userViewModel)
         {
-            var userVm = userViewModel;
-            if (_owners.Any(x => x.Equals(userVm.Name)))
-            {
-                userVm = new OwnerViewModel(userViewModel);
-            }
+            var userVm = new RoomUserViewModel(userViewModel);
+            userVm.IsOwner = _owners.Any(x => x.Equals(userVm.Name));
 
             _users.Add(userVm);
         }

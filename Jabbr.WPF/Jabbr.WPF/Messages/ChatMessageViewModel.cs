@@ -13,7 +13,7 @@ namespace Jabbr.WPF.Messages
     public class ChatMessageViewModel : MessageViewModel
     {
         private bool _hasBeenSeen;
-        private IUserViewModel _user;
+        private UserViewModel _user;
 
         public ChatMessageViewModel()
             :base(true)
@@ -34,7 +34,7 @@ namespace Jabbr.WPF.Messages
             }
         }
 
-        public IUserViewModel User
+        public UserViewModel User
         {
             get { return _user; }
             set
