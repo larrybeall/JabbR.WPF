@@ -32,7 +32,7 @@
             </TextBlock.Style>
         </TextBlock>
         <TextBlock FontSize="14" Grid.Row="1" Text="{Binding UserCount, Converter={StaticResource stringFormatter}, ConverterParameter='Users: {0}'}" />
-        <TextBlock FontSize="12" Grid.Row="2" props:BindableInlines.BindableInlines="{Binding Topic, Converter={StaticResource htmlToXamlConverter}}">
+        <TextBlock FontSize="12" Grid.Row="2" props:TextBlockHelper.XamlString="{Binding Topic, Converter={StaticResource htmlToXamlConverter}}">
             <TextBlock.Style>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Setter Property="Visibility" Value="Visible" />

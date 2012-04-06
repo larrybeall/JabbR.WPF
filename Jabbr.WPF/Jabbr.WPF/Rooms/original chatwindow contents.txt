@@ -1,0 +1,89 @@
+<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"  />
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="400" MinWidth="200" />
+            <ColumnDefinition />
+            <ColumnDefinition MaxWidth="400" MinWidth="200" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- row 0 -->
+        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="32" Text="Rooms" />
+        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="32" Text="Messages" />
+        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="32" Text="Users" />
+        
+        <!-- row 1-->
+        <ListView x:Name="Items" Grid.Row="1" Grid.Column="0">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="BorderThickness" Value="0" />
+                </Style>
+                </ListView.ItemContainerStyle>
+            <ListView.Style>
+                <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+            </ListView.Style>
+        </ListView>
+        <ItemsControl
+            ItemsSource="{Binding ActiveItem.Messages}"
+            Grid.Row="1"
+            Grid.Column="1">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl cal:View.Model="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl
+            Grid.Row="1"
+            Grid.Column="2"
+            ItemsSource="{Binding ActiveItem.Users}">
+            <ItemsControl.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="GroupItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GroupItem">
+                                        <Expander IsExpanded="True">
+                                            <Expander.Header>
+                                                <TextBlock FontSize="18" Text="{Binding Name, Converter={StaticResource groupTypeConverter}}"/>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ItemsControl.GroupStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <users:UserView cal:View.Context="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        
+        <!-- row 2 -->
+        <Border HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="2" Background="#FF000000">
+            <metro:AppBarButton MetroImageSource="{DynamicResource appbar_add}" Content="test" Foreground="#FFFFFFFF" Height="60" Width="60" Margin="5" />
+        </Border>
+        <Border HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" Background="#FF000000">
+
+        </Border>
+        <Border HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="2" Background="#FF000000">
+
+        </Border>
+    </Grid>

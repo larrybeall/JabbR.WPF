@@ -6,6 +6,7 @@ using Caliburn.Micro;
 using Jabbr.WPF.Authentication;
 using Jabbr.WPF.Infrastructure;
 using Jabbr.WPF.Rooms;
+using System.Windows.Input;
 
 namespace Jabbr.WPF
 {
@@ -80,6 +81,11 @@ namespace Jabbr.WPF
                 _jabbrManager.JoinedRoom -= JabbrManagerOnJoinedRoom;
             else
                 _jabbrManager.RoomsReceived -= JabbrManagerOnRoomsReceived;
+        }
+
+        public void MouseDown(MouseButtonEventArgs args)
+        {
+            args.Handled = true;
         }
     }
 }

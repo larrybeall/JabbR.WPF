@@ -6,6 +6,7 @@
              xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
+             xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -14,91 +15,63 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Icons/MergedResources.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
             
+            <Storyboard x:Key="showRoomGutter">
+                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter" To="0,0,0,0" Duration="0:0:.15" />
+            </Storyboard>
+            <Storyboard x:Key="hideRoomGutter">
+                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter" To="-250,0,0,0" Duration="0:0:.15" />
+            </Storyboard>
+            
             <converters:DebugConverter x:Key="debugConverter" />
             <converters:GroupTypeConverter x:Key="groupTypeConverter" />
+            <SolidColorBrush x:Key="roomGutterBrush" Color="{DynamicResource AccentColor3}" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"  />
-            <RowDefinition />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="400" MinWidth="200" />
-            <ColumnDefinition />
-            <ColumnDefinition MaxWidth="400" MinWidth="200" />
-        </Grid.ColumnDefinitions>
-        
-        <!-- row 0 -->
-        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="32" Text="Rooms" />
-        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="32" Text="Messages" />
-        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="32" Text="Users" />
-        
-        <!-- row 1-->
-        <ListView x:Name="Items" Grid.Row="1" Grid.Column="0">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="BorderThickness" Value="0" />
-                </Style>
-                </ListView.ItemContainerStyle>
-            <ListView.Style>
-                <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-            </ListView.Style>
-        </ListView>
-        <ItemsControl
-            ItemsSource="{Binding ActiveItem.Messages}"
-            Grid.Row="1"
-            Grid.Column="1">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl cal:View.Model="{Binding}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <ItemsControl
-            Grid.Row="1"
-            Grid.Column="2"
-            ItemsSource="{Binding ActiveItem.Users}">
-            <ItemsControl.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                        <Style TargetType="GroupItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="GroupItem">
-                                        <Expander IsExpanded="True">
-                                            <Expander.Header>
-                                                <TextBlock FontSize="18" Text="{Binding Name, Converter={StaticResource groupTypeConverter}}"/>
-                                            </Expander.Header>
-                                            <ItemsPresenter />
-                                        </Expander>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GroupStyle.ContainerStyle>
-                </GroupStyle>
-            </ItemsControl.GroupStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <users:UserView cal:View.Context="{Binding}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <Grid
+            x:Name="roomGutter"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Stretch"
+            Margin="-250,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Border
+                Width="250"
+                Grid.Column="0"
+                Background="{StaticResource roomGutterBrush}">
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard Storyboard="{StaticResource hideRoomGutter}" />
+                    </EventTrigger>
+                </Border.Triggers>
+                <ListView Margin="10" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl cal:View.Model="{Binding}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+            <Border 
+                Height="60"
+                MinWidth="40"
+                Grid.Column="1"
+                Background="{StaticResource roomGutterBrush}"
+                VerticalAlignment="Top"
+                CornerRadius="0,12,12,0"
+                Margin="0,30,0,0">
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard Storyboard="{StaticResource showRoomGutter}" />
+                    </EventTrigger>
+                </Border.Triggers>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
