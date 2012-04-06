@@ -16,11 +16,7 @@ namespace Jabbr.WPF.Converters
             if(string.IsNullOrEmpty(htmlString))
                 return null;
 
-            string xamlString = HtmlToXamlConversion.HtmlToXamlConverter.ConvertHtmlToXaml(htmlString, false);
-            var parsedXaml = XamlReader.Parse(xamlString);
-            var xamlLines = ((Paragraph) ((Section) parsedXaml).Blocks.FirstBlock).Inlines;
-
-            return xamlLines;
+            return HtmlToXamlConversion.HtmlToXamlConverter.ConvertHtmlToXaml(htmlString, false);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
