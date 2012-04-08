@@ -90,6 +90,7 @@
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Authentication\LoginViewModel.cs" />
+    <Compile Include="Converters\ComparableConverters.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\GroupTypeConverter.cs" />
