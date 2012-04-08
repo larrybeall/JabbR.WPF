@@ -42,6 +42,12 @@
     <Reference Include="JabbR.Client">
       <HintPath>..\lib\Jabbr.Client\JabbR.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Kent.Boogaart.Converters">
+      <HintPath>..\packages\Kent.Boogaart.Converters.1.2.0.0\lib\net40\Kent.Boogaart.Converters.dll</HintPath>
+    </Reference>
+    <Reference Include="Kent.Boogaart.HelperTrinity">
+      <HintPath>..\packages\Kent.Boogaart.HelperTrinity.1.4.0.0\lib\net40\Kent.Boogaart.HelperTrinity.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=0.7.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.0.7.2.0\lib\net40\MahApps.Metro.dll</HintPath>
     </Reference>
@@ -121,6 +127,9 @@
       <DependentUpon>ChatWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Rooms\ChatWindowViewModel.cs" />
+    <Compile Include="Rooms\RoomDescriptionView.xaml.cs">
+      <DependentUpon>RoomDescriptionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Rooms\RoomView.xaml.cs">
       <DependentUpon>RoomView.xaml</DependentUpon>
     </Compile>
@@ -161,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Rooms\RoomSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Rooms\RoomDescriptionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

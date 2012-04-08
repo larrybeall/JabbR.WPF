@@ -1,0 +1,1638 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kent.Boogaart.Converters</name>
+    </assembly>
+    <members>
+        <member name="T:Kent.Boogaart.Converters.CaseConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> that converts the casing of the input string.
+            </summary>
+            <remarks>
+            <para>
+            The <c>CaseConverter</c> class can be used to convert input strings into upper or lower case according to the <see cref="P:Kent.Boogaart.Converters.CaseConverter.Casing"/>
+            property.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how a <c>CaseConverter</c> can be used to convert a bound value to upper-case:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding Name, Converter={CaseConverter Upper}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.CaseConverter.CasingProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.CaseConverter.Casing"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.CaseConverter.#ctor">
+            <summary>
+            Initializes a new instance of the CaseConverter class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.CaseConverter.#ctor(System.Windows.Controls.CharacterCasing)">
+            <summary>
+            Initializes a new instance of the CaseConverter class with the specified target casing.
+            </summary>
+            <param name="casing">
+            The target casing for the converter (see <see cref="P:Kent.Boogaart.Converters.CaseConverter.Casing"/>).
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.CaseConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.CaseConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.CaseConverter.Casing">
+            <summary>
+            Gets or sets the target casing for the converter.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.ConverterGroup">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> that allows multiple <see cref="T:System.Windows.Data.IValueConverter"/> implementations to be grouped
+            together and executed in a pipeline.
+            </summary>
+            <remarks>
+            <para>
+            The <c>ConverterGroup</c> class allows multiple <see cref="T:System.Windows.Data.IValueConverter"/> implementations to be executed in a pipeline in order to
+            perform a conversion. The <see cref="M:Kent.Boogaart.Converters.ConverterGroup.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/> method executes the <see cref="M:System.Windows.Data.IValueConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/> method on each converter in the
+            <see cref="P:Kent.Boogaart.Converters.ConverterGroup.Converters"/> collection. The <see cref="M:Kent.Boogaart.Converters.ConverterGroup.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/> method executes the <see cref="M:System.Windows.Data.IValueConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/> method
+            on each converter in reverse order.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how a <see cref="T:System.DateTime"/> can be converted to local time prior to being formatted for display:
+            <code lang="xml">
+            <![CDATA[
+            <Label>
+                <Label.Content>
+                    <Binding Path="StartDateTime">
+                        <Binding.Converter>
+                            <ConverterGroup>
+                                <DateTimeConverter TargetKind="Local"/>
+                                <FormatConverter FormatString="{0:t}"/>
+                            </ConverterGroup>
+                        </Binding.Converter>
+                    </Binding>
+                </Label.Content>
+            </Label>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows a <c>ConverterGroup</c> being used to convert user input to either <see langword="true"/> or
+            <see langword="false"/>. If the user types "Yes" in the <c>TextBox</c> then the <c>CheckBox</c> will be checked. If the user
+            types "No" then the <c>TextBox</c> will be unchecked. Any other value will result in the <c>CheckBox</c> being in an
+            indeterminate state. Note that the comparisons are case-insensitive thanks to the <see cref="T:Kent.Boogaart.Converters.CaseConverter"/>.
+            <code lang="xml">
+            <![CDATA[
+            <TextBox x:Name="_textBox"/>
+            <CheckBox IsThreeState="True">
+                <CheckBox.IsChecked>
+                    <Binding Path="Text" ElementName="_textBox" FallbackValue="{x:Null}">
+                        <Binding.Converter>
+                            <ConverterGroup>
+                                <CaseConverter Casing="Upper"/>
+                                <MapConverter>
+                                    <Mapping From="YES">
+                                        <Mapping.To>
+                                            <sys:Boolean>True</sys:Boolean>
+                                        </Mapping.To>
+                                    </Mapping>
+                                    <Mapping From="NO">
+                                        <Mapping.To>
+                                            <sys:Boolean>False</sys:Boolean>
+                                        </Mapping.To>
+                                    </Mapping>
+                                </MapConverter>
+                            </ConverterGroup>
+                        </Binding.Converter>
+                    </Binding>
+                </CheckBox.IsChecked>
+            </CheckBox>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.ConverterGroup.ConvertersProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.ConverterGroup.Converters"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ConverterGroup.#ctor">
+            <summary>
+            Initializes a new instance of the ConverterGroup class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ConverterGroup.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ConverterGroup.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.ConverterGroup.Converters">
+            <summary>
+            Gets the collection of <see cref="T:System.Windows.Data.IValueConverter"/>s in this <c>ConverterGroup</c>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.DateTimeConversionMode">
+            <summary>
+            Used to specify how the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/> should convert <see cref="T:System.DateTime"/>s between different
+            <see cref="T:System.DateTimeKind"/>s.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConversionMode.DoConversion">
+            <summary>
+            The <see cref="M:System.DateTime.ToLocalTime"/> or <see cref="M:System.DateTime.ToUniversalTime"/> methods are called as necessary. The
+            <see cref="T:System.DateTime"/>'s value is adjusted accordingly.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConversionMode.SpecifyKindOnly">
+            <summary>
+            The <see cref="M:System.DateTime.SpecifyKind(System.DateTime,System.DateTimeKind)"/> method is used to change the kind of the <see cref="T:System.DateTime"/> without affecting
+            its value.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.DateTimeConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> that converts <see cref="T:System.DateTime"/>s between specified <see cref="T:System.DateTimeKind"/>s.
+            </summary>
+            <remarks>
+            <para>
+            The <c>DateTimeConverter</c> can be used to convert <see cref="T:System.DateTime"/>s between different <see cref="T:System.DateTimeKind"/>s as required by
+            the source and target of a data binding. The <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.SourceKind"/> specifies the <see cref="T:System.DateTimeKind"/> that the source stores the
+            <see cref="T:System.DateTime"/> in, whilst the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.TargetKind"/> specifies the <see cref="T:System.DateTimeKind"/> that the target stores the
+            <see cref="T:System.DateTime"/> in.
+            </para>
+            <para>
+            If <see cref="F:System.DateTimeKind.Unspecified"/> is assigned to either <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.SourceKind"/> or <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.TargetKind"/> then no conversion
+            will take place in that direction.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how a <c>DateTimeConverter</c> can be used to convert a UTC date to local time:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding StartDateTime, Converter={DateTimeConverter TargetKind=Local}}"/>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how a <c>DateTimeConverter</c> can be used to adjust a <c>DateTime</c> by 3 minutes:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding StartDateTime, Converter={DateTimeConverter TargetAdjustment=0:3}}"/>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how a <c>DateTimeConverter</c> can be used to convert <c>DateTime</c>s to local time for the
+            user, but convert them back to UTC time before storing them in the bound object:
+            <code lang="xml">
+            <![CDATA[
+            <DatePicker Value="{Binding StartDateTime, Converter={DateTimeConverter SourceKind=Utc, TargetKind=Local}}"/>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how a <c>DateTimeConverter</c> can be used to convert <c>DateTime</c>s to local time without
+            adjusting the underlying value of the <c>DateTime</c>:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding StartDateTime, Converter={DateTimeConverter TargetKind=Local, ConversionMode=SpecifyKindOnly}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConverter.SourceKindProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.SourceKind"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConverter.TargetKindProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.TargetKind"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConverter.ConversionModeProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.ConversionMode"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConverter.SourceAdjustmentProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.SourceAdjustment"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.DateTimeConverter.TargetAdjustmentProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.TargetAdjustment"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.DateTimeConverter.#ctor">
+            <summary>
+            Initializes a new instance of the DateTimeConverter class
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.DateTimeConverter.#ctor(System.DateTimeKind,System.DateTimeKind)">
+            <summary>
+            Initializes a new instance of the DateTimeConverter class with the specified source and target kinds.
+            </summary>
+            <param name="sourceKind">
+            The source kind for converted <see cref="T:System.DateTime"/>s.
+            </param>
+            <param name="targetKind">
+            The target kind for converted <see cref="T:System.DateTime"/>s.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.DateTimeConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.DateTimeConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.DateTimeConverter.SourceKind">
+            <summary>
+            Gets or sets the source kind for converted <see cref="T:System.DateTime"/>s.
+            </summary>
+            <remarks>
+            <para>
+            This property specifies what type of <see cref="T:System.DateTime"/> is required for the binding source. Any <see cref="T:System.DateTime"/>s converted
+            before being applied to the source will be converted to the kind specified by this property.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.DateTimeConverter.TargetKind">
+            <summary>
+            Gets or sets the target kind for converted <see cref="T:System.DateTime"/>s.
+            </summary>
+            <remarks>
+            <para>
+            This property specifies what type of <see cref="T:System.DateTime"/> is required for the binding target. Any <see cref="T:System.DateTime"/>s converted
+            before being applied to the target will be converted to the kind specified by this property.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.DateTimeConverter.ConversionMode">
+            <summary>
+            Gets or sets a value indicating how <see cref="T:System.DateTime"/>s are converted between the <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.SourceKind"/> and
+            <see cref="P:Kent.Boogaart.Converters.DateTimeConverter.TargetKind"/>.
+            </summary>
+            <remarks>
+            <para>
+            This property can be used to indicate how <see cref="T:System.DateTime"/>s should be converted between different
+            <see cref="T:System.DateTimeKind"/>s. If set to <see cref="F:Kent.Boogaart.Converters.DateTimeConversionMode.DoConversion"/> (the default), the
+            <see cref="T:System.DateTime"/>'s value will be adjusted during conversion. If set to
+            <see cref="F:Kent.Boogaart.Converters.DateTimeConversionMode.SpecifyKindOnly"/>, the value of the <see cref="T:System.DateTime"/> is not adjusted during
+            the conversion.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.DateTimeConverter.SourceAdjustment">
+            <summary>
+            Gets or sets a value by which the source <see cref="T:System.DateTime"/> will be adjusted during conversions.
+            </summary>
+            <remarks>
+            <para>
+            This property can be used to ensure that any <see cref="T:System.DateTime"/> heading to the source of the binding will be
+            adjusted according to the specified <see cref="T:System.TimeSpan"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.DateTimeConverter.TargetAdjustment">
+            <summary>
+            Gets or sets a value by which the target <see cref="T:System.DateTime"/> will be adjusted during conversions.
+            </summary>
+            <remarks>
+            <para>
+            This property can be used to ensure that any <see cref="T:System.DateTime"/> heading to the target of the binding will be
+            adjusted according to the specified <see cref="T:System.TimeSpan"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.ExpressionConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> and <see cref="T:System.Windows.Data.IMultiValueConverter"/> that converts bound values by using
+            a C#-like expression.
+            </summary>
+            <remarks>
+            <para>
+            The expression can be any valid C# expression as long as it uses only the operators discussed below. Bound values can be accessed
+            within the expression by using curly brackets. For example, an expression of <c>{0}</c> will simply yield the first bound value
+            unchanged, whereas an expression of <c>{0} * 2</c> will return the value doubled.
+            </para>
+            <para>
+            The operators supported are listed below along with example usage. They are listed in decreasing order of precedence.
+            <list type="table">
+                <listheader>
+                    <term>Operator Category</term>
+                    <term>Operator</term>
+                    <term>Example</term>
+                </listheader>
+                <item>
+                    <term>Unary</term>
+                    <term>+</term>
+                    <term>+4</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>-</term>
+                    <term>-4</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>!</term>
+                    <term>!true</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>~</term>
+                    <term>~21</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>(T)</term>
+                    <term>(long) 3</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>true</term>
+                    <term>{0} == true</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>false</term>
+                    <term>{0} == false</term>
+                </item>
+                <item>
+                    <term>Multiplicative</term>
+                    <term>*</term>
+                    <term>4 * {0}</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>/</term>
+                    <term>{0} / 4</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>%</term>
+                    <term>{0} % 4</term>
+                </item>
+                <item>
+                    <term>Additive</term>
+                    <term>+</term>
+                    <term>{0} + 4</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>-</term>
+                    <term>{0} - 4</term>
+                </item>
+                <item>
+                    <term>Shift</term>
+                    <term>&lt;&lt;</term>
+                    <term>{0} &lt;&lt; 4</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>&gt;&gt;</term>
+                    <term>{0} &gt;&gt; 4</term>
+                </item>
+                <item>
+                    <term>Relational</term>
+                    <term>&lt;</term>
+                    <term>{0} &lt; 50</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>&gt;</term>
+                    <term>{0} &gt; 50</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>&lt;=</term>
+                    <term>{0} &lt;= 50</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>&gt;=</term>
+                    <term>{0} &gt;= 50</term>
+                </item>
+                <item>
+                    <term>Equality</term>
+                    <term>==</term>
+                    <term>{0} == 50</term>
+                </item>
+                <item>
+                    <term></term>
+                    <term>!=</term>
+                    <term>{0} != 50</term>
+                </item>
+                <item>
+                    <term>Logical AND</term>
+                    <term>&amp;</term>
+                    <term>{0} &amp; 16</term>
+                </item>
+                <item>
+                    <term>Logical OR</term>
+                    <term>|</term>
+                    <term>{0} | 16</term>
+                </item>
+                <item>
+                    <term>Logical XOR</term>
+                    <term>^</term>
+                    <term>{0} ^ 16</term>
+                </item>
+                <item>
+                    <term>Conditional AND</term>
+                    <term>&amp;&amp;</term>
+                    <term>{0} &amp;&amp; {1}</term>
+                </item>
+                <item>
+                    <term>Conditional OR</term>
+                    <term>||</term>
+                    <term>{0} || {1}</term>
+                </item>
+                <item>
+                    <term>Ternary Conditional</term>
+                    <term>?:</term>
+                    <term>{0} ? "yes" : "no"</term>
+                </item>
+                <item>
+                    <term>Null Coalescing</term>
+                    <term>??</term>
+                    <term>{0} ?? {1} ?? "default"</term>
+                </item>
+            </list>
+            </para>
+            </remarks>
+            <example>
+            The following example shows how to use an expression converter to display the value of a slider multiplied by 2. Note that
+            the expression must be escaped with "{}" because it includes the '{' and '}' characters. The expression on its own
+            is "{0} * 2".
+            <code lang="xml">
+            <![CDATA[
+            <StackPanel>
+                <Slider x:Name="_slider"/>
+                <Label Content="{Binding Value, ElementName=_slider}"/>
+                <Label Content="{Binding Value, ElementName=_slider, Converter={ExpressionConverter {}{0} * 2}}"/>
+            </StackPanel>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how to position a <c>Popup</c> exactly in the center of a hosting panel. A <see cref="T:System.Windows.Data.MultiBinding"/>
+            is used to perform a calculation on the widths and heights of the containing panel and the popup itself.
+            <code lang="xml">
+            <![CDATA[
+            <StackPanel x:Name="_panel">
+                <Popup IsOpen="True" Placement="Relative" PlacementTarget="{Binding ElementName=_panel}">
+                    <Popup.HorizontalOffset>
+                        <MultiBinding Converter="{ExpressionConverter {}{0} / 2 - {1} / 2}">
+                            <Binding Path="ActualWidth" ElementName="_panel"/>
+                            <Binding Path="ActualWidth" ElementName="_border"/>
+                        </MultiBinding>
+                    </Popup.HorizontalOffset>
+                    <Popup.VerticalOffset>
+                        <MultiBinding Converter="{ExpressionConverter {}{0} / 2 - {1} / 2}">
+                            <Binding Path="ActualHeight" ElementName="_panel"/>
+                            <Binding Path="ActualHeight" ElementName="_border"/>
+                        </MultiBinding>
+                    </Popup.VerticalOffset>
+            
+                    <Border x:Name="_border" Background="White" BorderThickness="1">
+                        <Label>Here is the popup.</Label>
+                    </Border>
+                </Popup>
+            </StackPanel>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.ExpressionConverter.ExpressionProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.ExpressionConverter.Expression"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.#ctor">
+            <summary>
+            Initializes a new instance of the ExpressionConverter class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ExpressionConverter class with the specified expression.
+            </summary>
+            <param name="expression">
+            The expression (see <see cref="P:Kent.Boogaart.Converters.ExpressionConverter.Expression"/>).
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.Convert(System.Object[],System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified values.
+            </summary>
+            <param name="values">
+            The values to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.ExpressionConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert back the specified values.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetTypes">
+            The types of the binding target properties.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            Converted values.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.ExpressionConverter.Expression">
+            <summary>
+            Gets or sets the expression for this <c>MathConverter</c>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Expressions.ParseException">
+            <summary>
+            Exception thrown when the <see cref="T:Kent.Boogaart.Converters.Expressions.Parser"/> encounters any errors.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Expressions.ParseException.#ctor">
+            <summary>
+            Initializes a new instance of the ParseException class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Expressions.ParseException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ParseException class with the specified message.
+            </summary>
+            <param name="message">
+            The message.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Expressions.ParseException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the ParseException class with the specified message and inner exception.
+            </summary>
+            <param name="message">
+            The message.
+            </param>
+            <param name="innerException">
+            The exception that caused this exception to be thrown.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Expressions.ParseException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the ParseException class with information read from the provided serialization information.
+            </summary>
+            <param name="info">
+            A <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds all the data needed to serialize or deserialize an object.
+            </param>
+            <param name="context">
+            A <see cref="T:System.Runtime.Serialization.StreamingContext"/> structure that provides a context for the operation.
+            </param>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.FallbackBehavior">
+            <summary>
+            Defines possible fallback behaviors for the <see cref="T:Kent.Boogaart.Converters.MapConverter"/>.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.FallbackBehavior.ReturnUnsetValue">
+            <summary>
+            Specifies that <see cref="F:System.Windows.DependencyProperty.UnsetValue"/> should be returned when falling back.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.FallbackBehavior.ReturnOriginalValue">
+            <summary>
+            Specifies that the value being converted should be returned when falling back.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.FallbackBehavior.ReturnFallbackValue">
+            <summary>
+            Specifies that the fallback value specified by <see cref="P:Kent.Boogaart.Converters.MapConverter.FallbackValue"/> should be returned when falling back.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.FormatConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> and <see cref="T:System.Windows.Data.IMultiValueConverter"/> that formats any bound data with a specified
+            <see cref="P:Kent.Boogaart.Converters.FormatConverter.FormatString"/>.
+            </summary>
+            <remarks>
+            <para>
+            The <c>FormatConverter</c> class can be used to format bound data according to standard .NET formatting rules. It implements both the
+            <see cref="T:System.Windows.Data.IValueConverter"/> and <see cref="T:System.Windows.Data.IMultiValueConverter"/> interfaces, thus enabling usage in both <c>Binding</c>s and
+            <c>MultiBinding</c>s.
+            </para>
+            <para>
+            Note that this converter does not support conversions back for its <see cref="T:System.Windows.Data.IMultiValueConverter"/> implementation. Any attempt to
+            convert multiple values back will return <see langword="null"/>.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how a <c>FormatConverter</c> can be used to format a single value:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding Name, Converter={FormatConverter {}Your name is '{0}'.}}"/>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how a <c>FormatConverter</c> can be used to format multiple values:
+            <code lang="xml">
+            <![CDATA[
+            <Label>
+                <Label.Content>
+                    <MultiBinding Converter="{FormatConverter {}Your name is '{0}' and you were born on {1:dd/MM/yyyy}.}">
+                        <Binding Path="Name"/>
+                        <Binding Path="Dob"/>
+                    </MultiBinding>
+                </Label.Content>
+            </Label>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.FormatConverter.FormatStringProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.FormatConverter.FormatString"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.#ctor">
+            <summary>
+            Initializes a new instance of the FormatConverter class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the FormatConverter class with the specified format string.
+            </summary>
+            <param name="formatString">
+            The format string.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.Convert(System.Object[],System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified values.
+            </summary>
+            <param name="values">
+            The values to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.FormatConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert back the specified values.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetTypes">
+            The types of the binding target properties.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            Converted values.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.FormatConverter.FormatString">
+            <summary>
+            Gets or sets the format string to use when converting bound data.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.MapConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> that converts from one set of values to another based on the contents of the
+            <see cref="P:Kent.Boogaart.Converters.MapConverter.Mappings"/> collection.
+            </summary>
+            <remarks>
+            <para>
+            The <c>MapConverter</c> converts from one set of values to another. The source and destination values are stored in instances of
+            <see cref="T:Kent.Boogaart.Converters.Mapping"/> inside the <see cref="P:Kent.Boogaart.Converters.MapConverter.Mappings"/> collection. 
+            </para>
+            <para>
+            If this converter is asked to convert a value for which it has no knowledge, it will use the <see cref="P:Kent.Boogaart.Converters.MapConverter.FallbackBehavior"/> to determine
+            how to deal with the situation.
+            </para>
+            </remarks>
+            <example>
+            The following example shows a <c>MapConverter</c> being used to control the visibility of a <c>Label</c> based on a
+            <c>CheckBox</c>:
+            <code lang="xml">
+            <![CDATA[
+            <CheckBox x:Name="_checkBox"/>
+            <Label Content="Here is the label.">
+                <Label.Visibility>
+                    <Binding Path="IsChecked" ElementName="_checkBox" FallbackValue="Collapsed">
+                        <Binding.Converter>
+                            <MapConverter>
+                                <Mapping To="{x:Static Visibility.Visible}">
+                                    <Mapping.From>
+                                        <sys:Boolean>True</sys:Boolean>
+                                    </Mapping.From>
+                                </Mapping>
+                            </MapConverter>
+                        </Binding.Converter>
+                    </Binding>
+                </Label.Visibility>
+            </Label>
+            ]]>
+            </code>
+            </example>
+            <example>
+            The following example shows how a <c>MapConverter</c> can be used to convert between values of the <see cref="T:System.UriFormat"/>
+            enumeration and human-readable strings. Notice how not all possible values are present in the mappings. The fallback behavior
+            is set to <c>ReturnOriginalValue</c> to ensure that any conversion failures result in the original value being returned:
+            <code lang="xml">
+            <![CDATA[
+            <Label>
+                   <Label.Content>
+                       <Binding Path="UriFormat">
+                           <Binding.Converter>
+                               <MapConverter FallbackBehavior="ReturnOriginalValue">
+                                   <Mapping From="{x:Static sys:UriFormat.SafeUnescaped}" To="Safe unescaped"/>
+                                   <Mapping From="{x:Static sys:UriFormat.UriEscaped}" To="URI escaped"/>
+                               </MapConverter>
+                           </Binding.Converter>
+                       </Binding>
+                   </Label.Content>
+               </Label>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.MapConverter.MappingsProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.MapConverter.Mappings"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.MapConverter.FallbackBehaviorProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.MapConverter.FallbackBehavior"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.MapConverter.FallbackValueProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.MapConverter.FallbackValue"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MapConverter.#ctor">
+            <summary>
+            Initializes a new instance of the MapConverter class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MapConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MapConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.MapConverter.FallbackBehavior">
+            <summary>
+            Gets or sets the fallback behavior for this <c>MapConverter</c>.
+            </summary>
+            <remarks>
+            <para>
+            The fallback behavior determines how this <c>MapConverter</c> treats failed conversions. <c>ReturnUnsetValue</c> (the default)
+            specifies that any failed conversions should return <see cref="F:System.Windows.DependencyProperty.UnsetValue"/>, which can be used in combination with
+            <c>Binding.FallbackValue</c> to default bindings to a specific value.
+            </para>
+            <para>
+            Alternatively, <c>FallbackBehavior.ReturnOriginalValue</c> can be specified so that failed conversions result in the original value
+            being returned. This is useful where mappings are only necessary for a subset of the total possible values. Mappings can be specified
+            where necessary and other values can be returned as is by the <c>MapConverter</c> by setting the fallback behavior to
+            <c>ReturnOriginalValue</c>.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.MapConverter.FallbackValue">
+            <summary>
+            Gets or sets the value that will be returned if <see cref="P:Kent.Boogaart.Converters.MapConverter.FallbackBehavior"/> is set to <see cref="!:FallbackBehavior.ReturnFallbackValue"/>
+            and no mapping is present for the converted value.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.MapConverter.Mappings">
+            <summary>
+            Gets the collection of <see cref="T:Kent.Boogaart.Converters.Mapping"/>s configured for this <c>MapConverter</c>.
+            </summary>
+            <remarks>
+            <para>
+            Each <see cref="T:Kent.Boogaart.Converters.Mapping"/> defines a relationship between a source object (see <see cref="P:Kent.Boogaart.Converters.Mapping.From"/>) and a destination (see
+            <see cref="P:Kent.Boogaart.Converters.Mapping.To"/>). The <c>MapConverter</c> uses these mappings whilst attempting to convert values.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Mapping">
+            <summary>
+            Represents a mapping <see cref="P:Kent.Boogaart.Converters.Mapping.From"/> one value <see cref="P:Kent.Boogaart.Converters.Mapping.To"/> another.
+            </summary>
+            <remarks>
+            <para>
+            The <see cref="T:Kent.Boogaart.Converters.MapConverter"/> uses instances of this class to define mappings between one set of values and another.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.Mapping.FromProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.Mapping.From"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.Mapping.ToProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.Mapping.To"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Mapping.#ctor">
+            <summary>
+            Initializes a new instance of the Mapping class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Mapping.#ctor(System.Object,System.Object)">
+            <summary>
+            Initializes a new instance of the Mapping class with the specified <paramref name="from"/> and <paramref name="to"/> values.
+            </summary>
+            <param name="from">
+            The value for the source in the mapping (see <see cref="P:Kent.Boogaart.Converters.Mapping.From"/>).
+            </param>
+            <param name="to">
+            The value for the destination in the mapping (see <see cref="P:Kent.Boogaart.Converters.Mapping.To"/>).
+            </param>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Mapping.From">
+            <summary>
+            Gets or sets the source object for the mapping.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Mapping.To">
+            <summary>
+            Gets or sets the destination object for the mapping.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Markup.CaseConverterExtension">
+            <summary>
+            Implements a markup extension that allows instances of <see cref="T:Kent.Boogaart.Converters.CaseConverter"/> to be easily created.
+            </summary>
+            <remarks>
+            This markup extension allows instance of <see cref="T:Kent.Boogaart.Converters.CaseConverter"/> to be easily created inline in a XAML binding.
+            See the example below.
+            </remarks>
+            <example>
+            The following shows how to use the <c>CaseConverterExtension</c> inside a binding to convert values to upper-case:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding Name, Converter={CaseConverter Upper}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.CaseConverterExtension.#ctor">
+            <summary>
+            Initializes a new instance of the CaseConverterExtension class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.CaseConverterExtension.#ctor(System.Windows.Controls.CharacterCasing)">
+            <summary>
+            Initializes a new instance of the CaseConverterExtension class with the specified <see cref="P:Kent.Boogaart.Converters.Markup.CaseConverterExtension.Casing"/>.
+            </summary>
+            <param name="casing">
+            The casing for the <see cref="T:Kent.Boogaart.Converters.CaseConverter"/>.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.CaseConverterExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides an instance of <see cref="T:Kent.Boogaart.Converters.CaseConverter"/> based on <see cref="P:Kent.Boogaart.Converters.Markup.CaseConverterExtension.Casing"/>.
+            </summary>
+            <param name="serviceProvider">
+            An object that can provide services.
+            </param>
+            <returns>
+            The instance of <see cref="T:Kent.Boogaart.Converters.CaseConverter"/>.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.CaseConverterExtension.Casing">
+            <summary>
+            Gets or sets the <see cref="T:System.Windows.Controls.CharacterCasing"/> for the <see cref="T:Kent.Boogaart.Converters.CaseConverter"/>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension">
+            <summary>
+            Implements a markup extension that allows instances of <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/> to be easily created.
+            </summary>
+            <remarks>
+            This markup extension allows instance of <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/> to be easily created inline in a XAML binding.
+            See the example below.
+            </remarks>
+            <example>
+            The following shows how to use the <c>DateTimeConverterExtension</c> inside a binding to convert values to local time:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding StartTime, Converter={DateTimeConverter TargetKind=Local}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.#ctor">
+            <summary>
+            Initializes a new instance of the DateTimeConverterExtension class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.#ctor(System.DateTimeKind,System.DateTimeKind)">
+            <summary>
+            Initializes a new instance of the DateTimeConverterExtension class with the specified source and target kinds.
+            </summary>
+            <param name="sourceKind">
+            The source kind for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </param>
+            <param name="targetKind">
+            The target kind for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides an instance of <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/> based on this <c>DateTimeConverterExtension</c>.
+            </summary>
+            <param name="serviceProvider">
+            An object that can provide services.
+            </param>
+            <returns>
+            The instance of <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.SourceKind">
+            <summary>
+            Gets or sets the source kind for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.TargetKind">
+            <summary>
+            Gets or sets the target kind for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.ConversionMode">
+            <summary>
+            Gets or sets the conversion mode for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.SourceAdjustment">
+            <summary>
+            Gets or sets the source adjustment for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.DateTimeConverterExtension.TargetAdjustment">
+            <summary>
+            Gets or sets the target adjustment for the <see cref="T:Kent.Boogaart.Converters.DateTimeConverter"/>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension">
+            <summary>
+            Implements a markup extension that allows instances of <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/> to be easily created.
+            See <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/> for more information on supported expressions.
+            </summary>
+            <remarks>
+            This markup extension allows instance of <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/> to be easily created inline in a XAML binding.
+            See the example below.
+            </remarks>
+            <example>
+            The following shows how to use the <c>ExpressionConverterExtension</c> inside a binding to calculate double a given value:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding Value, Converter={ExpressionConverter {} {0} * 2}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension.#ctor">
+            <summary>
+            Initializes a new instance of the ExpressionConverterExtension class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ExpressionConverterExtension class with the given expression.
+            </summary>
+            <param name="expression">
+            The expression.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides an instance of <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/> based on <see cref="P:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension.Expression"/>.
+            </summary>
+            <param name="serviceProvider">
+            An object that can provide services.
+            </param>
+            <returns>
+            The instance of <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/>.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.ExpressionConverterExtension.Expression">
+            <summary>
+            Gets or sets the expression to use in the <see cref="T:Kent.Boogaart.Converters.ExpressionConverter"/>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Markup.FormatConverterExtension">
+            <summary>
+            Implements a markup extension that allows instances of <see cref="T:Kent.Boogaart.Converters.FormatConverter"/> to be easily created.
+            </summary>
+            <remarks>
+            This markup extension allows instance of <see cref="T:Kent.Boogaart.Converters.FormatConverter"/> to be easily created inline in a XAML binding.
+            See the example below.
+            </remarks>
+            <example>
+            The following shows how to use the <c>FormatConverterExtension</c> inside a binding to format values:
+            <code lang="xml">
+            <![CDATA[
+            <Label Content="{Binding Name, Converter={FormatConverter {}Your name is '{0}'}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.FormatConverterExtension.#ctor">
+            <summary>
+            Initializes a new instance of the FormatConverterExtension class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.FormatConverterExtension.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the FormatConverterExtension class with the specified format string.
+            </summary>
+            <param name="formatString">
+            The format string for the <see cref="T:Kent.Boogaart.Converters.FormatConverter"/>.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.FormatConverterExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides an instance of <see cref="T:Kent.Boogaart.Converters.FormatConverter"/> based on <see cref="P:Kent.Boogaart.Converters.Markup.FormatConverterExtension.FormatString"/>.
+            </summary>
+            <param name="serviceProvider">
+            An object that can provide services.
+            </param>
+            <returns>
+            The instance of <see cref="T:Kent.Boogaart.Converters.FormatConverter"/>.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.FormatConverterExtension.FormatString">
+            <summary>
+            Gets or sets the format string for the <see cref="T:Kent.Boogaart.Converters.FormatConverter"/>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.Markup.TypeConverterExtension">
+            <summary>
+            Implements a markup extension that allows instances of <see cref="T:Kent.Boogaart.Converters.TypeConverter"/> to be easily created.
+            </summary>
+            <remarks>
+            This markup extension allows instance of <see cref="T:Kent.Boogaart.Converters.TypeConverter"/> to be easily created inline in a XAML binding. See
+            the example below.
+            </remarks>
+            <example>
+            The following shows how to use the <c>TypeConverterExtension</c> inside a binding to convert integer values to strings
+            and back:
+            <code lang="xml">
+            <![CDATA[
+            <TextBox Text="{Binding Age, Converter={TypeConverter sys:Int32, sys:String}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.TypeConverterExtension.#ctor">
+            <summary>
+            Initializes a new instance of the TypeConverterExtension class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.TypeConverterExtension.#ctor(System.Type,System.Type)">
+            <summary>
+            Initializes a new instance of the TypeConverterExtension class with the specified source and target types.
+            </summary>
+            <param name="sourceType">
+            The source type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </param>
+            <param name="targetType">
+            The target type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.TypeConverterExtension.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the TypeConverterExtension class with the specified source and target types.
+            </summary>
+            <param name="sourceTypeName">
+            The source type name for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </param>
+            <param name="targetTypeName">
+            The target type name for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.Markup.TypeConverterExtension.ProvideValue(System.IServiceProvider)">
+            <summary>
+            Provides an instance of <see cref="T:Kent.Boogaart.Converters.TypeConverter"/> based on this <c>TypeConverterExtension</c>.
+            </summary>
+            <param name="serviceProvider">
+            An object that can provide services.
+            </param>
+            <returns>
+            The instance of <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.TypeConverterExtension.SourceType">
+            <summary>
+            Gets or sets the source type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.TypeConverterExtension.TargetType">
+            <summary>
+            Gets or sets the target type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.TypeConverterExtension.SourceTypeName">
+            <summary>
+            Gets or sets the name of the source type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.Markup.TypeConverterExtension.TargetTypeName">
+            <summary>
+            Gets or sets the name of the target type for the <see cref="T:Kent.Boogaart.Converters.TypeConverter"/>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.MultiConverterGroup">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IMultiValueConverter"/> that allows multiple <see cref="T:System.Windows.Data.IMultiValueConverter"/>s to be chained together in
+            a sequence of steps.
+            </summary>
+            <remarks>
+            <para>
+            The <c>MultiConverterGroup</c> class allows <see cref="T:System.Windows.Data.IMultiValueConverter"/> implementations to be chained together in various steps to
+            produce an execution pipeline. Each step in the execution chain is represented by an instance of <see cref="T:Kent.Boogaart.Converters.MultiConverterGroupStep"/>,
+            which must be added to the <see cref="P:Kent.Boogaart.Converters.MultiConverterGroup.Steps"/> collection.
+            </para>
+            <para>
+            During a call to <see cref="M:Kent.Boogaart.Converters.MultiConverterGroup.Convert(System.Object[],System.Type,System.Object,System.Globalization.CultureInfo)"/>, each step is handed a set of values. Each converter in that step is required to produce one value
+            from the set of values. All values produced by the converters in a step are combined and form the input to the next step.
+            </para>
+            <para>
+            During a call to <see cref="M:Kent.Boogaart.Converters.MultiConverterGroup.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)"/>, the steps are traversed in reverse order. Only the first converter in each step is used, since
+            each converter in the step should map a single input value back to the same output values. The output values from the single converter in
+            each step are fed as input into the previous step all the way up the stack. Of course, if any of the first converters in any of the steps
+            do not support backward conversions, calling <see cref="M:Kent.Boogaart.Converters.MultiConverterGroup.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)"/> will not yield the desired results.
+            </para>
+            <para>
+            Note that the final step in a <c>MultiConverterGroup</c> must have a single <see cref="T:System.Windows.Data.IMultiValueConverter"/> instance added to it. In
+            addition, all steps in a <c>MultiConverterGroup</c> must have at least one converter added to them. Violating either of these constraints
+            will result in an exception at runtime.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how multiple converters might be joined together to produce some useful output:
+            <code lang="xml">
+            <![CDATA[
+            <MultiConverterGroup>
+                <MultiConverterGroupStep>
+                    <NumberOfFilesConverter/>
+                    <TotalFileSizeConverter/>
+                </MultiConverterGroupStep>
+                <MultiConverterGroupStep>
+                    <FormatConverter FormatString="{0} files with a total size of {1}KB."/>
+                </MultiConverterGroupStep>
+            </MultiConverterGroup>
+            ]]>
+            </code>
+            Such a converter might be used in a <c>MultiBinding</c> that is bound to a collection of files.
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.MultiConverterGroup.StepsProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.MultiConverterGroup.Steps"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MultiConverterGroup.#ctor">
+            <summary>
+            Initializes a new instance of the MultiConverterGroup class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MultiConverterGroup.Convert(System.Object[],System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified values.
+            </summary>
+            <param name="values">
+            The values to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MultiConverterGroup.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert back the specified values.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetTypes">
+            The types of the binding target properties.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            Converted values.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.MultiConverterGroup.Steps">
+            <summary>
+            Gets the collection of <see cref="T:Kent.Boogaart.Converters.MultiConverterGroupStep"/>s in this <c>MultiConverterGroup</c>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.MultiConverterGroupStep">
+            <summary>
+            Represents a single step in a <see cref="T:Kent.Boogaart.Converters.MultiConverterGroup"/>.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.MultiConverterGroupStep.ConvertersProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.MultiConverterGroupStep.Converters"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.MultiConverterGroupStep.#ctor">
+            <summary>
+            Initializes a new instance of the MultiConverterGroupStep class.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.MultiConverterGroupStep.Converters">
+            <summary>
+            Gets the collection of <see cref="T:System.Windows.Data.IMultiValueConverter"/>s in this <c>MultiConverterGroupStep</c>.
+            </summary>
+        </member>
+        <member name="T:Kent.Boogaart.Converters.TypeConverter">
+            <summary>
+            An implementation of <see cref="T:System.Windows.Data.IValueConverter"/> that attempts to convert values between specified <see cref="T:System.Type"/>s.
+            </summary>
+            <remarks>
+            <para>
+            The <c>TypeConverter</c> class can be used to attempt to convert values between a <see cref="P:Kent.Boogaart.Converters.TypeConverter.SourceType"/> and <see cref="P:Kent.Boogaart.Converters.TypeConverter.TargetType"/>.
+            The <see cref="M:Kent.Boogaart.Converters.TypeConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/> method will attempt to convert values to the <see cref="P:Kent.Boogaart.Converters.TypeConverter.TargetType"/>, whilst the <see cref="M:Kent.Boogaart.Converters.TypeConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)"/>
+            method will attempt to convert values to the <see cref="P:Kent.Boogaart.Converters.TypeConverter.SourceType"/>.
+            </para>
+            <para>
+            This class attempts to convert values by way of the <see cref="T:System.IConvertible"/> interface. However, if the value being converted does not
+            implement <see cref="T:System.IConvertible"/>, an attempt is made to convert via a suitable <see cref="T:System.ComponentModel.TypeConverter"/>.
+            Failing that, <see cref="F:System.Windows.DependencyProperty.UnsetValue"/> is returned by conversion attempts.
+            </para>
+            <para>
+            Since the WPF binding infrastructure already performs automatic conversions, this converter is useful mainly in group
+            scenarios when using the <see cref="T:Kent.Boogaart.Converters.ConverterGroup"/> or <see cref="T:Kent.Boogaart.Converters.MultiConverterGroup"/> classes.
+            </para>
+            </remarks>
+            <example>
+            The following example shows how a <c>TypeConverter</c> can be used to convert integer values in the source to strings:
+            <code lang="xml">
+            <![CDATA[
+            <TextBox Text="{Binding Age, Converter={TypeConverter SourceType=sys:Int32, TargetType=sys:String}}"/>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.TypeConverter.SourceTypeProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.TypeConverter.SourceType"/> dependency property.
+            </summary>
+        </member>
+        <member name="F:Kent.Boogaart.Converters.TypeConverter.TargetTypeProperty">
+            <summary>
+            Identifies the <see cref="P:Kent.Boogaart.Converters.TypeConverter.TargetType"/> dependency property.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.TypeConverter.#ctor">
+            <summary>
+            Initializes a new instance of the TypeConverter class.
+            </summary>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.TypeConverter.#ctor(System.Type,System.Type)">
+            <summary>
+            Initializes a new instance of the TypeConverter class with the specified source and target types.
+            </summary>
+            <param name="sourceType">
+            The source type (see <see cref="P:Kent.Boogaart.Converters.TypeConverter.SourceType"/>).
+            </param>
+            <param name="targetType">
+            The target type (see <see cref="P:Kent.Boogaart.Converters.TypeConverter.TargetType"/>).
+            </param>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.TypeConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.Converters.TypeConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Attempts to convert the specified value back.
+            </summary>
+            <param name="value">
+            The value to convert.
+            </param>
+            <param name="targetType">
+            The type of the binding target property.
+            </param>
+            <param name="parameter">
+            The converter parameter to use.
+            </param>
+            <param name="culture">
+            The culture to use in the converter.
+            </param>
+            <returns>
+            A converted value.
+            </returns>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.TypeConverter.SourceType">
+            <summary>
+            Gets or sets the source type for the conversion.
+            </summary>
+        </member>
+        <member name="P:Kent.Boogaart.Converters.TypeConverter.TargetType">
+            <summary>
+            Gets or sets the target type for the conversion.
+            </summary>
+        </member>
+    </members>
+</doc>
