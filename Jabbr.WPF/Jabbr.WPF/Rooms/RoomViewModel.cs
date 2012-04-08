@@ -102,7 +102,13 @@ namespace Jabbr.WPF.Rooms
 
                 _unreadMessageCount = value;
                 NotifyOfPropertyChange(() => UnreadMessageCount);
+                NotifyOfPropertyChange(() => HasUnreadMessages);
             }
+        }
+
+        public bool HasUnreadMessages
+        {
+            get { return UnreadMessageCount > 0; }
         }
 
         public string Topic
@@ -136,7 +142,7 @@ namespace Jabbr.WPF.Rooms
             _messageService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
 
             var roomDetails = roomDetailsEventArgs.Room;
-            RoomName = roomDetails.Name;
+            RoomName = roomDetails.Name.ToUpper();
             UserCount = roomDetails.Users.Count();
             IsPrivate = roomDetails.Private;
             Topic = roomDetails.Topic;

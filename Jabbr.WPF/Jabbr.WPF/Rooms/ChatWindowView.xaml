@@ -7,6 +7,9 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:metroConverters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
+             xmlns:boogartConverters="clr-namespace:Kent.Boogaart.Converters;assembly=Kent.Boogaart.Converters"
+             xmlns:roomViews="clr-namespace:Jabbr.WPF.Rooms"
              HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -26,12 +29,18 @@
                 <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter" To="-250,0,0,0" Duration="0:0:.15" />
             </Storyboard>
             
-            <converters:DebugConverter x:Key="debugConverter" />
-            <converters:GroupTypeConverter x:Key="groupTypeConverter" />
+            <TransformGroup x:Key="sidewaysRoomName">
+                <RotateTransform Angle="90" />
+            </TransformGroup>
+            
+            <converters:StringFormatConverter x:Key="stringFormatter" />
+            <converters:BooleanToVisibilityConverter x:Key="boolToVisibility" />
+            <metroConverters:ToUpperConverter x:Key="toUpperConverter" />
             <SolidColorBrush x:Key="roomGutterBrush" Color="{DynamicResource AccentColor3}" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <ContentControl Margin="60,0,0,0" cal:View.Model="{Binding ActiveItem}" />
         <Grid
             x:Name="roomGutter"
             HorizontalAlignment="Left"
@@ -41,37 +50,72 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Border
-                Width="250"
-                Grid.Column="0"
-                Background="{StaticResource roomGutterBrush}">
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="MouseLeave">
-                        <BeginStoryboard Storyboard="{StaticResource hideRoomGutter}" />
-                    </EventTrigger>
-                </Border.Triggers>
-                <ListView Margin="10" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items}">
-                    <ListView.ItemTemplate>
+            <Border Background="White" CornerRadius="0,10,10,0">
+                <Border
+                    Width="250"
+                    Grid.Column="0"
+                    Background="{StaticResource roomGutterBrush}"
+                    CornerRadius="0,10,10,0">
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard Storyboard="{StaticResource hideRoomGutter}" />
+                        </EventTrigger>
+                    </Border.Triggers>
+                    <ListView Margin="10" Background="Transparent" BorderThickness="0" x:Name="Items">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <roomViews:RoomDescriptionView cal:View.Context="{Binding}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+            </Border>
+            <StackPanel Grid.Column="1">
+                <Border 
+                    Height="60"
+                    MinWidth="40"
+                    Background="{StaticResource roomGutterBrush}"
+                    VerticalAlignment="Top"
+                    CornerRadius="0,12,12,0"
+                    Margin="0,30,0,0">
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard Storyboard="{StaticResource showRoomGutter}" />
+                        </EventTrigger>
+                    </Border.Triggers>
+                    <metro:MetroImage Source="{DynamicResource appbar_arrow_right}" Width="40" Height="40" Margin="4" />
+                </Border>
+                <Border Background="Transparent" Height="7"/>
+                <ItemsControl 
+                    ItemsSource="{Binding Items}" 
+                    Background="Transparent" BorderThickness="0">
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ContentControl cal:View.Model="{Binding}" />
+                            <Border 
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Left"
+                                Background="{StaticResource roomGutterBrush}"
+                                Visibility="{Binding HasUnreadMessages, Converter={StaticResource boolToVisibility}}"
+                                CornerRadius="0,5,5,0"
+                                Margin="0,0,0,3">
+                                <Button cal:Message.Attach="ActivateItem($dataContext)">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ChromelessButtonStyle}">
+                                            <Setter Property="Margin" Value="4" />
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Content>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding UnreadMessageCount}" FontSize="24" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding RoomName, Converter={StaticResource stringFormatter}, ConverterParameter='#{0}'}" FontSize="18" HorizontalAlignment="Center" LayoutTransform="{StaticResource sidewaysRoomName}" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </Border>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Border>
-            <Border 
-                Height="60"
-                MinWidth="40"
-                Grid.Column="1"
-                Background="{StaticResource roomGutterBrush}"
-                VerticalAlignment="Top"
-                CornerRadius="0,12,12,0"
-                Margin="0,30,0,0">
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="MouseEnter">
-                        <BeginStoryboard Storyboard="{StaticResource showRoomGutter}" />
-                    </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

@@ -14,7 +14,7 @@ namespace Jabbr.WPF.Converters
             if (string.IsNullOrEmpty(format))
                 return null;
 
-            return string.Format(format, values);
+            return string.Format(format, values).Trim();
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
