@@ -1,8 +1,8 @@
 ﻿<UserControl x:Class="Jabbr.WPF.Messages.ChatMessageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:props="clr-namespace:Jabbr.WPF.AttachedProperties"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Converters">
+             xmlns:props="clr-namespace:Jabbr.WPF.Resources.AttachedProperties"
+             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
     <UserControl.Resources>
         <converters:HtmlToXamlConverter x:Key="htmlToXamlConverter" />
         <converters:DebugConverter x:Key="debugConverter" />

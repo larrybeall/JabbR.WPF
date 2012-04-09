@@ -8,7 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Diagnostics;
 
-namespace Jabbr.WPF.AttachedProperties
+namespace Jabbr.WPF.Resources.AttachedProperties
 {
     public static class TextBlockHelper
     {
