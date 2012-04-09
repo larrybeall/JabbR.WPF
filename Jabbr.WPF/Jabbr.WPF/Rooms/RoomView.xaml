@@ -8,6 +8,8 @@
     <UserControl.Resources>
         <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         <converters:StringFormatConverter x:Key="formatConverter" />
+        <converters:MessageItemsToUserConverter x:Key="messageItemsToUserConverter" />
+        <SolidColorBrush Color="{DynamicResource AccentColor3}" x:Key="messageBackground" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -29,6 +31,39 @@
             ItemsSource="{Binding Messages}"
             Grid.Row="1"
             Grid.Column="0">
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="{x:Type ItemsControl}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="GroupItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GroupItem">
+                                        <Grid Margin="7,0,7,7">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.Row="0" Background="{StaticResource messageBackground}" Margin="0,0,0,4">
+                                                <ItemsPresenter Margin="5" />
+                                            </Border>
+                                            <users:MessageUserView Grid.Row="1" cal:Bind.Model="{Binding Items, Converter={StaticResource messageItemsToUserConverter}}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ItemsControl.GroupStyle>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel VerticalAlignment="Bottom" />
@@ -66,7 +101,7 @@
             </ItemsControl.GroupStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <users:UserView cal:View.Context="{Binding}" />
+                    <users:UserView Width="75" Height="90" cal:View.Context="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

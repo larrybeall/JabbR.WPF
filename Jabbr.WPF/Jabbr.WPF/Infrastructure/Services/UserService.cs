@@ -29,7 +29,10 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public UserViewModel GetUserViewModel(string name)
         {
-            return _users.SingleOrDefault(x => x.Name == name);
+            // create a copy so that we avoid any potential threading issues.
+            var users = _users.ToArray();
+
+            return users.SingleOrDefault(x => x.Name == name);
         }
 
         public UserViewModel GetUserViewModel(JabbrModels.User user)

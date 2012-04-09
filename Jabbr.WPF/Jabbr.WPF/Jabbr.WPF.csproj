@@ -101,6 +101,7 @@
     <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\GroupTypeConverter.cs" />
     <Compile Include="Converters\HtmlToXamlConverter.cs" />
+    <Compile Include="Converters\MessageItemsToUserConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Infrastructure\AutoRefreshCollectionViewSource.cs" />
     <Compile Include="Infrastructure\Services\BaseService.cs" />
@@ -111,6 +112,7 @@
       <DependentUpon>ChatMessageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Messages\ChatMessageViewModel.cs" />
+    <Compile Include="Messages\MessageCollectionViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Infrastructure\EventArgs.cs" />
@@ -143,6 +145,9 @@
     </Compile>
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="Users\GroupType.cs" />
+    <Compile Include="Users\MessageUserView.xaml.cs">
+      <DependentUpon>MessageUserView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Users\RoomUserViewModel.cs" />
     <Compile Include="Users\UserView.xaml.cs">
       <DependentUpon>UserView.xaml</DependentUpon>
@@ -184,6 +189,10 @@
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Users\MessageUserView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Users\UserView.xaml">
       <SubType>Designer</SubType>

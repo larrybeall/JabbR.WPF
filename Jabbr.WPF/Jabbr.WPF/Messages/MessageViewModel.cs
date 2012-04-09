@@ -13,6 +13,7 @@ namespace Jabbr.WPF.Messages
         private DateTime _messageDateTime;
         private string _messageId;
         private string _rawContent;
+        private Guid _messageGroup;
 
         protected MessageViewModel()
             :base(false)
@@ -24,6 +25,19 @@ namespace Jabbr.WPF.Messages
             : base(cacheViews)
         {
             
+        }
+
+        public Guid MessageGroup
+        {
+            get { return _messageGroup; }
+            set
+            {
+                if(_messageGroup == value)
+                    return;
+
+                _messageGroup = value;
+                NotifyOfPropertyChange(() => MessageGroup);
+            }
         }
 
         public string RawContent
