@@ -4,7 +4,8 @@
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Converters">
+             xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
+             xmlns:expression="http://schemas.microsoft.com/expression/2010/drawing">
     <UserControl.Resources>
         <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         <converters:StringFormatConverter x:Key="formatConverter" />
@@ -47,16 +48,21 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="GroupItem">
-                                        <Grid Margin="7,0,7,7">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto"/>
-                                                <RowDefinition Height="auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Border Grid.Row="0" Background="{StaticResource messageBackground}" Margin="0,0,0,4">
+                                        <StackPanel Margin="7,0,7,7">
+                                            <Border Background="{StaticResource messageBackground}">
                                                 <ItemsPresenter Margin="5" />
                                             </Border>
+                                            <Border Margin="20,0,0,0" HorizontalAlignment="Left">
+                                                <Polygon Fill="{StaticResource messageBackground}">
+                                                    <Polygon.Points>
+                                                        <Point X="0" Y="0" />
+                                                        <Point X="0" Y="7" />
+                                                        <Point X="9" Y="0" />
+                                                    </Polygon.Points>
+                                                </Polygon>
+                                            </Border>
                                             <users:MessageUserView Grid.Row="1" cal:Bind.Model="{Binding Items, Converter={StaticResource messageItemsToUserConverter}}" />
-                                        </Grid>
+                                        </StackPanel>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
