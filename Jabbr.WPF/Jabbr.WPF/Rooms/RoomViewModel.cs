@@ -20,7 +20,8 @@ namespace Jabbr.WPF.Rooms
         private readonly ServiceLocator _serviceLocator;
         private readonly MessageService _messageService;
         private readonly UserService _userService;
-        private readonly IObservableCollection<ChatMessageViewModel> _messages;
+        //private readonly IObservableCollection<ChatMessageViewModel> _messages;
+        private readonly MessageCollectionViewModel _messages;
         private readonly IObservableCollection<RoomUserViewModel> _users;
         private readonly AutoRefreshCollectionViewSource _usersSource;
         private readonly AutoRefreshCollectionViewSource _messagesSource;
@@ -41,16 +42,18 @@ namespace Jabbr.WPF.Rooms
             _serviceLocator = serviceLocator;
             _messageService = messageService;
             _userService = userService;
-            _messages = new BindableCollection<ChatMessageViewModel>();
+            //_messages = new BindableCollection<ChatMessageViewModel>();
+            _messages = new MessageCollectionViewModel();
             _users = new BindableCollection<RoomUserViewModel>();
             _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
-            _messagesSource = new AutoRefreshCollectionViewSource {Source = _messages};
+            _messagesSource = new AutoRefreshCollectionViewSource {Source = _messages.Messages};
 
             _usersSource.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
             _usersSource.SortDescriptions.Add(new SortDescription("Group", ListSortDirection.Ascending));
             _usersSource.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
 
             _messagesSource.SortDescriptions.Add(new SortDescription("MessageDateTime", ListSortDirection.Ascending));
+            _messagesSource.GroupDescriptions.Add(new PropertyGroupDescription("MessageGroup"));
         }
 
         public int UserCount
@@ -199,11 +202,6 @@ namespace Jabbr.WPF.Rooms
             return roomName.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private void JabbrManagerOnUserJoinedRoom(object sender, UserRoomSpecificEventArgs userRoomSpecificEventArgs)
-        {
-            
-        }
-
         private void JabbrManagerOnRoomTopicChanged(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
         {
             if(VerifyRoomName(roomDetailsEventArgs.Room.Name))
@@ -226,7 +224,7 @@ namespace Jabbr.WPF.Rooms
         {
             viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
 
-            _messages.Add(viewModel);
+            _messages.AddNewMessage(viewModel);
             UpdateUnreadMessageCount();
         }
 
@@ -243,18 +241,14 @@ namespace Jabbr.WPF.Rooms
 
         private void UpdateUnreadMessageCount()
         {
-            UnreadMessageCount = _messages.Count(msg => !msg.HasBeenSeen);
+            UnreadMessageCount = _messages.UnreadMessageCount;
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
 
-            var unseenMessages = _messages.Where(x => x.HasBeenSeen == false).ToList();
-            foreach (var chatMessageViewModel in unseenMessages)
-            {
-                chatMessageViewModel.HasBeenSeen = true;
-            }
+            _messages.SetAllMessagesAsSeen();
             UpdateUnreadMessageCount();
         }
     }

@@ -11,16 +11,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.ComponentModel;
 
 namespace Jabbr.WPF.Users
 {
     /// <summary>
-    /// Interaction logic for UserView.xaml
+    /// Interaction logic for MessageUserView.xaml
     /// </summary>
-    public partial class UserView : UserControl
+    public partial class MessageUserView : UserControl
     {
-        public UserView()
+        public MessageUserView()
         {
             InitializeComponent();
         }
