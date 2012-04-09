@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Jabbr.WPF.AttachedProperties
+namespace Jabbr.WPF.Resources.AttachedProperties
 {
     public static class PasswordHelper
     {

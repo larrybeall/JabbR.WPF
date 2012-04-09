@@ -4,8 +4,7 @@
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
-             xmlns:expression="http://schemas.microsoft.com/expression/2010/drawing">
+             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
     <UserControl.Resources>
         <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         <converters:StringFormatConverter x:Key="formatConverter" />
@@ -16,7 +15,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"  />
             <RowDefinition />
-            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -116,13 +114,5 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-
-        <!-- row 2 -->
-        <Border HorizontalAlignment="Stretch" Grid.Column="0" Grid.Row="2" Background="{DynamicResource BlackBrush}">
-
-        </Border>
-        <Border HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2" Background="{DynamicResource BlackBrush}">
-
-        </Border>
     </Grid>
 </UserControl>

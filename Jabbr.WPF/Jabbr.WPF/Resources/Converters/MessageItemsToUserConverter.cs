@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Data;
-using System.Windows.Markup;
-using System.Windows.Documents;
+using Jabbr.WPF.Messages;
 
-namespace Jabbr.WPF.Converters
+namespace Jabbr.WPF.Resources.Converters
 {
-    public class HtmlToXamlConverter : IValueConverter
+    public class MessageItemsToUserConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string htmlString = value as string;
-            if(string.IsNullOrEmpty(htmlString))
-                return null;
+            var messages = ((IEnumerable<Object>) value).OfType<ChatMessageViewModel>().ToList();
+            var user = messages.First().User;
 
-            return HtmlToXamlConversion.HtmlToXamlConverter.ConvertHtmlToXaml(htmlString, false);
+            return user;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

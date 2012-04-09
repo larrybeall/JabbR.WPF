@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 
-namespace Jabbr.WPF.Converters
+namespace Jabbr.WPF.Resources.Converters
 {
     public class GreaterThanConverter : ComparableConverter
     {

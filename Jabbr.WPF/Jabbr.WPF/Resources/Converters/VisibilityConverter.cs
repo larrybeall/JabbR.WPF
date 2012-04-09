@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows;
 
-namespace Jabbr.WPF.Converters
+namespace Jabbr.WPF.Resources.Converters
 {
     public class BooleanToVisibilityConverter : IValueConverter
     {

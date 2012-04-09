@@ -4,7 +4,7 @@
         xmlns:metroControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:metroConverters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
         xmlns:cal="http://www.caliburnproject.org"
-        xmlns:converters="clr-namespace:Jabbr.WPF.Converters"
+        xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:metroBehaviors="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
         WindowState="Maximized"
