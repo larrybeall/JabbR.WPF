@@ -181,8 +181,9 @@ namespace Jabbr.WPF.Infrastructure
 
         public void SignIn(string token, Action completAction)
         {
-            string userId = Authenticate(token);
-            CompleteSignIn(_client.Connect(userId), completAction);
+            Task.Factory.StartNew(() => Authenticate(token)).ContinueWith(
+                (completedTask) => CompleteSignIn(_client.Connect(completedTask.Result), completAction),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public void SignInStandard(string username, string password, Action completeAction)

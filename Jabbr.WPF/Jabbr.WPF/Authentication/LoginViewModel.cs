@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Caliburn.Micro;
 using System.Windows.Input;
-using Phoenix.Windows.Controls;
 using Jabbr.WPF.Infrastructure;
+using Phoenix.Windows.Engage;
 
 namespace Jabbr.WPF.Authentication
 {
@@ -129,10 +129,10 @@ namespace Jabbr.WPF.Authentication
             ShowOpenIdPopup = false;
         }
 
-        public void OnTokenReceived(TokenReceivedEventArgs tokenReceivedEventArgs)
+        public void OnTokenReceived(TokenReceivedRoutedEventArgs tokenReceivedEventArgs)
         {
-            ShowOpenIdPopup = false;
             IsAuthenticating = true;
+            ShowOpenIdPopup = false;
             _jabbrManager.SignIn(tokenReceivedEventArgs.Token, CompleteLogin);
         }
 

@@ -6,6 +6,7 @@ using Jabbr.WPF.Users;
 using Jabbr.WPF.Infrastructure.Models;
 using System.Threading;
 using JabbrModels = JabbR.Client.Models;
+using System.Collections.Concurrent;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -16,23 +17,23 @@ namespace Jabbr.WPF.Infrastructure.Services
         private readonly static object SyncRoot = new object();
 
         private readonly ServiceLocator _serviceLocator;
-        private readonly List<UserViewModel> _users;  
+        private readonly ConcurrentDictionary<string, UserViewModel> _users;
 
         public UserService(ServiceLocator serviceLocator)
             : base()
         {
             _serviceLocator = serviceLocator;
-            _users = new List<UserViewModel>();
+            _users = new ConcurrentDictionary<string, UserViewModel>();
         }
 
         public event EventHandler<UserJoinedEventArgs> UserJoined;
 
         public UserViewModel GetUserViewModel(string name)
         {
-            // create a copy so that we avoid any potential threading issues.
-            var users = _users.ToArray();
+            UserViewModel user;
+            _users.TryGetValue(name, out user);
 
-            return users.SingleOrDefault(x => x.Name == name);
+            return user;
         }
 
         public UserViewModel GetUserViewModel(JabbrModels.User user)
@@ -47,26 +48,20 @@ namespace Jabbr.WPF.Infrastructure.Services
             if (toReturn != null)
                 return toReturn;
 
-            lock (SyncRoot)
+            toReturn = _serviceLocator.GetViewModel<UserViewModel>();
+
+            toReturn.IsNotifying = false;
+
+            toReturn.Name = user.Name;
+            toReturn.IsAway = user.Status == UserStatus.Inactive || user.IsAfk;
+            toReturn.Note = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
+            toReturn.Gravatar = string.Format(GravatarUrlFormat, user.Hash ?? "00000000000000000000000000000000");
+
+            toReturn.IsNotifying = true;
+
+            if (!_users.TryAdd(toReturn.Name, toReturn))
             {
-                // need to perform lookup a second time after we have acquired a lock
-                // as the value could have changed
-                toReturn = GetUserViewModel(user.Name);
-                if (toReturn != null)
-                    return toReturn;
-
-                toReturn = _serviceLocator.GetViewModel<UserViewModel>();
-
-                toReturn.IsNotifying = false;
-
-                toReturn.Name = user.Name;
-                toReturn.IsAway = user.Status == UserStatus.Inactive || user.IsAfk;
-                toReturn.Note = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
-                toReturn.Gravatar = string.Format(GravatarUrlFormat, user.Hash ?? "00000000000000000000000000000000");
-
-                toReturn.IsNotifying = true;
-
-                _users.Add(toReturn);
+                return GetUserViewModel(user.Name);
             }
 
             return toReturn;
@@ -100,6 +95,11 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             if(userVm == null)
                 return;
+
+            if (!_users.TryRemove(oldUsername, out  userVm))
+                return;
+
+            _users.TryAdd(user.Name, userVm);
 
             PostOnUi(() =>
             {

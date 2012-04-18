@@ -6,16 +6,16 @@
              xmlns:properties="clr-namespace:Jabbr.WPF.Resources.AttachedProperties"
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
-             xmlns:phx="clr-namespace:Phoenix.Windows.Controls;assembly=Phoenix.Windows.Controls"
+             xmlns:phx="clr-namespace:Phoenix.Windows.Engage;assembly=Phoenix.Windows.Engage"
              xmlns:cal="http://www.caliburnproject.org"
              x:Name="uiThis"
              Width="500" Height="255">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Icons.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Icons/MergedResources.xaml" />-->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
             
@@ -47,7 +47,7 @@
             <TextBlock Text="Authenticating" FontSize="28" Margin="5" />
             <metro:ProgressIndicator ProgressColour="{StaticResource AccentColorBrush}" Height="6" Width="120" HorizontalAlignment="Center" />
         </StackPanel>
-        <Popup IsOpen="{Binding ShowOpenIdPopup}" PlacementTarget="{Binding ElementName=ShowOpenId}" Placement="Center">
+        <Popup IsOpen="{Binding ShowOpenIdPopup}" PlacementTarget="{Binding ElementName=uiThis}" Placement="Center">
             <Border BorderThickness="1" BorderBrush="LightGray">
                 <Border.Background>
                     <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
@@ -79,7 +79,7 @@
                             Width="16" 
                             Height="16">
                             <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_left}" />
+                                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_arrow_left}" />
                             </Rectangle.Fill>
                         </Rectangle>
                     </Button>
@@ -92,12 +92,12 @@
                         FontFamily="Marlett"
                         FontWeight="Bold"
                         cal:Message.Attach="CloseOpenId(AuthWidget.SwitchAccounts)"/>
-                    <phx:JanrainWidget
+                    <phx:EngageWidget
                         x:Name="AuthWidget"
                         Grid.Row="1" 
                         ApplicationName="jabbr" 
-                        Width="380" 
-                        Height="166"
+                        Width="392" 
+                        Height="156"
                         cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($eventArgs)]"/>
                 </Grid>
             </Border>
