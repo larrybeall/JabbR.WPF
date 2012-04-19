@@ -4,12 +4,32 @@
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
+             xmlns:inf="clr-namespace:Jabbr.WPF.Infrastructure"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
     <UserControl.Resources>
         <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         <converters:StringFormatConverter x:Key="formatConverter" />
         <converters:MessageItemsToUserConverter x:Key="messageItemsToUserConverter" />
         <SolidColorBrush Color="{DynamicResource AccentColor3}" x:Key="messageBackground" />
+        <inf:AutoRefreshCollectionViewSource Source="{Binding Users}" x:Key="usersSource">
+            <inf:AutoRefreshCollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Group" />
+            </inf:AutoRefreshCollectionViewSource.GroupDescriptions>
+            <inf:AutoRefreshCollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Group" Direction="Ascending" />
+                <scm:SortDescription PropertyName="Name" Direction="Ascending" />
+            </inf:AutoRefreshCollectionViewSource.SortDescriptions>
+        </inf:AutoRefreshCollectionViewSource>
+        
+        <inf:AutoRefreshCollectionViewSource Source="{Binding Messages}" x:Key="messagesSource">
+            <inf:AutoRefreshCollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="MessageGroup" />
+            </inf:AutoRefreshCollectionViewSource.GroupDescriptions>
+            <inf:AutoRefreshCollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="MessageDateTime" Direction="Ascending" />
+            </inf:AutoRefreshCollectionViewSource.SortDescriptions>
+        </inf:AutoRefreshCollectionViewSource>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,7 +47,7 @@
 
         <!-- row 1-->
         <ItemsControl
-            ItemsSource="{Binding Messages}"
+            ItemsSource="{Binding Source={StaticResource messagesSource}}"
             Grid.Row="1"
             Grid.Column="0">
             <ItemsControl.Template>
@@ -82,7 +102,7 @@
         <ItemsControl
             Grid.Row="1"
             Grid.Column="1"
-            ItemsSource="{Binding Users}">
+            ItemsSource="{Binding Source={StaticResource usersSource}}">
             <ItemsControl.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>

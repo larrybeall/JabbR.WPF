@@ -17,14 +17,10 @@ namespace Jabbr.WPF.Rooms
     public class RoomViewModel : Screen
     {
         private readonly JabbrManager _jabbrManager;
-        private readonly ServiceLocator _serviceLocator;
         private readonly MessageService _messageService;
         private readonly UserService _userService;
-        //private readonly IObservableCollection<ChatMessageViewModel> _messages;
         private readonly MessageCollectionViewModel _messages;
         private readonly IObservableCollection<RoomUserViewModel> _users;
-        private readonly AutoRefreshCollectionViewSource _usersSource;
-        private readonly AutoRefreshCollectionViewSource _messagesSource;
         private IEnumerable<string> _owners; 
 
         private bool _isPrivate;
@@ -34,26 +30,14 @@ namespace Jabbr.WPF.Rooms
 
         public RoomViewModel(
             JabbrManager jabbrManager, 
-            ServiceLocator serviceLocator, 
             MessageService messageService,
             UserService userService)
         {
             _jabbrManager = jabbrManager;
-            _serviceLocator = serviceLocator;
             _messageService = messageService;
             _userService = userService;
-            //_messages = new BindableCollection<ChatMessageViewModel>();
             _messages = new MessageCollectionViewModel();
             _users = new BindableCollection<RoomUserViewModel>();
-            _usersSource = new AutoRefreshCollectionViewSource {Source = _users};
-            _messagesSource = new AutoRefreshCollectionViewSource {Source = _messages.Messages};
-
-            _usersSource.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            _usersSource.SortDescriptions.Add(new SortDescription("Group", ListSortDirection.Ascending));
-            _usersSource.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-
-            _messagesSource.SortDescriptions.Add(new SortDescription("MessageDateTime", ListSortDirection.Ascending));
-            _messagesSource.GroupDescriptions.Add(new PropertyGroupDescription("MessageGroup"));
         }
 
         public int UserCount
@@ -127,24 +111,25 @@ namespace Jabbr.WPF.Rooms
             }
         }
 
-        public ICollectionView Messages
+        public IObservableCollection<MessageViewModel> Messages
         {
-            get { return _messagesSource.View; }
+            get { return _messages.Messages; }
         }
 
-        public ICollectionView Users
+        public IObservableCollection<RoomUserViewModel> Users
         {
-            get { return _usersSource.View; }
+            get { return _users; }
         }
 
-        internal void Initialize(RoomDetailsEventArgs roomDetailsEventArgs)
+        internal void Initialize(JabbR.Client.Models.Room roomDetails)
         {
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
             _userService.UserJoined += UserServiceOnUserJoined;
             _messageService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
 
-            var roomDetails = roomDetailsEventArgs.Room;
+            SetIsNotifying(false);
+
             RoomName = roomDetails.Name.ToUpper();
             UserCount = roomDetails.Users.Count();
             IsPrivate = roomDetails.Private;
@@ -161,6 +146,15 @@ namespace Jabbr.WPF.Rooms
             {
                 ProcessMessage(chatMessageViewModel, true);
             }
+
+            SetIsNotifying(true);
+        }
+
+        private void SetIsNotifying(bool isNotifying)
+        {
+            IsNotifying = isNotifying;
+            _users.IsNotifying = isNotifying;
+            _messages.IsNotifying = isNotifying;
         }
 
         private void UserServiceOnUserJoined(object sender, UserJoinedEventArgs userJoinedEventArgs)
@@ -182,7 +176,7 @@ namespace Jabbr.WPF.Rooms
             ProcessMessage(messageProcessedEventArgs.MessageViewModel);
         }
 
-        private void AddUser(User user)
+        private void AddUser(JabbR.Client.Models.User user)
         {
             var userVm = _userService.GetUserViewModel(user);
 
@@ -214,12 +208,6 @@ namespace Jabbr.WPF.Rooms
                 UserCount = roomCountEventArgs.Count;
         }
 
-        private void ProcessMessage(Jabbr.WPF.Infrastructure.Models.Message message, bool isInitializing = false)
-        {
-            var msgVm = _messageService.ProcessMessage(message);
-            ProcessMessage(msgVm, isInitializing);
-        }
-
         private void ProcessMessage(ChatMessageViewModel viewModel, bool isInitializing = false)
         {
             viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
@@ -230,11 +218,11 @@ namespace Jabbr.WPF.Rooms
 
         private bool IsRoomVisible(bool isRoomInitializing = false)
         {
-            if (Application.Current.MainWindow.IsActive == false || Application.Current.MainWindow.WindowState == WindowState.Minimized)
-                return false;
-
             if (isRoomInitializing)
                 return true;
+
+            if (Application.Current.MainWindow.IsActive == false || Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                return false;
 
             return IsActive;
         }
