@@ -87,3 +87,5 @@ obj
  
 # mstest test results
 TestResults
+
+packages*
