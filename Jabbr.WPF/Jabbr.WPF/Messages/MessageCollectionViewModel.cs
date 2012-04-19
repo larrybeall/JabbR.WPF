@@ -25,6 +25,12 @@ namespace Jabbr.WPF.Messages
             get { return _messages.OfType<ChatMessageViewModel>().Count(x => !x.HasBeenSeen); }
         }
 
+        public bool IsNotifying
+        {
+            get { return _messages.IsNotifying; }
+            set { _messages.IsNotifying = value; }
+        }
+
         public void AddNewMessage(MessageViewModel message)
         {
             Guid messageGroup = Guid.NewGuid();

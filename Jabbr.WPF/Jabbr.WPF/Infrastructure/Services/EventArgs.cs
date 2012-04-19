@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jabbr.WPF.Messages;
 using Jabbr.WPF.Users;
+using Jabbr.WPF.Rooms;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -40,6 +41,28 @@ namespace Jabbr.WPF.Infrastructure.Services
         {
             Room = room;
             UserViewModel = userViewModel;
+        }
+    }
+
+    public class LoginCompleteEventArgs : EventArgs
+    {
+        public UserViewModel User { get; private set; }
+        public bool HasJoinedRooms { get; private set; }
+
+        public LoginCompleteEventArgs(UserViewModel user, bool hasJoinedRooms)
+        {
+            User = user;
+            HasJoinedRooms = hasJoinedRooms;
+        }
+    }
+
+    public class JoinedRoomEventArgs : EventArgs
+    {
+        public RoomViewModel Room { get; private set; }
+
+        public JoinedRoomEventArgs(RoomViewModel room)
+        {
+            Room = room;
         }
     }
 }

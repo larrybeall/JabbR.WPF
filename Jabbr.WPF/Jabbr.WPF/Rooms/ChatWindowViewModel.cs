@@ -4,17 +4,18 @@ using System.Linq;
 using System.Text;
 using Caliburn.Micro;
 using Jabbr.WPF.Infrastructure;
+using Jabbr.WPF.Infrastructure.Services;
 
 namespace Jabbr.WPF.Rooms
 {
     public class ChatWindowViewModel : Conductor<RoomViewModel>.Collection.OneActive
     {
-        private readonly JabbrManager _jabbrManager;
+        private readonly RoomService _roomService;
         private readonly ServiceLocator _serviceLocator;
 
-        public ChatWindowViewModel(JabbrManager jabbrManager, ServiceLocator serviceLocator)
+        public ChatWindowViewModel(RoomService roomService, ServiceLocator serviceLocator)
         {
-            _jabbrManager = jabbrManager;
+            _roomService = roomService;
             _serviceLocator = serviceLocator;
 
             Initialize();
@@ -24,15 +25,12 @@ namespace Jabbr.WPF.Rooms
         {
             DisplayName = "Chat Window";
 
-            _jabbrManager.JoinedRoom += JabbrManagerOnJoinedRoom;
+            _roomService.JoinedRoom += RoomServiceOnJoinedRoom;
         }
 
-        private void JabbrManagerOnJoinedRoom(object sender, RoomDetailsEventArgs roomDetailsEventArgs)
+        private void RoomServiceOnJoinedRoom(object sender, JoinedRoomEventArgs joinedRoomEventArgs)
         {
-            var roomVm = _serviceLocator.GetViewModel<RoomViewModel>();
-            roomVm.Initialize(roomDetailsEventArgs);
-
-            ActivateItem(roomVm);
+            ActivateItem(joinedRoomEventArgs.Room);
         }
     }
 }

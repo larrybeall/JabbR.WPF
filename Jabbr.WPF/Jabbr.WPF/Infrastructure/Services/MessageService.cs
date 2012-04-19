@@ -65,6 +65,13 @@ namespace Jabbr.WPF.Infrastructure.Services
             return CreateMessageViewModel(message);
         }
 
+        public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<JabbrModels.Message> messages)
+        {
+            var result = messages.AsParallel().Select(x => CreateMessageViewModel(new Message(x)));
+
+            return result;
+        }
+
         public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<Message> messages)
         {
             List<Task<ChatMessageViewModel>> parsingTasks = new List<Task<ChatMessageViewModel>>();

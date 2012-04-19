@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using System.Windows.Input;
 using Jabbr.WPF.Infrastructure;
 using Phoenix.Windows.Engage;
+using Jabbr.WPF.Infrastructure.Services;
 
 namespace Jabbr.WPF.Authentication
 {
     public class LoginViewModel : Screen
     {
-        private readonly JabbrManager _jabbrManager;
+        private readonly AuthenticationService _authenticationService;
 
         private string _username;
         private string _password;
@@ -20,9 +22,9 @@ namespace Jabbr.WPF.Authentication
         private bool _isAuthenticating;
         private bool _canLogin;
 
-        public LoginViewModel(JabbrManager jabbrManager)
+        public LoginViewModel(AuthenticationService authenticationService)
         {
-            _jabbrManager = jabbrManager;
+            _authenticationService = authenticationService;
         }
 
         public string Username
@@ -133,26 +135,23 @@ namespace Jabbr.WPF.Authentication
         {
             IsAuthenticating = true;
             ShowOpenIdPopup = false;
-            _jabbrManager.SignIn(tokenReceivedEventArgs.Token, CompleteLogin);
+            _authenticationService.SignIn(tokenReceivedEventArgs.Token);
         }
 
         public void Login()
         {
             IsAuthenticating = true;
-            _jabbrManager.SignInStandard(Username, Password, CompleteLogin);
+            _authenticationService.SignIn(Username, Password)
+                .ContinueWith((completedTask) =>
+                {
+                    Password = Username = null;
+                    ShowOpenIdPopup = false;
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         private void Validate()
         {
             CanLogin = !string.IsNullOrEmpty(Username) & !string.IsNullOrEmpty(Password);
-        }
-
-        private void CompleteLogin()
-        {
-            Username = null;
-            Password = null;
-            ShowOpenIdPopup = false;
-            //IsAuthenticating = false;
         }
     }
 }

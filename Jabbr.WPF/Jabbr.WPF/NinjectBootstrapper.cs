@@ -8,6 +8,8 @@ using System.Reflection;
 using System.IO;
 using Jabbr.WPF.Infrastructure;
 using Jabbr.WPF.Infrastructure.Services;
+using JabbR.Client;
+using SignalR.Client.Transports;
 
 namespace Jabbr.WPF
 {
@@ -49,11 +51,15 @@ namespace Jabbr.WPF
         {
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
-            _kernel.Bind<ShellViewModel>().ToSelf().InSingletonScope();
 
+            _kernel.Bind<JabbRClient>().ToMethod(
+                context => new JabbRClient("http://jabbr.net", new LongPollingTransport())).InSingletonScope();
+
+            _kernel.Bind<ShellViewModel>().ToSelf().InSingletonScope();
+            _kernel.Bind<AuthenticationService>().ToSelf().InSingletonScope();
             _kernel.Bind<UserService>().ToSelf().InSingletonScope();
             _kernel.Bind<MessageService>().ToSelf().InSingletonScope();
-
+            _kernel.Bind<RoomService>().ToSelf().InSingletonScope();
             _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
     }

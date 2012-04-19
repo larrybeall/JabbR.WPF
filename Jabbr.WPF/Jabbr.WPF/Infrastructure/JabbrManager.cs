@@ -25,13 +25,13 @@ namespace Jabbr.WPF.Infrastructure
         private readonly MessageService _messageService;
         private readonly UserService _userService;
 
-        public JabbrManager(MessageService messageService, UserService userService)
+        public JabbrManager(JabbRClient client, MessageService messageService, UserService userService)
         {
             _uiContext = SynchronizationContext.Current;
-            _url = "http://jabbr.net";
-            _client = new JabbRClient(_url, new LongPollingTransport());
             _messageService = messageService;
             _userService = userService;
+            _client = client;
+            _url = client.SourceUrl;
             SubscribeToEvents();
         }
 
