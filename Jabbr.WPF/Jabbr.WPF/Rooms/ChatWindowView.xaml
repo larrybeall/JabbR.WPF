@@ -1,6 +1,8 @@
 ﻿<UserControl x:Class="Jabbr.WPF.Rooms.ChatWindowView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:triggers="clr-namespace:Jabbr.WPF.Resources.Triggers"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
@@ -183,11 +185,20 @@
         </Grid>
         <Border HorizontalAlignment="Stretch" Grid.Row="1" Background="{DynamicResource BlackBrush}">
             <StackPanel Orientation="Horizontal">
-                <Button ToolTip="Join Room" Style="{StaticResource _appBarButton}" Height="45" Width="45" Foreground="{DynamicResource WhiteBrush}" VerticalAlignment="Top">
+                <!--<Button ToolTip="Join Room" Style="{StaticResource _appBarButton}" Height="45" Width="45" Foreground="{DynamicResource WhiteBrush}" VerticalAlignment="Top">
                     <metro:MetroImage Height="20" Width="20" Source="{DynamicResource appbar_add}" />
-                </Button>
+                </Button>-->
                 <!--<metro:AppBarButton MetroImageSource="{DynamicResource appbar_add}" />-->
-                <TextBox Width="500" FontSize="14" HorizontalAlignment="Left" MinWidth="300" Margin="15,15,15,15" Background="{DynamicResource BlackBrush}" Foreground="{DynamicResource appBarTextBox}" />
+                <TextBox x:Name="SendText" Width="500" FontSize="14" HorizontalAlignment="Left" MinWidth="300" Margin="15,15,15,15" Background="{DynamicResource BlackBrush}" Foreground="{DynamicResource appBarTextBox}">
+                    <i:Interaction.Triggers>
+                        <triggers:InputBindingTrigger>
+                            <triggers:InputBindingTrigger.InputBinding>
+                                <KeyBinding Key="Enter" />
+                            </triggers:InputBindingTrigger.InputBinding>
+                            <cal:ActionMessage MethodName="Send" />
+                        </triggers:InputBindingTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
             </StackPanel>
         </Border>
     </Grid>
