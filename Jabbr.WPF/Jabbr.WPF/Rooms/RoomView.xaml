@@ -88,11 +88,11 @@
                     </GroupStyle.ContainerStyle>
                 </GroupStyle>
             </ItemsControl.GroupStyle>
-            <ItemsControl.ItemsPanel>
+            <!--<ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel VerticalAlignment="Bottom" />
                 </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+            </ItemsControl.ItemsPanel>-->
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ContentControl cal:View.Model="{Binding}" />
