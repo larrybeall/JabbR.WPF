@@ -69,13 +69,13 @@ namespace Jabbr.WPF.Infrastructure.Services
         {
             var result = messages.AsParallel().Select(x => CreateMessageViewModel(new Message(x)));
 
-            return result;
+            return result.OrderBy(x => x.MessageDateTime);
         }
 
         public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<Message> messages)
         {
             List<Task<ChatMessageViewModel>> parsingTasks = new List<Task<ChatMessageViewModel>>();
-            foreach (var message in messages)
+            foreach (var message in messages.OrderBy(x => x.When.ToLocalTime()))
             {
                 Message toProcess = message;
                 var task = Task.Factory.StartNew<ChatMessageViewModel>(() => CreateMessageViewModel(toProcess));
@@ -87,7 +87,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             var waitTasks = parsingTasks.ToArray();
             Task.WaitAll(waitTasks);
 
-            return parsingTasks.Select(x => x.Result);
+            return parsingTasks.Select(x => x.Result).OrderBy(x => x.MessageDateTime);
         }
 
         private void ProcessTaskExceptions(Task errorTask)

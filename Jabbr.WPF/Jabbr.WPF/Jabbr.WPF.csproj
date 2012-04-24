@@ -126,6 +126,7 @@
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
+    <Compile Include="Resources\Triggers\InputBindingTrigger.cs" />
     <Compile Include="Rooms\ChatWindowView.xaml.cs">
       <DependentUpon>ChatWindowView.xaml</DependentUpon>
     </Compile>
