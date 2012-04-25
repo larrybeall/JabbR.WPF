@@ -91,6 +91,9 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\Services\AuthenticationService.cs" />
     <Compile Include="Infrastructure\Services\RoomService.cs" />
+    <Compile Include="Messages\ChatMessageGroupView.xaml.cs">
+      <DependentUpon>ChatMessageGroupView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Messages\ChatMessageGroupViewModel.cs" />
     <Compile Include="Messages\IHasBeenSeen.cs" />
     <Compile Include="Messages\IUnreadMessageCount.cs" />
@@ -167,6 +170,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Messages\ChatMessageGroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Messages\ChatMessageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -235,6 +242,10 @@
     <ProjectReference Include="..\HtmlToXamlConversion\HtmlToXamlConversion.csproj">
       <Project>{9B494AE1-D0E6-437E-BC42-6E3FCFA61A8C}</Project>
       <Name>HtmlToXamlConversion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JabbR.WPF.MarkUp\JabbR.WPF.MarkUp.csproj">
+      <Project>{299C5308-450E-4C66-9101-048C909FB693}</Project>
+      <Name>JabbR.WPF.MarkUp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
