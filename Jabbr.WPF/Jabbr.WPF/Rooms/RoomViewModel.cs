@@ -19,7 +19,7 @@ namespace Jabbr.WPF.Rooms
         private readonly JabbrManager _jabbrManager;
         private readonly MessageService _messageService;
         private readonly UserService _userService;
-        private readonly MessageCollectionViewModel _messages;
+        private readonly IObservableCollection<MessageViewModel> _messages; 
         private readonly IObservableCollection<RoomUserViewModel> _users;
         private IEnumerable<string> _owners; 
 
@@ -36,7 +36,7 @@ namespace Jabbr.WPF.Rooms
             _jabbrManager = jabbrManager;
             _messageService = messageService;
             _userService = userService;
-            _messages = new MessageCollectionViewModel();
+            _messages = new BindableCollection<MessageViewModel>();
             _users = new BindableCollection<RoomUserViewModel>();
         }
 
@@ -113,7 +113,7 @@ namespace Jabbr.WPF.Rooms
 
         public IObservableCollection<MessageViewModel> Messages
         {
-            get { return _messages.Messages; }
+            get { return _messages; }
         }
 
         public IObservableCollection<RoomUserViewModel> Users
@@ -212,7 +212,13 @@ namespace Jabbr.WPF.Rooms
         {
             viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
 
-            _messages.AddNewMessage(viewModel);
+            ChatMessageGroupViewModel lastGroupMessage = _messages.LastOrDefault() as ChatMessageGroupViewModel;
+            if (lastGroupMessage == null || !lastGroupMessage.TryAddMessage(viewModel))
+            {
+                ChatMessageGroupViewModel groupViewModel = new ChatMessageGroupViewModel(viewModel);
+                _messages.Add(groupViewModel);
+            }
+
             UpdateUnreadMessageCount();
         }
 
@@ -229,15 +235,24 @@ namespace Jabbr.WPF.Rooms
 
         private void UpdateUnreadMessageCount()
         {
-            UnreadMessageCount = _messages.UnreadMessageCount;
+            int hasNotBeenSeenCount = _messages.OfType<IHasBeenSeen>().Count(x => !x.HasBeenSeen);
+            UnreadMessageCount = _messages.OfType<ICanHaveUnreadMessages>().Sum(x => x.UnreadMessageCount) +
+                                 hasNotBeenSeenCount;
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
 
-            _messages.SetAllMessagesAsSeen();
-            UpdateUnreadMessageCount();
+            // capture point in time
+            var hasUnreadMessags = _messages.OfType<ICanHaveUnreadMessages>().Where(x => x.HasUnreadMessages).ToList();
+            hasUnreadMessags.ForEach(x => x.SetAllMessagesRead());
+
+            // capture point in time
+            var unseenMessages = _messages.OfType<IHasBeenSeen>().Where(x => !x.HasBeenSeen).ToList();
+            unseenMessages.ForEach(x => x.HasBeenSeen = true);
+
+            UnreadMessageCount = 0;
         }
     }
 }
