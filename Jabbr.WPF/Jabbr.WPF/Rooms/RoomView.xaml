@@ -28,8 +28,8 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition MaxWidth="400" MinWidth="200" />
+            <ColumnDefinition Width="75*" />
+            <ColumnDefinition MaxWidth="300" Width="25*" MinWidth="180" />
         </Grid.ColumnDefinitions>
 
         <!-- row 0 -->
