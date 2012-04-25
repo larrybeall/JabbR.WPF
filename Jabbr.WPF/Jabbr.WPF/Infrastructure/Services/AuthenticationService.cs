@@ -78,6 +78,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             var userinfo = _client.GetUserInfo().Result;
             var userviewModel = _userService.GetUserViewModel(userinfo);
+            userviewModel.IsCurrentUser = true;
 
             _roomService.JoinRooms(logOnInfo.Rooms);
 

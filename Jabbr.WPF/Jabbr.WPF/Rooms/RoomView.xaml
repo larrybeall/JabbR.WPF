@@ -6,12 +6,12 @@
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
              xmlns:inf="clr-namespace:Jabbr.WPF.Infrastructure"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
+             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
+             xmlns:jabbrControls="clr-namespace:JabbR.WPF.MarkUp.Controls;assembly=JabbR.WPF.MarkUp">
     <UserControl.Resources>
         <converters:GroupTypeConverter x:Key="groupTypeConverter" />
         <converters:StringFormatConverter x:Key="formatConverter" />
-        <converters:MessageItemsToUserConverter x:Key="messageItemsToUserConverter" />
-        <SolidColorBrush Color="{DynamicResource AccentColor3}" x:Key="messageBackground" />
+        
         <inf:AutoRefreshCollectionViewSource Source="{Binding Users}" x:Key="usersSource">
             <inf:AutoRefreshCollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Group" />
@@ -19,15 +19,6 @@
             <inf:AutoRefreshCollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="Group" Direction="Ascending" />
                 <scm:SortDescription PropertyName="Name" Direction="Ascending" />
-            </inf:AutoRefreshCollectionViewSource.SortDescriptions>
-        </inf:AutoRefreshCollectionViewSource>
-        
-        <inf:AutoRefreshCollectionViewSource Source="{Binding Messages}" x:Key="messagesSource">
-            <inf:AutoRefreshCollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="MessageGroup" />
-            </inf:AutoRefreshCollectionViewSource.GroupDescriptions>
-            <inf:AutoRefreshCollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="MessageDateTime" Direction="Ascending" />
             </inf:AutoRefreshCollectionViewSource.SortDescriptions>
         </inf:AutoRefreshCollectionViewSource>
     </UserControl.Resources>
@@ -46,59 +37,7 @@
         <TextBlock Grid.Column="1" Grid.Row="0" FontSize="32" Text="Users" />
 
         <!-- row 1-->
-        <ItemsControl
-            ItemsSource="{Binding Source={StaticResource messagesSource}}"
-            Grid.Row="1"
-            Grid.Column="0">
-            <ItemsControl.Template>
-                <ControlTemplate TargetType="{x:Type ItemsControl}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </ItemsControl.Template>
-            <ItemsControl.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                        <Style TargetType="GroupItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="GroupItem">
-                                        <StackPanel Margin="7,0,7,7">
-                                            <Border Background="{StaticResource messageBackground}">
-                                                <ItemsPresenter Margin="5" />
-                                            </Border>
-                                            <Border Margin="20,0,0,0" HorizontalAlignment="Left">
-                                                <Polygon Fill="{StaticResource messageBackground}">
-                                                    <Polygon.Points>
-                                                        <Point X="0" Y="0" />
-                                                        <Point X="0" Y="7" />
-                                                        <Point X="9" Y="0" />
-                                                    </Polygon.Points>
-                                                </Polygon>
-                                            </Border>
-                                            <users:MessageUserView Grid.Row="1" cal:Bind.Model="{Binding Items, Converter={StaticResource messageItemsToUserConverter}}" />
-                                        </StackPanel>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GroupStyle.ContainerStyle>
-                </GroupStyle>
-            </ItemsControl.GroupStyle>
-            <!--<ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel VerticalAlignment="Bottom" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>-->
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl cal:View.Model="{Binding}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <jabbrControls:BottomScrolledItemsControl x:Name="Messages" Grid.Row="1" Grid.Column="0" />
         <ItemsControl
             Grid.Row="1"
             Grid.Column="1"

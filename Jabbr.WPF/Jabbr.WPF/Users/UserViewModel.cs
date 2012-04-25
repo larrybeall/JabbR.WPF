@@ -15,6 +15,20 @@ namespace Jabbr.WPF.Users
         private string _name;
         private string _note;
         private string _gravatar;
+        private bool _isCurrentUser;
+
+        public bool IsCurrentUser
+        {
+            get { return _isCurrentUser; }
+            set
+            {
+                if(_isCurrentUser == value)
+                    return;
+
+                _isCurrentUser = value;
+                NotifyOfPropertyChange(() => IsCurrentUser);
+            }
+        }
 
         public virtual bool IsAway
         {

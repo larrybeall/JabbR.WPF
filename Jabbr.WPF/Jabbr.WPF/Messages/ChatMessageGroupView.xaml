@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Jabbr.WPF.Messages.ChatMessageGroupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:users="clr-namespace:Jabbr.WPF.Users" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
+    <UserControl.Resources>
+        <SolidColorBrush Color="{DynamicResource AccentColor3}" x:Key="messageBackground" />
+        <SolidColorBrush Color="{DynamicResource AccentColor4}" x:Key="ownedMessageBackground" />
+        <converters:DebugConverter x:Key="debugConverter"/>
+    </UserControl.Resources>
+    <StackPanel Margin="7,0,7,7">
+        <Border>
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{StaticResource messageBackground}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding User.IsCurrentUser}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ownedMessageBackground}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <ItemsControl x:Name="Messages" />
+        </Border>
+        <Border Margin="20,0,0,0" HorizontalAlignment="Left">
+            <Polygon>
+                <Polygon.Style>
+                    <Style TargetType="Polygon">
+                        <Setter Property="Fill" Value="{StaticResource messageBackground}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding User.IsCurrentUser}" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource ownedMessageBackground}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Polygon.Style>
+                <Polygon.Points>
+                    <Point X="0" Y="0" />
+                    <Point X="0" Y="7" />
+                    <Point X="9" Y="0" />
+                </Polygon.Points>
+            </Polygon>
+        </Border>
+        <users:MessageUserView Grid.Row="1" cal:Bind.Model="{Binding User}" />
+    </StackPanel>
+</UserControl>
