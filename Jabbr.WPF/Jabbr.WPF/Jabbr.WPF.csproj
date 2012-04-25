@@ -91,6 +91,9 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\Services\AuthenticationService.cs" />
     <Compile Include="Infrastructure\Services\RoomService.cs" />
+    <Compile Include="Messages\ChatMessageGroupViewModel.cs" />
+    <Compile Include="Messages\IHasBeenSeen.cs" />
+    <Compile Include="Messages\IUnreadMessageCount.cs" />
     <Compile Include="Resources\AttachedProperties\PasswordHelper.cs" />
     <Compile Include="Resources\AttachedProperties\TextBlockHelper.cs" />
     <Compile Include="Authentication\LoginView.xaml.cs">
