@@ -10,10 +10,12 @@ using System.Windows.Documents;
 
 namespace Jabbr.WPF.Messages
 {
-    public class ChatMessageViewModel : MessageViewModel
+    public class ChatMessageViewModel : MessageViewModel, IHasBeenSeen
     {
         private bool _hasBeenSeen;
         private UserViewModel _user;
+        private string _rawContent;
+        private string _richContent;
 
         public ChatMessageViewModel()
             :base(true)
@@ -45,6 +47,38 @@ namespace Jabbr.WPF.Messages
                 _user = value;
                 NotifyOfPropertyChange(() => User);
             }
+        }
+
+        public string RawContent
+        {
+            get { return _rawContent; }
+            set
+            {
+                if (_rawContent == value)
+                    return;
+
+                _rawContent = value;
+                NotifyOfPropertyChange(() => RawContent);
+            }
+        }
+
+        public string RichContent
+        {
+            get { return _richContent; }
+            set
+            {
+                if (_richContent == value)
+                    return;
+
+                _richContent = value;
+                NotifyOfPropertyChange(() => RichContent);
+                NotifyOfPropertyChange(() => HasRichContent);
+            }
+        }
+
+        public bool HasRichContent
+        {
+            get { return RichContent != null; }
         }
     }
 }
