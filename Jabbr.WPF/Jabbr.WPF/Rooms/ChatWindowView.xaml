@@ -2,18 +2,13 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:triggers="clr-namespace:Jabbr.WPF.Resources.Triggers"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:users="clr-namespace:Jabbr.WPF.Users"
              xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:metroConverters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
-             xmlns:boogartConverters="clr-namespace:Kent.Boogaart.Converters;assembly=Kent.Boogaart.Converters"
              xmlns:roomViews="clr-namespace:Jabbr.WPF.Rooms"
              xmlns:inf="clr-namespace:Jabbr.WPF.Infrastructure"
              xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
+             xmlns:Triggers="clr-namespace:Jabbr.WPF.Markup.Triggers;assembly=JabbR.WPF.MarkUp"
              HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -48,7 +43,7 @@
                 <RotateTransform Angle="90" />
             </TransformGroup>
 
-            <converters:StringFormatConverter x:Key="stringFormatter" />
+            <Converters:StringFormatConverter x:Key="stringFormatter" />
             <SolidColorBrush x:Key="roomGutterBrush" Color="{DynamicResource AccentColor3}" />
             <SolidColorBrush x:Key="appBarTextBox" Color="{DynamicResource Gray1}" />
 
@@ -234,12 +229,12 @@
                 <!--<metro:AppBarButton MetroImageSource="{DynamicResource appbar_add}" />-->
                 <TextBox x:Name="SendText" Width="500" FontSize="14" HorizontalAlignment="Left" MinWidth="300" Margin="15,15,15,15" Background="{DynamicResource BlackBrush}" Foreground="{DynamicResource appBarTextBox}">
                     <i:Interaction.Triggers>
-                        <triggers:InputBindingTrigger>
-                            <triggers:InputBindingTrigger.InputBinding>
+                        <Triggers:InputBindingTrigger>
+                            <Triggers:InputBindingTrigger.InputBinding>
                                 <KeyBinding Key="Enter" />
-                            </triggers:InputBindingTrigger.InputBinding>
+                            </Triggers:InputBindingTrigger.InputBinding>
                             <cal:ActionMessage MethodName="Send" />
-                        </triggers:InputBindingTrigger>
+                        </Triggers:InputBindingTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
             </StackPanel>

@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using Jabbr.WPF.Users;
 
-namespace Jabbr.WPF.Resources.Converters
+namespace Jabbr.WPF.Markup.Converters
 {
     public class GroupTypeConverter : IValueConverter
     {

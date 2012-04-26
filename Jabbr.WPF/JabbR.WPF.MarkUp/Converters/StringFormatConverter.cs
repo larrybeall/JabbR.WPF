@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 
-namespace Jabbr.WPF.Resources.Converters
+namespace Jabbr.WPF.Markup.Converters
 {
     public class StringFormatConverter : IMultiValueConverter, IValueConverter
     {

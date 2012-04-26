@@ -4,24 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 
-namespace Jabbr.WPF.Resources.Converters
+namespace Jabbr.WPF.Markup.Converters
 {
-    public class DateTimeConverter : IValueConverter
+    public class DebugConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            DateTime dateTime = (DateTime) value;
-            string format = parameter as string;
-
-            if (!string.IsNullOrEmpty(format))
-                return dateTime.ToString(format);
-
-            return dateTime.ToString();
+            return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return null;
+            return value;
         }
     }
 }

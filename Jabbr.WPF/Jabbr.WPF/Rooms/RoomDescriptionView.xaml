@@ -1,9 +1,9 @@
 ﻿<UserControl x:Class="Jabbr.WPF.Rooms.RoomDescriptionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters">
+             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp">
     <UserControl.Resources>
-        <converters:StringFormatConverter x:Key="stringFormatter" />
+        <Converters:StringFormatConverter x:Key="stringFormatter" />
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>

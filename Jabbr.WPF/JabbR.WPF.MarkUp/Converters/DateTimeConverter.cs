@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Data;
-using System.Windows.Markup;
-using System.Windows.Documents;
 
-namespace Jabbr.WPF.Resources.Converters
+namespace Jabbr.WPF.Markup.Converters
 {
-    public class HtmlToXamlConverter : IValueConverter
+    public class DateTimeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string htmlString = value as string;
-            if(string.IsNullOrEmpty(htmlString))
-                return null;
+            DateTime dateTime = (DateTime) value;
+            string format = parameter as string;
 
-            return HtmlToXamlConversion.HtmlToXamlConverter.ConvertHtmlToXaml(htmlString, false);
+            if (!string.IsNullOrEmpty(format))
+                return dateTime.ToString(format);
+
+            return dateTime.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
