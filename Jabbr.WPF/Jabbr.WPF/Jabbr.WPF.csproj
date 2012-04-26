@@ -137,6 +137,7 @@
       <DependentUpon>ChatWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Rooms\ChatWindowViewModel.cs" />
+    <Compile Include="Rooms\JoinState.cs" />
     <Compile Include="Rooms\RoomDescriptionView.xaml.cs">
       <DependentUpon>RoomDescriptionView.xaml</DependentUpon>
     </Compile>

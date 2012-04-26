@@ -56,13 +56,23 @@ namespace Jabbr.WPF.Infrastructure.Services
         }
     }
 
-    public class JoinedRoomEventArgs : EventArgs
+    public class JoiningRoomEventArgs : EventArgs
     {
         public RoomViewModel Room { get; private set; }
 
-        public JoinedRoomEventArgs(RoomViewModel room)
+        public JoiningRoomEventArgs(RoomViewModel room)
         {
             Room = room;
+        }
+    }
+
+    public class RoomsRetrievedEventArgs : EventArgs
+    {
+        public IEnumerable<RoomViewModel> Rooms { get; private set; }
+ 
+        public RoomsRetrievedEventArgs(IEnumerable<RoomViewModel> rooms)
+        {
+            Rooms = rooms;
         }
     }
 }

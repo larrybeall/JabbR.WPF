@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Jabbr.WPF.Infrastructure.Models;
 using Jabbr.WPF.Messages;
 using System.Threading;
-using System.Windows.Documents;
-using System.Windows.Markup;
 using HtmlToXamlConversion;
 using System.Threading.Tasks;
-using Jabbr.WPF.Users;
-using JabbrModels = JabbR.Client.Models;
-using System.Text.RegularExpressions;
+using JabbR.Client.Models;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -20,23 +14,15 @@ namespace Jabbr.WPF.Infrastructure.Services
         private readonly SynchronizationContext _uiContext;
         private readonly ServiceLocator _serviceLocator;
         private readonly UserService _userService;
-        private readonly Regex _tagRegex;
 
         public MessageService(ServiceLocator serviceLocator, UserService userService)
         {
             _uiContext = SynchronizationContext.Current;
             _serviceLocator = serviceLocator;
             _userService = userService;
-            _tagRegex = new Regex(@"<[^>]+>");
         }
 
         public event EventHandler<MessageProcessedEventArgs> MessageProcessed;
-
-        public void ProcessMessageAsync(string room, JabbrModels.Message message)
-        {
-            Message msg = new Message(message);
-            ProcessMessageAsync(room, msg);
-        }
 
         public void ProcessMessageAsync(string room, Message message)
         {
@@ -47,17 +33,11 @@ namespace Jabbr.WPF.Infrastructure.Services
                 return new MessageProcessedEventArgs(msgVm, room);
             });
 
-            task.ContinueWith((completedTask) => OnMessageProcessed(completedTask.Result, _uiContext),
+            task.ContinueWith(completedTask => OnMessageProcessed(completedTask.Result, _uiContext),
                                 TaskContinuationOptions.OnlyOnRanToCompletion);
             task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
 
             task.Start();
-        }
-
-        public ChatMessageViewModel ProcessMessage(JabbrModels.Message message)
-        {
-            Message msg = new Message(message);
-            return ProcessMessage(msg);
         }
 
         public ChatMessageViewModel ProcessMessage(Message message)
@@ -65,29 +45,11 @@ namespace Jabbr.WPF.Infrastructure.Services
             return CreateMessageViewModel(message);
         }
 
-        public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<JabbrModels.Message> messages)
-        {
-            var result = messages.AsParallel().Select(x => CreateMessageViewModel(new Message(x)));
-
-            return result.OrderBy(x => x.MessageDateTime);
-        }
-
         public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<Message> messages)
         {
-            List<Task<ChatMessageViewModel>> parsingTasks = new List<Task<ChatMessageViewModel>>();
-            foreach (var message in messages.OrderBy(x => x.When.ToLocalTime()))
-            {
-                Message toProcess = message;
-                var task = Task.Factory.StartNew<ChatMessageViewModel>(() => CreateMessageViewModel(toProcess));
-                task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
+            var result = messages.AsParallel().Select(CreateMessageViewModel);
 
-                parsingTasks.Add(task);
-            }
-
-            var waitTasks = parsingTasks.ToArray();
-            Task.WaitAll(waitTasks);
-
-            return parsingTasks.Select(x => x.Result).OrderBy(x => x.MessageDateTime);
+            return result.OrderBy(x => x.MessageDateTime);
         }
 
         private void ProcessTaskExceptions(Task errorTask)
@@ -146,31 +108,6 @@ namespace Jabbr.WPF.Infrastructure.Services
             var handler = MessageProcessed;
             if (handler != null)
                 handler(this, args);
-        }
-
-        private static bool ContentContainsHtml(string content, Regex tagRegex)
-        {
-            if (string.IsNullOrEmpty(content))
-                return false;
-
-            return tagRegex.IsMatch(content);
-        }
-
-        private static Inline[] CreateInlineArray(string xamlString)
-        {
-            try
-            {
-                var parsedXaml = XamlReader.Parse(xamlString);
-                var inlineCollection = ((Paragraph)((Section)parsedXaml).Blocks.FirstBlock).Inlines;
-                Inline[] inlines = new Inline[inlineCollection.Count];
-                inlineCollection.CopyTo(inlines, 0);
-
-                return inlines;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     }
 }

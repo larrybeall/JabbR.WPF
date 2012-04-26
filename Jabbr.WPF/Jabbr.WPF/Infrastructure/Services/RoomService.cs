@@ -14,8 +14,10 @@ namespace Jabbr.WPF.Infrastructure.Services
     {
         private readonly JabbRClient _client;
         private readonly ServiceLocator _serviceLocator;
-        private readonly ConcurrentDictionary<string, RoomViewModel> _joinedRooms =
+        private readonly ConcurrentDictionary<string, RoomViewModel> _roomStore =
             new ConcurrentDictionary<string, RoomViewModel>();
+
+        private DateTime _lastRoomsRetrieve;
 
         public RoomService(JabbRClient client, ServiceLocator serviceLocator)
             : base()
@@ -24,43 +26,70 @@ namespace Jabbr.WPF.Infrastructure.Services
             _serviceLocator = serviceLocator;
         }
 
-        public event EventHandler<JoinedRoomEventArgs> JoinedRoom; 
+        public event EventHandler<JoiningRoomEventArgs> JoiningRoom;
+        public event EventHandler<RoomsRetrievedEventArgs> RoomsRetrieved;
 
         public void JoinRooms(IEnumerable<Room> rooms)
         {
             foreach (var room in rooms)
             {
-                JoinRoom(room.Name);
+                JoinRoom(room);
             }
         }
 
-        public Task JoinRoom(string roomName)
+        public Task JoinRoom(Room room)
         {
-            return _client.JoinRoom(roomName).ContinueWith(task =>
+            var basicRoomVm = GetRoom(room);
+            return JoinRoom(basicRoomVm);
+        }
+
+        public Task JoinRoom(RoomViewModel roomViewModel)
+        {
+            roomViewModel.JoinState = JoinState.Joining;
+            OnJoiningRoom(roomViewModel);
+
+            return _client.JoinRoom(roomViewModel.RoomName).ContinueWith(task =>
             {
-                _client.GetRoomInfo(roomName).ContinueWith(details =>
+                _client.GetRoomInfo(roomViewModel.RoomName).ContinueWith(details =>
                 {
                     var roomInfo = details.Result;
-                    var roomVm = GetRoom(roomInfo);
-                    OnJoinedRoom(roomVm);
+                    var roomVm = GetRoom(roomInfo.Name);
+                    roomVm.OnJoined(roomInfo);
                 });
             });
         }
 
-        //public Task GetRooms()
-        //{
-            
-        //}
+        public void GetRooms()
+        {
+            var timeSinceLastRetrieve = DateTime.Now.Subtract(_lastRoomsRetrieve);
+            if (timeSinceLastRetrieve.TotalSeconds <= 30)
+            {
+                OnRoomsRetrieved();
+                return;
+            }
+
+            _lastRoomsRetrieve = DateTime.Now;
+
+            _client.GetRooms().ContinueWith(roomsTask =>
+            {
+                foreach (var room in roomsTask.Result)
+                {
+                    GetRoom(room);
+                }
+
+                OnRoomsRetrieved();
+            });
+        }
 
         public RoomViewModel GetRoom(string roomName)
         {
             RoomViewModel room;
-            _joinedRooms.TryGetValue(roomName, out room);
+            _roomStore.TryGetValue(roomName, out room);
 
             return room;
         }
 
-        public RoomViewModel GetRoom(Room room)
+        public RoomViewModel GetRoom(Room room, bool isJoining = false)
         {
             RoomViewModel toReturn = GetRoom(room.Name);
 
@@ -70,20 +99,29 @@ namespace Jabbr.WPF.Infrastructure.Services
             toReturn = _serviceLocator.GetViewModel<RoomViewModel>();
             toReturn.IsNotifying = false;
 
-            toReturn.Initialize(room);
+            toReturn.Populate(room);
 
             toReturn.IsNotifying = true;
 
-            _joinedRooms.TryAdd(room.Name, toReturn);
+            _roomStore.TryAdd(room.Name, toReturn);
 
             return toReturn;
         }
 
-        private void OnJoinedRoom(RoomViewModel room)
+        private void OnJoiningRoom(RoomViewModel room)
         {
-            var handler = JoinedRoom;
+            var handler = JoiningRoom;
             if(handler != null)
-                PostOnUi(() => handler(this, new JoinedRoomEventArgs(room)));
+                PostOnUi(() => handler(this, new JoiningRoomEventArgs(room)));
+        }
+
+        private void OnRoomsRetrieved()
+        {
+            var rooms = _roomStore.Select(x => x.Value).ToList();
+
+            var handler = RoomsRetrieved;
+            if(handler != null)
+                PostOnUi(() => handler(this, new RoomsRetrievedEventArgs(rooms)));
         }
     }
 }
