@@ -59,6 +59,13 @@ namespace Jabbr.WPF.Infrastructure.Services
             });
         }
 
+        public void LeaveRoom(RoomViewModel roomViewModel)
+        {
+            _client.LeaveRoom(roomViewModel.RoomName).ContinueWith(
+                task => PostOnUi(() => roomViewModel.JoinState = JoinState.NotJoined),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
         public void GetRooms()
         {
             var timeSinceLastRetrieve = DateTime.Now.Subtract(_lastRoomsRetrieve);

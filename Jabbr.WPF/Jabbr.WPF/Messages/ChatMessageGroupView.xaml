@@ -21,7 +21,7 @@
             </Border.Style>
             <ItemsControl x:Name="Messages" />
         </Border>
-        <Border Margin="20,0,0,0" HorizontalAlignment="Left">
+        <Border Margin="25,0,0,0" HorizontalAlignment="Left">
             <Polygon>
                 <Polygon.Style>
                     <Style TargetType="Polygon">

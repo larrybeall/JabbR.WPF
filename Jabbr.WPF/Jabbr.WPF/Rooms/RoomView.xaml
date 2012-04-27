@@ -41,6 +41,7 @@
             <TextBlock FontSize="16" AttachedProperties:TextBlockHelper.XamlString="{Binding Topic, Converter={StaticResource htmlToXamlConverter}}"  />
         </StackPanel>
         <Button
+            x:Name="LeaveRoom"
             Grid.Column="0"
             Grid.Row="0"
             HorizontalAlignment="Right"

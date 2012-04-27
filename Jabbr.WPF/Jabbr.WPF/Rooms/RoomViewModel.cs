@@ -18,6 +18,7 @@ namespace Jabbr.WPF.Rooms
     {
         private readonly JabbrManager _jabbrManager;
         private readonly MessageService _messageService;
+        private readonly RoomService _roomService;
         private readonly UserService _userService;
         private readonly IObservableCollection<MessageViewModel> _messages; 
         private readonly IObservableCollection<RoomUserViewModel> _users;
@@ -32,10 +33,12 @@ namespace Jabbr.WPF.Rooms
         public RoomViewModel(
             JabbrManager jabbrManager, 
             MessageService messageService,
+            RoomService roomService,
             UserService userService)
         {
             _jabbrManager = jabbrManager;
             _messageService = messageService;
+            _roomService = roomService;
             _userService = userService;
             _messages = new BindableCollection<MessageViewModel>();
             _users = new BindableCollection<RoomUserViewModel>();
@@ -167,6 +170,13 @@ namespace Jabbr.WPF.Rooms
             }
 
             SetIsNotifying(true);
+        }
+
+        public void LeaveRoom()
+        {
+            _roomService.LeaveRoom(this);
+
+            TryClose();
         }
 
         internal void OnJoined(JabbR.Client.Models.Room roomDetails)
