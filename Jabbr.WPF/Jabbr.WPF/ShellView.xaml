@@ -52,6 +52,6 @@
                 Foreground="#FF000000"/>
         </Border>
         <metroControls:WindowCommands Grid.Row="0" HorizontalAlignment="Right" />
-        <ContentControl Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="ActiveItem" />
+        <ContentControl Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="ActiveItem" Focusable="False" FocusVisualStyle="{x:Null}"  />
     </Grid>
 </Window>

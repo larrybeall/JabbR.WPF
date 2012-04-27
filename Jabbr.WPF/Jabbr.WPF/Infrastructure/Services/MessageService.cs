@@ -9,13 +9,14 @@ using JabbR.Client.Models;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
-    public class MessageService
+    public class MessageService : BaseService
     {
         private readonly SynchronizationContext _uiContext;
         private readonly ServiceLocator _serviceLocator;
         private readonly UserService _userService;
 
         public MessageService(ServiceLocator serviceLocator, UserService userService)
+            :base()
         {
             _uiContext = SynchronizationContext.Current;
             _serviceLocator = serviceLocator;

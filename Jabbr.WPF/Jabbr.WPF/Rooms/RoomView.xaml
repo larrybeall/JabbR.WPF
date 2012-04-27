@@ -6,11 +6,14 @@
              xmlns:inf="clr-namespace:Jabbr.WPF.Infrastructure"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:jabbrControls="clr-namespace:JabbR.WPF.MarkUp.Controls;assembly=JabbR.WPF.MarkUp"
-             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters"
-             xmlns:Converters1="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp">
+             xmlns:LocalConverters="clr-namespace:Jabbr.WPF.Markup.Converters"
+             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
+             xmlns:AttachedProperties="clr-namespace:Jabbr.WPF.Markup.AttachedProperties;assembly=JabbR.WPF.MarkUp"
+             xmlns:MetroControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
     <UserControl.Resources>
-        <Converters:GroupTypeConverter x:Key="groupTypeConverter" />
-        <Converters1:StringFormatConverter x:Key="formatConverter" />
+        <LocalConverters:GroupTypeConverter x:Key="groupTypeConverter" />
+        <Converters:StringFormatConverter x:Key="formatConverter" />
+        <Converters:HtmlToXamlConverter x:Key="htmlToXamlConverter" />
         
         <inf:AutoRefreshCollectionViewSource Source="{Binding Users}" x:Key="usersSource">
             <inf:AutoRefreshCollectionViewSource.GroupDescriptions>
@@ -33,7 +36,22 @@
         </Grid.ColumnDefinitions>
 
         <!-- row 0 -->
-        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="32" Text="{Binding RoomName, Converter={StaticResource formatConverter}, ConverterParameter='#{0} Messages'}" />
+        <StackPanel Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left">
+            <TextBlock Grid.Column="0" Grid.Row="0" FontSize="32" Text="{Binding RoomName, Converter={StaticResource formatConverter}, ConverterParameter='#{0} Messages'}" />
+            <TextBlock FontSize="16" AttachedProperties:TextBlockHelper.XamlString="{Binding Topic, Converter={StaticResource htmlToXamlConverter}}"  />
+        </StackPanel>
+        <Button
+            Grid.Column="0"
+            Grid.Row="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="0,0,15,0"
+            Width="40"
+            Height="40"
+            Style="{DynamicResource ChromelessButtonStyle}"
+            ToolTip="Leave Room"
+            Opacity="0.8" FontFamily="Marlett" FontSize="22"
+            Content="r" />
         <TextBlock Grid.Column="1" Grid.Row="0" FontSize="32" Text="Users" />
 
         <!-- row 1-->

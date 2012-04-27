@@ -119,7 +119,7 @@
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" Margin="60,0,0,0" cal:View.Model="{Binding ActiveItem}" />
+        <ContentControl Grid.Row="0" Margin="60,0,0,0" cal:View.Model="{Binding ActiveItem}" Focusable="False" />
         <Grid
             Grid.Row="0"
             x:Name="roomGutter"
