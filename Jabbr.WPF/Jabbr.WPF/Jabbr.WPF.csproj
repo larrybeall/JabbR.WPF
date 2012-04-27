@@ -114,13 +114,6 @@
     <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\MessageCollectionViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
-    <Compile Include="Infrastructure\EventArgs.cs" />
-    <Compile Include="Infrastructure\JabbrManager.cs" />
-    <Compile Include="Infrastructure\Models\ExtensionMethods.cs" />
-    <Compile Include="Infrastructure\Models\Message.cs" />
-    <Compile Include="Infrastructure\Models\Room.cs" />
-    <Compile Include="Infrastructure\Models\User.cs" />
-    <Compile Include="Infrastructure\Models\UserStatus.cs" />
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />

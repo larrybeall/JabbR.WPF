@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jabbr.WPF.Users;
-using Jabbr.WPF.Infrastructure.Models;
 using System.Threading;
-using JabbrModels = JabbR.Client.Models;
+using JabbR.Client.Models;
 using System.Collections.Concurrent;
 
 namespace Jabbr.WPF.Infrastructure.Services
@@ -36,11 +35,6 @@ namespace Jabbr.WPF.Infrastructure.Services
             return user;
         }
 
-        public UserViewModel GetUserViewModel(JabbrModels.User user)
-        {
-            return GetUserViewModel(new User(user));
-        }
-
         public UserViewModel GetUserViewModel(User user)
         {
             UserViewModel toReturn = GetUserViewModel(user.Name);
@@ -67,7 +61,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             return toReturn;
         }
 
-        public void ProcessNoteChanged(JabbrModels.User user)
+        public void ProcessNoteChanged(User user)
         {
             var userVm = GetUserViewModel(user.Name);
 
@@ -77,7 +71,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             userVm.SetNote(user.IsAfk, user.AfkNote, user.Note);
         }
 
-        public void ProcessUserJoined(JabbrModels.User user, string room)
+        public void ProcessUserJoined(User user, string room)
         {
             UserViewModel userVm = GetUserViewModel(user);
 
@@ -89,7 +83,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             });
         }
 
-        public void ProcessUsernameChange(JabbrModels.User user, string oldUsername)
+        public void ProcessUsernameChange(User user, string oldUsername)
         {
             UserViewModel userVm = GetUserViewModel(oldUsername);
 
@@ -107,7 +101,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             });
         }
 
-        public void ProcessUserActivityChanged(JabbrModels.User user)
+        public void ProcessUserActivityChanged(User user)
         {
             var userVm = GetUserViewModel(user.Name);
             if(userVm == null)
@@ -115,7 +109,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             PostOnUi(() =>
             {
-                userVm.IsAway = user.Status == JabbrModels.UserStatus.Inactive;
+                userVm.IsAway = user.Status == UserStatus.Inactive;
             });
         }
     }

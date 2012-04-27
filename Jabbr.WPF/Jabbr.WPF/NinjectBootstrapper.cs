@@ -60,7 +60,6 @@ namespace Jabbr.WPF
             _kernel.Bind<UserService>().ToSelf().InSingletonScope();
             _kernel.Bind<MessageService>().ToSelf().InSingletonScope();
             _kernel.Bind<RoomService>().ToSelf().InSingletonScope();
-            _kernel.Bind<JabbrManager>().ToSelf().InSingletonScope();
         }
     }
 }

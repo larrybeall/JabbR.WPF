@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jabbr.WPF.Infrastructure.Models;
 using Jabbr.WPF.Infrastructure;
 using Caliburn.Micro;
 using Jabbr.WPF.Users;

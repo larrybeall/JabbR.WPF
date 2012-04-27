@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Caliburn.Micro;
-using Jabbr.WPF.Infrastructure.Models;
 using Jabbr.WPF.Infrastructure;
 
 namespace Jabbr.WPF.Users

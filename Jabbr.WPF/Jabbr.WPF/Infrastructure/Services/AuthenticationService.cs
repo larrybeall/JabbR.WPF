@@ -60,6 +60,11 @@ namespace Jabbr.WPF.Infrastructure.Services
             return signinTaskSource.Task;
         }
 
+        public void SignOut()
+        {
+            _client.Disconnect();
+        }
+
         private void SetupSigninTaskContinuations(Task<LogOnInfo> signinTask, TaskCompletionSource<UserViewModel> taskCompletionSource)
         {
             signinTask.ContinueWith(completedTask => CompleteSignin(completedTask.Result, taskCompletionSource),
