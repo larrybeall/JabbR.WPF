@@ -27,6 +27,7 @@ namespace Jabbr.WPF.Rooms
         private int _userCount;
         private int _unreadMessageCount;
         private string _topic;
+        private JoinState _joinState;
 
         public RoomViewModel(
             JabbrManager jabbrManager, 
@@ -53,6 +54,19 @@ namespace Jabbr.WPF.Rooms
             }
         }
 
+        public JoinState JoinState
+        {
+            get { return _joinState; }
+            set
+            {
+                if(_joinState == value)
+                    return;
+
+                _joinState = value;
+                NotifyOfPropertyChange(() => JoinState);
+            }
+        }
+
         public bool IsPrivate
         {
             get { return _isPrivate; }
@@ -71,10 +85,10 @@ namespace Jabbr.WPF.Rooms
             get { return DisplayName; }
             set
             {
-                if (DisplayName == value)
+                if (DisplayName == value || value == null)
                     return;
 
-                DisplayName = value;
+                DisplayName = value.ToUpper();
                 NotifyOfPropertyChange(() => RoomName);
             }
         }
@@ -121,7 +135,41 @@ namespace Jabbr.WPF.Rooms
             get { return _users; }
         }
 
-        internal void Initialize(JabbR.Client.Models.Room roomDetails)
+        internal void Populate(JabbR.Client.Models.Room roomDetails)
+        {
+            SetIsNotifying(false);
+
+            RoomName = roomDetails.Name;
+            IsPrivate = roomDetails.Private;
+            UserCount = roomDetails.Count;
+            Topic = roomDetails.Topic;
+            _owners = roomDetails.Owners;
+
+            if (roomDetails.Users != null)
+            {
+                int userCount = 0;
+                foreach (var user in roomDetails.Users)
+                {
+                    AddUser(user);
+                    userCount = userCount + 1;
+                }
+
+                UserCount = userCount;
+            }
+
+            if (roomDetails.RecentMessages != null && roomDetails.RecentMessages.Any())
+            {
+                var messageViewModels = _messageService.ProcessMessages(roomDetails.RecentMessages);
+                foreach (var chatMessageViewModel in messageViewModels)
+                {
+                    ProcessMessage(chatMessageViewModel, true);
+                }
+            }
+
+            SetIsNotifying(true);
+        }
+
+        internal void OnJoined(JabbR.Client.Models.Room roomDetails)
         {
             _jabbrManager.RoomCountChanged += JabbrManagerOnRoomCountChanged;
             _jabbrManager.RoomTopicChanged += JabbrManagerOnRoomTopicChanged;
@@ -130,31 +178,24 @@ namespace Jabbr.WPF.Rooms
 
             SetIsNotifying(false);
 
-            RoomName = roomDetails.Name.ToUpper();
-            UserCount = roomDetails.Users.Count();
-            IsPrivate = roomDetails.Private;
-            Topic = roomDetails.Topic;
-            _owners = roomDetails.Owners;
+            Populate(roomDetails);
+            JoinState = JoinState.Joined;
 
-            foreach (var user in roomDetails.Users)
-            {
-                AddUser(user);
-            }
-
-            var messageViewModels = _messageService.ProcessMessages(roomDetails.RecentMessages);
-            foreach (var chatMessageViewModel in messageViewModels)
-            {
-                ProcessMessage(chatMessageViewModel, true);
-            }
-
-            SetIsNotifying(true);
+            SetIsNotifying(true, true);
         }
 
-        private void SetIsNotifying(bool isNotifying)
+        private void SetIsNotifying(bool isNotifying, bool forceRefresh = false)
         {
             IsNotifying = isNotifying;
             _users.IsNotifying = isNotifying;
             _messages.IsNotifying = isNotifying;
+
+            if (forceRefresh)
+            {
+                _users.Refresh();
+                _messages.Refresh();
+                Refresh();
+            }
         }
 
         private void UserServiceOnUserJoined(object sender, UserJoinedEventArgs userJoinedEventArgs)

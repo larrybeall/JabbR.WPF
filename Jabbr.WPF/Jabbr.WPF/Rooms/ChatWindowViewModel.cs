@@ -15,6 +15,8 @@ namespace Jabbr.WPF.Rooms
         private readonly ServiceLocator _serviceLocator;
         private readonly JabbRClient _client;
         private string _sendText;
+        private IEnumerable<RoomViewModel> _availableRooms;
+        private RoomViewModel _selectedRoom;
 
         public ChatWindowViewModel(RoomService roomService, ServiceLocator serviceLocator, JabbRClient client)
         {
@@ -38,17 +40,50 @@ namespace Jabbr.WPF.Rooms
             }
         }
 
+        public IEnumerable<RoomViewModel> AvailableRooms
+        {
+            get { return _availableRooms; }
+        }
+
+        public RoomViewModel SelectedRoom
+        {
+            get { return _selectedRoom; }
+            set
+            {
+                if(_selectedRoom == value)
+                    return;
+
+                _selectedRoom = value;
+                NotifyOfPropertyChange(() => SelectedRoom);
+            }
+        }
+
+        public void OnRoomSelected()
+        {
+            if(SelectedRoom == null)
+                return;
+
+            _roomService.JoinRoom(SelectedRoom);
+            SelectedRoom = null;
+        }
 
         private void Initialize()
         {
             DisplayName = "Chat Window";
 
-            _roomService.JoinedRoom += RoomServiceOnJoinedRoom;
+            _roomService.JoiningRoom += OnJoiningRoom;
+            _roomService.RoomsRetrieved += OnRoomsRetrieved;
         }
 
-        private void RoomServiceOnJoinedRoom(object sender, JoinedRoomEventArgs joinedRoomEventArgs)
+        private void OnRoomsRetrieved(object sender, RoomsRetrievedEventArgs roomsRetrievedEventArgs)
         {
-            ActivateItem(joinedRoomEventArgs.Room);
+            _availableRooms = roomsRetrievedEventArgs.Rooms;
+            NotifyOfPropertyChange(() => AvailableRooms);
+        }
+
+        private void OnJoiningRoom(object sender, JoiningRoomEventArgs joiningRoomEventArgs)
+        {
+            ActivateItem(joiningRoomEventArgs.Room);
         }
 
         public void Send()

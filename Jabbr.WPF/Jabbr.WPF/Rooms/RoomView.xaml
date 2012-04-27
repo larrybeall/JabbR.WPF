@@ -1,16 +1,16 @@
 ﻿<UserControl x:Class="Jabbr.WPF.Rooms.RoomView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:users="clr-namespace:Jabbr.WPF.Users"
              xmlns:inf="clr-namespace:Jabbr.WPF.Infrastructure"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-             xmlns:converters="clr-namespace:Jabbr.WPF.Resources.Converters"
-             xmlns:jabbrControls="clr-namespace:JabbR.WPF.MarkUp.Controls;assembly=JabbR.WPF.MarkUp">
+             xmlns:jabbrControls="clr-namespace:JabbR.WPF.MarkUp.Controls;assembly=JabbR.WPF.MarkUp"
+             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters"
+             xmlns:Converters1="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp">
     <UserControl.Resources>
-        <converters:GroupTypeConverter x:Key="groupTypeConverter" />
-        <converters:StringFormatConverter x:Key="formatConverter" />
+        <Converters:GroupTypeConverter x:Key="groupTypeConverter" />
+        <Converters1:StringFormatConverter x:Key="formatConverter" />
         
         <inf:AutoRefreshCollectionViewSource Source="{Binding Users}" x:Key="usersSource">
             <inf:AutoRefreshCollectionViewSource.GroupDescriptions>

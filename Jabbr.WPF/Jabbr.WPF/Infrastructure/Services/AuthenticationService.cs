@@ -81,6 +81,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             userviewModel.IsCurrentUser = true;
 
             _roomService.JoinRooms(logOnInfo.Rooms);
+            _roomService.GetRooms();
 
             CurrentUser = userviewModel;
 

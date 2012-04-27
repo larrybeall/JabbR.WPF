@@ -91,25 +91,18 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\Services\AuthenticationService.cs" />
     <Compile Include="Infrastructure\Services\RoomService.cs" />
+    <Compile Include="Markup\Converters\GroupTypeConverter.cs" />
+    <Compile Include="Markup\Converters\MessageItemsToUserConverter.cs" />
     <Compile Include="Messages\ChatMessageGroupView.xaml.cs">
       <DependentUpon>ChatMessageGroupView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Messages\ChatMessageGroupViewModel.cs" />
     <Compile Include="Messages\IHasBeenSeen.cs" />
     <Compile Include="Messages\IUnreadMessageCount.cs" />
-    <Compile Include="Resources\AttachedProperties\PasswordHelper.cs" />
-    <Compile Include="Resources\AttachedProperties\TextBlockHelper.cs" />
     <Compile Include="Authentication\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Authentication\LoginViewModel.cs" />
-    <Compile Include="Resources\Converters\ComparableConverters.cs" />
-    <Compile Include="Resources\Converters\DateTimeConverter.cs" />
-    <Compile Include="Resources\Converters\DebugConverter.cs" />
-    <Compile Include="Resources\Converters\GroupTypeConverter.cs" />
-    <Compile Include="Resources\Converters\HtmlToXamlConverter.cs" />
-    <Compile Include="Resources\Converters\MessageItemsToUserConverter.cs" />
-    <Compile Include="Resources\Converters\StringFormatConverter.cs" />
     <Compile Include="Infrastructure\AutoRefreshCollectionViewSource.cs" />
     <Compile Include="Infrastructure\Services\BaseService.cs" />
     <Compile Include="Infrastructure\Services\EventArgs.cs" />
@@ -121,7 +114,6 @@
     <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\MessageCollectionViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
-    <Compile Include="Resources\Converters\VisibilityConverter.cs" />
     <Compile Include="Infrastructure\EventArgs.cs" />
     <Compile Include="Infrastructure\JabbrManager.cs" />
     <Compile Include="Infrastructure\Models\ExtensionMethods.cs" />
@@ -132,11 +124,11 @@
     <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
-    <Compile Include="Resources\Triggers\InputBindingTrigger.cs" />
     <Compile Include="Rooms\ChatWindowView.xaml.cs">
       <DependentUpon>ChatWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Rooms\ChatWindowViewModel.cs" />
+    <Compile Include="Rooms\JoinState.cs" />
     <Compile Include="Rooms\RoomDescriptionView.xaml.cs">
       <DependentUpon>RoomDescriptionView.xaml</DependentUpon>
     </Compile>
@@ -144,10 +136,6 @@
       <DependentUpon>RoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Rooms\RoomViewModel.cs" />
-    <Compile Include="Rooms\RoomSelectionView.xaml.cs">
-      <DependentUpon>RoomSelectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Rooms\RoomSelectionViewModel.cs" />
     <Compile Include="ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
@@ -183,10 +171,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Rooms\ChatWindowView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Rooms\RoomSelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -751,6 +735,7 @@
   <ItemGroup>
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

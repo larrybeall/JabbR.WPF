@@ -15,18 +15,15 @@ namespace Jabbr.WPF
     {
         private readonly AuthenticationService _authenticationService;
         private readonly LoginViewModel _loginViewModel;
-        private readonly RoomSelectionViewModel _roomSelectionViewModel;
         private readonly ChatWindowViewModel _chatWindowViewModel;
 
         public ShellViewModel(
             AuthenticationService authenticationService,
             LoginViewModel loginViewModel,
-            RoomSelectionViewModel roomSelectionViewModel,
             ChatWindowViewModel chatWindowViewModel)
         {
             _authenticationService = authenticationService;
             _loginViewModel = loginViewModel;
-            _roomSelectionViewModel = roomSelectionViewModel;
             _chatWindowViewModel = chatWindowViewModel;
 
             Initialize();
@@ -37,7 +34,6 @@ namespace Jabbr.WPF
             _authenticationService.SignInComplete += AuthenticationServiceOnSignInComplete;
 
             Items.Add(_loginViewModel);
-            Items.Add(_roomSelectionViewModel);
             Items.Add(_chatWindowViewModel);
 
             ActivateItem(_loginViewModel);
@@ -47,8 +43,7 @@ namespace Jabbr.WPF
         {
             if(loginCompleteEventArgs.HasJoinedRooms)
                 ActivateItem(_chatWindowViewModel);
-            else
-                ActivateItem(_roomSelectionViewModel);
+            // TODO: implement code to handle situations where a user does not have joined rooms
         }
 
         public void MouseDown(MouseButtonEventArgs args)
