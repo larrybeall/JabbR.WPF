@@ -10,6 +10,7 @@ using Jabbr.WPF.Users;
 using System.ComponentModel;
 using System.Windows;
 using Jabbr.WPF.Infrastructure.Services;
+using JabbR.Client.Models;
 
 namespace Jabbr.WPF.Rooms
 {
@@ -148,9 +149,10 @@ namespace Jabbr.WPF.Rooms
 
         #region internal methods
 
-        internal void Populate(JabbR.Client.Models.Room roomDetails)
+        internal void Populate(Room roomDetails, bool suppressNotification = true)
         {
-            SetIsNotifying(false);
+            if(suppressNotification)
+                SetIsNotifying(false);
 
             RoomName = roomDetails.Name;
             IsPrivate = roomDetails.Private;
@@ -180,20 +182,16 @@ namespace Jabbr.WPF.Rooms
                     ProcessMessage(chatMessageViewModel, true);
                 }
             }
-
-            SetIsNotifying(true);
+            
+            if(suppressNotification)
+                SetIsNotifying(true);
         }
 
-        internal void OnJoined(JabbR.Client.Models.Room roomDetails)
+        internal void OnJoined(Room roomDetails)
         {
-            _messageService.MessageProcessed += MessageProcessingServiceOnMessageProcessed;
+            Populate(roomDetails, false);
 
-            SetIsNotifying(false);
-
-            Populate(roomDetails);
             JoinState = JoinState.Joined;
-
-            SetIsNotifying(true, true);
         }
 
         internal void AddUser(UserViewModel userViewModel)
@@ -256,6 +254,20 @@ namespace Jabbr.WPF.Rooms
                 userVm.IsTyping = true;
         }
 
+        internal void ProcessMessage(ChatMessageViewModel viewModel, bool suppressUnreadNotifications = false)
+        {
+            viewModel.HasBeenSeen = IsRoomVisible(suppressUnreadNotifications);
+
+            ChatMessageGroupViewModel lastGroupMessage = _messages.LastOrDefault() as ChatMessageGroupViewModel;
+            if (lastGroupMessage == null || !lastGroupMessage.TryAddMessage(viewModel))
+            {
+                ChatMessageGroupViewModel groupViewModel = new ChatMessageGroupViewModel(viewModel);
+                _messages.Add(groupViewModel);
+            }
+
+            UpdateUnreadMessageCount();
+        }
+
         #endregion
 
         #region public methods
@@ -271,26 +283,11 @@ namespace Jabbr.WPF.Rooms
 
         #region private methods
 
-        private void SetIsNotifying(bool isNotifying, bool forceRefresh = false)
+        private void SetIsNotifying(bool isNotifying)
         {
             IsNotifying = isNotifying;
             _users.IsNotifying = isNotifying;
             _messages.IsNotifying = isNotifying;
-
-            if (forceRefresh)
-            {
-                _users.Refresh();
-                _messages.Refresh();
-                Refresh();
-            }
-        }
-
-        private void MessageProcessingServiceOnMessageProcessed(object sender, MessageProcessedEventArgs messageProcessedEventArgs)
-        {
-            if (!VerifyRoomName(messageProcessedEventArgs.Room))
-                return;
-
-            ProcessMessage(messageProcessedEventArgs.MessageViewModel);
         }
 
         private void AddUser(JabbR.Client.Models.User user)
@@ -303,20 +300,6 @@ namespace Jabbr.WPF.Rooms
         private bool VerifyRoomName(string roomName)
         {
             return roomName.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private void ProcessMessage(ChatMessageViewModel viewModel, bool isInitializing = false)
-        {
-            viewModel.HasBeenSeen = IsRoomVisible(isInitializing);
-
-            ChatMessageGroupViewModel lastGroupMessage = _messages.LastOrDefault() as ChatMessageGroupViewModel;
-            if (lastGroupMessage == null || !lastGroupMessage.TryAddMessage(viewModel))
-            {
-                ChatMessageGroupViewModel groupViewModel = new ChatMessageGroupViewModel(viewModel);
-                _messages.Add(groupViewModel);
-            }
-
-            UpdateUnreadMessageCount();
         }
 
         private bool IsRoomVisible(bool isRoomInitializing = false)

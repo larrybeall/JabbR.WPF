@@ -6,39 +6,47 @@ using System.Threading;
 using HtmlToXamlConversion;
 using System.Threading.Tasks;
 using JabbR.Client.Models;
+using JabbR.Client;
+using Jabbr.WPF.Rooms;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
     public class MessageService : BaseService
     {
-        private readonly SynchronizationContext _uiContext;
         private readonly ServiceLocator _serviceLocator;
         private readonly UserService _userService;
+        private readonly RoomService _roomService;
+        private readonly JabbRClient _client;
 
-        public MessageService(ServiceLocator serviceLocator, UserService userService)
+        public MessageService(
+            ServiceLocator serviceLocator, 
+            UserService userService, 
+            JabbRClient client,
+            RoomService roomService)
             :base()
         {
-            _uiContext = SynchronizationContext.Current;
             _serviceLocator = serviceLocator;
             _userService = userService;
+            _roomService = roomService;
+            _client = client;
+
+            _client.MessageReceived += OnMessageReceived;
         }
 
-        public event EventHandler<MessageProcessedEventArgs> MessageProcessed;
-
-        public void ProcessMessageAsync(string room, Message message)
+        public Task ProcessMessageAsync(string room, Message message)
         {
-            Task<MessageProcessedEventArgs> task = new Task<MessageProcessedEventArgs>(() =>
+            Task<ChatMessageViewModel> task = new Task<ChatMessageViewModel>(() =>
             {
                 var msgVm = CreateMessageViewModel(message);
-
-                return new MessageProcessedEventArgs(msgVm, room);
+                return msgVm;
             });
 
-            task.ContinueWith(completedTask => OnMessageProcessed(completedTask.Result, _uiContext),
+            task.ContinueWith(completedTask => OnMessageProcessed(completedTask.Result, room),
                                 TaskContinuationOptions.OnlyOnRanToCompletion);
             task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
 
             task.Start();
+            return task;
         }
 
         public ChatMessageViewModel ProcessMessage(Message message)
@@ -98,17 +106,16 @@ namespace Jabbr.WPF.Infrastructure.Services
             return HtmlToXamlConverter.ConvertHtmlToXaml(content, false);
         }
 
-        private void OnMessageProcessed(MessageProcessedEventArgs args, SynchronizationContext context = null)
+        private void OnMessageProcessed(ChatMessageViewModel messageViewModel, string room)
         {
-            if (context != null)
-            {
-                context.Post(d => OnMessageProcessed(args), null);
-                return;
-            }
+            var roomViewModel = _roomService.GetRoom(room);
 
-            var handler = MessageProcessed;
-            if (handler != null)
-                handler(this, args);
+            PostOnUi(() => roomViewModel.ProcessMessage(messageViewModel));
+        }
+
+        private void OnMessageReceived(Message message, string room)
+        {
+            ProcessMessageAsync(room, message);
         }
     }
 }

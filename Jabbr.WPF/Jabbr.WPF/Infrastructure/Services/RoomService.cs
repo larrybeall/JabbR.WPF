@@ -67,7 +67,7 @@ namespace Jabbr.WPF.Infrastructure.Services
                 {
                     var roomInfo = details.Result;
                     var roomVm = GetRoom(roomInfo.Name);
-                    roomVm.OnJoined(roomInfo);
+                    PostOnUi(() => roomVm.OnJoined(roomInfo));
                 });
             });
         }
@@ -216,7 +216,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private void OnOwnerAdded(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.RemoveOwner(user.Name)));
+            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.AddOwner(user.Name)));
         }
 
         private void OnKicked(string s)

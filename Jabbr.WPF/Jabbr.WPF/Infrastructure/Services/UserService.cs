@@ -6,6 +6,7 @@ using Jabbr.WPF.Users;
 using System.Threading;
 using JabbR.Client.Models;
 using System.Collections.Concurrent;
+using JabbR.Client;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
@@ -13,16 +14,19 @@ namespace Jabbr.WPF.Infrastructure.Services
     {
         private const string GravatarUrlFormat = "http://www.gravatar.com/avatar/{0}?d=mm&s=75";
 
-        private readonly static object SyncRoot = new object();
-
         private readonly ServiceLocator _serviceLocator;
         private readonly ConcurrentDictionary<string, UserViewModel> _users;
+        private readonly JabbRClient _client;
 
-        public UserService(ServiceLocator serviceLocator)
+        public UserService(ServiceLocator serviceLocator, JabbRClient client)
             : base()
         {
             _serviceLocator = serviceLocator;
+            _client = client;
             _users = new ConcurrentDictionary<string, UserViewModel>();
+
+            _client.UserActivityChanged += OnUserActivityChanged;
+            _client.NoteChanged += UserNoteChanged;
         }
 
         public event EventHandler<UserJoinedEventArgs> UserJoined;
@@ -101,16 +105,25 @@ namespace Jabbr.WPF.Infrastructure.Services
             });
         }
 
-        public void ProcessUserActivityChanged(User user)
+        private void OnUserActivityChanged(User user) 
         {
             var userVm = GetUserViewModel(user.Name);
-            if(userVm == null)
+            if (userVm == null)
                 return;
 
             PostOnUi(() =>
             {
                 userVm.IsAway = user.Status == UserStatus.Inactive;
             });
+        }
+
+        private void UserNoteChanged(User user, string room)
+        {
+            var userVm = GetUserViewModel(user.Name);
+            if(userVm == null)
+                return;
+
+            PostOnUi(() => userVm.SetNote(user.IsAfk, user.AfkNote, user.Note));
         }
     }
 }
