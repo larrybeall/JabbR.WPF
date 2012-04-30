@@ -6,7 +6,7 @@
     <SolidColorBrush Color="{DynamicResource AccentColor3}" x:Key="messageBackground" />
     <SolidColorBrush Color="{DynamicResource AccentColor4}" x:Key="ownedMessageBackground" />
   </UserControl.Resources>
-  <StackPanel Margin="7,0,7,7">
+  <StackPanel Margin="0,0,7,7">
     <Border>
       <Border.Style>
         <Style TargetType="Border">

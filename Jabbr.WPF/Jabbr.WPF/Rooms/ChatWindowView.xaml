@@ -6,199 +6,203 @@
              xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
              xmlns:Triggers="clr-namespace:Jabbr.WPF.Markup.Triggers;assembly=JabbR.WPF.MarkUp" HorizontalAlignment="Stretch">
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-        <ResourceDictionary
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary
 Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-      </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
 
-      <Storyboard x:Key="showRoomGutter">
-        <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter" To="0,0,0,0"
+            <Storyboard x:Key="showRoomGutter">
+                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter" To="0,0,0,0"
                             Duration="0:0:.15" />
-        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
                                        Storyboard.TargetName="showGutterHandle">
-          <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Collapsed}" />
-        </ObjectAnimationUsingKeyFrames>
-        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Collapsed}" />
+                </ObjectAnimationUsingKeyFrames>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
                                        Storyboard.TargetName="joinedRooms">
-          <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Collapsed}" />
-        </ObjectAnimationUsingKeyFrames>
-      </Storyboard>
-      <Storyboard x:Key="hideRoomGutter">
-        <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter"
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Collapsed}" />
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="hideRoomGutter">
+                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="roomGutter"
                             To="-250,0,0,0" Duration="0:0:.15" />
-        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
                                        Storyboard.TargetName="showGutterHandle">
-          <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Visible}" />
-        </ObjectAnimationUsingKeyFrames>
-        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Visible}" />
+                </ObjectAnimationUsingKeyFrames>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility"
                                        Storyboard.TargetName="joinedRooms">
-          <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Visible}" />
-        </ObjectAnimationUsingKeyFrames>
-      </Storyboard>
+                    <DiscreteObjectKeyFrame KeyTime="0:0:.13" Value="{x:Static Visibility.Visible}" />
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
 
-      <TransformGroup x:Key="sidewaysRoomName">
-        <RotateTransform Angle="90" />
-      </TransformGroup>
+            <TransformGroup x:Key="sidewaysRoomName">
+                <RotateTransform Angle="90" />
+            </TransformGroup>
 
-      <Converters:StringFormatConverter x:Key="stringFormatter" />
-      <SolidColorBrush x:Key="roomGutterBrush" Color="{DynamicResource AccentColor3}" />
-      <SolidColorBrush x:Key="appBarTextBox" Color="{DynamicResource Gray1}" />
+            <Converters:StringFormatConverter x:Key="stringFormatter" />
+            <SolidColorBrush x:Key="roomGutterBrush" Color="{DynamicResource AccentColor3}" />
+            <SolidColorBrush x:Key="appBarTextBox" Color="{DynamicResource Gray1}" />
 
-      <Style x:Key="_appBarButton" TargetType="Button">
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate TargetType="{x:Type Button}">
-              <Grid x:Name="grid" Background="#02FFFFFF">
-                <Ellipse x:Name="ellipsebg" Margin="4" Stroke="{TemplateBinding Foreground}"
+            <Style x:Key="_appBarButton" TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid x:Name="grid" Background="#02FFFFFF">
+                                <Ellipse x:Name="ellipsebg" Margin="4" Stroke="{TemplateBinding Foreground}"
                          StrokeThickness="0" VerticalAlignment="Stretch" />
-                <Ellipse x:Name="ellipse" Margin="4" Stroke="{TemplateBinding Foreground}"
+                                <Ellipse x:Name="ellipse" Margin="4" Stroke="{TemplateBinding Foreground}"
                          StrokeThickness="2" VerticalAlignment="Stretch" />
-                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                   Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-              </Grid>
-              <ControlTemplate.Triggers>
-                <Trigger Property="IsPressed" Value="True">
-                  <Setter TargetName="ellipsebg" Property="Fill" Value="{DynamicResource BlackBrush}" />
-                  <Setter TargetName="ellipsebg" Property="Opacity" Value="0.2" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                  <Setter TargetName="ellipse" Property="Opacity" Value="1" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="False">
-                  <Setter TargetName="ellipse" Property="Opacity" Value=".5" />
-                </Trigger>
-                <Trigger Property="IsKeyboardFocused" Value="true" />
-                <Trigger Property="ToggleButton.IsChecked" Value="true" />
-                <Trigger Property="IsEnabled" Value="false">
-                  <Setter Property="Foreground" Value="#ADADAD" />
-                </Trigger>
-              </ControlTemplate.Triggers>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ellipsebg" Property="Fill" Value="{DynamicResource BlackBrush}" />
+                                    <Setter TargetName="ellipsebg" Property="Opacity" Value="0.2" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ellipse" Property="Opacity" Value="1" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="False">
+                                    <Setter TargetName="ellipse" Property="Opacity" Value=".5" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="true" />
+                                <Trigger Property="ToggleButton.IsChecked" Value="true" />
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="#ADADAD" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-      <inf:AutoRefreshCollectionViewSource x:Key="availableRoomsView" Source="{Binding AvailableRooms}">
-        <inf:AutoRefreshCollectionViewSource.SortDescriptions>
-          <ComponentModel:SortDescription PropertyName="UserCount" Direction="Descending" />
-          <ComponentModel:SortDescription PropertyName="RoomName" Direction="Ascending" />
-        </inf:AutoRefreshCollectionViewSource.SortDescriptions>
-      </inf:AutoRefreshCollectionViewSource>
-    </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition />
-      <RowDefinition Height="auto" />
-    </Grid.RowDefinitions>
-    <ContentControl Grid.Row="0" Margin="60,0,0,0" cal:View.Model="{Binding ActiveItem}" Focusable="False" />
-    <Grid Grid.Row="0" x:Name="roomGutter" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+            <inf:AutoRefreshCollectionViewSource x:Key="availableRoomsView" Source="{Binding AvailableRooms}">
+                <inf:AutoRefreshCollectionViewSource.SortDescriptions>
+                    <ComponentModel:SortDescription PropertyName="UserCount" Direction="Descending" />
+                    <ComponentModel:SortDescription PropertyName="RoomName" Direction="Ascending" />
+                </inf:AutoRefreshCollectionViewSource.SortDescriptions>
+            </inf:AutoRefreshCollectionViewSource>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row="0" Margin="60,0,0,0" cal:View.Model="{Binding ActiveItem}" Focusable="False" />
+        <Grid Grid.Row="0" x:Name="roomGutter" HorizontalAlignment="Left" VerticalAlignment="Stretch"
           Margin="-250,0,0,0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="auto" />
-        <ColumnDefinition Width="auto" />
-      </Grid.ColumnDefinitions>
-      <Border Background="White" CornerRadius="0,10,10,0">
-        <Border Width="250" Grid.Column="0" Background="{StaticResource roomGutterBrush}"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Border Background="White" CornerRadius="0,10,10,0">
+                <Border Width="250" Grid.Column="0" Background="{StaticResource roomGutterBrush}"
                 CornerRadius="0,10,10,0">
-          <Border.Triggers>
-            <EventTrigger RoutedEvent="MouseLeave">
-              <BeginStoryboard Storyboard="{StaticResource hideRoomGutter}" />
-            </EventTrigger>
-          </Border.Triggers>
-          <Grid Margin="10">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="auto" />
-              <RowDefinition />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Rooms" FontSize="26" />
-            <ListView Grid.Row="1" Background="Transparent" BorderThickness="0"
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard Storyboard="{StaticResource hideRoomGutter}" />
+                        </EventTrigger>
+                    </Border.Triggers>
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Rooms" FontSize="26" />
+                        <ListView Grid.Row="1" Background="Transparent" BorderThickness="0"
                       ItemsSource="{Binding Source={StaticResource availableRoomsView}}" SelectedItem="{Binding SelectedRoom}"
                       cal:Message.Attach="[Event SelectionChanged] = [OnRoomSelected]">
-              <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                  <Setter Property="Visibility" Value="Collapsed" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding JoinState}" Value="NotJoined">
-                      <Setter Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </ListView.ItemContainerStyle>
-              <ListView.ItemTemplate>
-                <DataTemplate>
-                  <roomViews:RoomDescriptionView cal:View.Context="{Binding}" />
-                </DataTemplate>
-              </ListView.ItemTemplate>
-            </ListView>
-          </Grid>
-        </Border>
-      </Border>
-      <StackPanel Grid.Column="1">
-        <Border x:Name="showGutterHandle" Height="60" MinWidth="40"
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding JoinState}" Value="NotJoined">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <roomViews:RoomDescriptionView cal:View.Context="{Binding}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Border>
+            </Border>
+            <StackPanel Grid.Column="1">
+                <Border x:Name="showGutterHandle" Height="60" MinWidth="40"
                 Background="{StaticResource roomGutterBrush}" VerticalAlignment="Top" CornerRadius="0,12,12,0" Margin="0,30,0,0">
-          <Border.Triggers>
-            <EventTrigger RoutedEvent="MouseEnter">
-              <BeginStoryboard Storyboard="{StaticResource showRoomGutter}" />
-            </EventTrigger>
-          </Border.Triggers>
-          <metro:MetroImage Source="{DynamicResource appbar_arrow_right}" Width="40" Height="40" Margin="4" />
-        </Border>
-        <Border Background="Transparent" Height="7" />
-        <ItemsControl x:Name="joinedRooms" ItemsSource="{Binding Items}" Background="Transparent"
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard Storyboard="{StaticResource showRoomGutter}" />
+                        </EventTrigger>
+                    </Border.Triggers>
+                    <metro:MetroImage Source="{DynamicResource appbar_arrow_right}" Width="40" Height="40" Margin="4" />
+                </Border>
+                <Border Background="Transparent" Height="7" />
+                <ItemsControl x:Name="joinedRooms" ItemsSource="{Binding Items}" Background="Transparent"
                       BorderThickness="0">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border VerticalAlignment="Top" HorizontalAlignment="Left"
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border VerticalAlignment="Top" HorizontalAlignment="Left"
                       Background="{StaticResource roomGutterBrush}" CornerRadius="0,5,5,0" Margin="0,0,0,3">
-                <Button cal:Message.Attach="ActivateItem($dataContext)">
-                  <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ChromelessButtonStyle}">
-                      <Setter Property="Margin" Value="2" />
-                    </Style>
-                  </Button.Style>
-                  <Button.Content>
-                    <StackPanel>
-                      <TextBlock Text="{Binding UnreadMessageCount}" FontSize="24"
+                                <Button cal:Message.Attach="ActivateItem($dataContext)">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ChromelessButtonStyle}">
+                                            <Setter Property="Margin" Value="2" />
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Content>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding UnreadMessageCount}" FontSize="24"
                                  HorizontalAlignment="Center" />
-                      <TextBlock
+                                            <TextBlock
 Text="{Binding RoomName, Converter={StaticResource stringFormatter}, ConverterParameter='#{0}'}" FontSize="18"
 HorizontalAlignment="Center" LayoutTransform="{StaticResource sidewaysRoomName}" />
-                    </StackPanel>
-                  </Button.Content>
-                </Button>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Background="{DynamicResource BlackBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75*" />
+                <ColumnDefinition MaxWidth="300" Width="25*" MinWidth="180" />
+            </Grid.ColumnDefinitions>
+                <TextBox 
+                    Grid.Column="0"
+                    x:Name="SendText" 
+                    FontSize="14" 
+                    HorizontalAlignment="Stretch" 
+                    Margin="60,15,15,15" 
+                    Background="{DynamicResource BlackBrush}" 
+                    Foreground="{DynamicResource appBarTextBox}">
+                    <i:Interaction.Triggers>
+                        <Triggers:InputBindingTrigger>
+                            <Triggers:InputBindingTrigger.InputBinding>
+                                <KeyBinding Key="Enter" />
+                            </Triggers:InputBindingTrigger.InputBinding>
+                            <cal:ActionMessage MethodName="Send" />
+                        </Triggers:InputBindingTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+        </Grid>
     </Grid>
-    <Border HorizontalAlignment="Stretch" Grid.Row="1" Background="{DynamicResource BlackBrush}">
-      <StackPanel Orientation="Horizontal">
-        <!--<Button ToolTip="Join Room" Style="{StaticResource _appBarButton}" Height="45" Width="45" Foreground="{DynamicResource WhiteBrush}" VerticalAlignment="Top">
-                    <metro:MetroImage Height="20" Width="20" Source="{DynamicResource appbar_add}" />
-                </Button>-->
-        <!--<metro:AppBarButton MetroImageSource="{DynamicResource appbar_add}" />-->
-        <TextBox x:Name="SendText" Width="500" FontSize="14" HorizontalAlignment="Left" MinWidth="300"
-                 Margin="15,15,15,15" Background="{DynamicResource BlackBrush}" Foreground="{DynamicResource appBarTextBox}">
-          <i:Interaction.Triggers>
-            <Triggers:InputBindingTrigger>
-              <Triggers:InputBindingTrigger.InputBinding>
-                <KeyBinding Key="Enter" />
-              </Triggers:InputBindingTrigger.InputBinding>
-              <cal:ActionMessage MethodName="Send" />
-            </Triggers:InputBindingTrigger>
-          </i:Interaction.Triggers>
-        </TextBox>
-      </StackPanel>
-    </Border>
-  </Grid>
 </UserControl>
