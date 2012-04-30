@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using JabbR.Client;
 using System.Threading.Tasks;
-using Jabbr.WPF.Rooms;
-using System.Collections.Concurrent;
+using JabbR.Client;
 using JabbR.Client.Models;
+using Jabbr.WPF.Rooms;
+using Jabbr.WPF.Users;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
     public class RoomService : BaseService
     {
         private readonly JabbRClient _client;
-        private readonly UserService _userService;
-        private readonly ServiceLocator _serviceLocator;
+
         private readonly ConcurrentDictionary<string, RoomViewModel> _roomStore =
             new ConcurrentDictionary<string, RoomViewModel>();
+
+        private readonly ServiceLocator _serviceLocator;
+        private readonly UserService _userService;
 
         private DateTime _lastRoomsRetrieve;
 
         public RoomService(JabbRClient client, ServiceLocator serviceLocator, UserService userService)
-            : base()
         {
             _client = client;
             _serviceLocator = serviceLocator;
@@ -37,14 +38,12 @@ namespace Jabbr.WPF.Infrastructure.Services
             _client.UserTyping += OnUserTyping;
         }
 
-        
-
         public event EventHandler<JoiningRoomEventArgs> JoiningRoom;
         public event EventHandler<RoomsRetrievedEventArgs> RoomsRetrieved;
 
         public void JoinRooms(IEnumerable<Room> rooms)
         {
-            foreach (var room in rooms)
+            foreach (Room room in rooms)
             {
                 JoinRoom(room);
             }
@@ -52,7 +51,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public Task JoinRoom(Room room)
         {
-            var basicRoomVm = GetRoom(room);
+            RoomViewModel basicRoomVm = GetRoom(room);
             return JoinRoom(basicRoomVm);
         }
 
@@ -65,8 +64,8 @@ namespace Jabbr.WPF.Infrastructure.Services
             {
                 _client.GetRoomInfo(roomViewModel.RoomName).ContinueWith(details =>
                 {
-                    var roomInfo = details.Result;
-                    var roomVm = GetRoom(roomInfo.Name);
+                    Room roomInfo = details.Result;
+                    RoomViewModel roomVm = GetRoom(roomInfo.Name);
                     PostOnUi(() => roomVm.OnJoined(roomInfo));
                 });
             });
@@ -81,7 +80,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public void GetRooms()
         {
-            var timeSinceLastRetrieve = DateTime.Now.Subtract(_lastRoomsRetrieve);
+            TimeSpan timeSinceLastRetrieve = DateTime.Now.Subtract(_lastRoomsRetrieve);
             if (timeSinceLastRetrieve.TotalSeconds <= 30)
             {
                 OnRoomsRetrieved();
@@ -92,7 +91,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             _client.GetRooms().ContinueWith(roomsTask =>
             {
-                foreach (var room in roomsTask.Result)
+                foreach (Room room in roomsTask.Result)
                 {
                     GetRoom(room);
                 }
@@ -130,19 +129,19 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private void InvokeIfInRoom(string room, Action<RoomViewModel> toInvoke)
         {
-            var roomVm = GetRoom(room);
+            RoomViewModel roomVm = GetRoom(room);
             InvokeIfInRoom(roomVm, toInvoke);
         }
 
         private void InvokeIfInRoom(Room room, Action<RoomViewModel> toInvoke)
         {
-            var roomVm = GetRoom(room.Name);
+            RoomViewModel roomVm = GetRoom(room.Name);
             InvokeIfInRoom(roomVm, toInvoke);
         }
 
         private void InvokeIfInRoom(RoomViewModel room, Action<RoomViewModel> toInvoke)
         {
-            if(room == null || room.JoinState != JoinState.Joined)
+            if (room == null || room.JoinState != JoinState.Joined)
                 return;
 
             toInvoke(room);
@@ -152,77 +151,77 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private void OnJoiningRoom(RoomViewModel room)
         {
-            var handler = JoiningRoom;
+            EventHandler<JoiningRoomEventArgs> handler = JoiningRoom;
             if (handler != null)
                 PostOnUi(() => handler(this, new JoiningRoomEventArgs(room)));
         }
 
         private void OnRoomsRetrieved()
         {
-            var rooms = _roomStore.Select(x => x.Value).ToList();
+            List<RoomViewModel> rooms = _roomStore.Select(x => x.Value).ToList();
 
-            var handler = RoomsRetrieved;
+            EventHandler<RoomsRetrievedEventArgs> handler = RoomsRetrieved;
             if (handler != null)
                 PostOnUi(() => handler(this, new RoomsRetrievedEventArgs(rooms)));
         }
 
         private void OnUserTyping(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) =>
-                {
-                    var userVm = _userService.GetUserViewModel(user);
-                    if (userVm == null)
-                        return;
+            InvokeIfInRoom(room, roomVm =>
+            {
+                UserViewModel userVm = _userService.GetUserViewModel(user);
+                if (userVm == null)
+                    return;
 
-                    PostOnUi(() => roomVm.SetUserTyping(userVm));
-                });
+                PostOnUi(() => roomVm.SetUserTyping(userVm));
+            });
         }
 
         private void OnUserLeft(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) =>
-                {
-                    var userVm = _userService.GetUserViewModel(user.Name);
-                    if (userVm == null)
-                        return;
+            InvokeIfInRoom(room, roomVm =>
+            {
+                UserViewModel userVm = _userService.GetUserViewModel(user.Name);
+                if (userVm == null)
+                    return;
 
-                    PostOnUi(() => roomVm.UserLeft(userVm));
-                });
+                PostOnUi(() => roomVm.UserLeft(userVm));
+            });
         }
 
         private void OnUserJoined(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) =>
-                {
-                    var userVm = _userService.GetUserViewModel(user);
-                    PostOnUi(() => roomVm.AddUser(userVm));
-                });
+            InvokeIfInRoom(room, roomVm =>
+            {
+                UserViewModel userVm = _userService.GetUserViewModel(user);
+                PostOnUi(() => roomVm.AddUser(userVm));
+            });
         }
 
         private void OnTopicChanged(Room room)
         {
-            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.SetTopic(room.Topic)));
+            InvokeIfInRoom(room, roomVm => PostOnUi(() => roomVm.SetTopic(room.Topic)));
         }
 
         private void OnRoomCountChanged(Room room, int userCount)
         {
-            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.UserCount = userCount));
+            InvokeIfInRoom(room, roomVm => PostOnUi(() => roomVm.UserCount = userCount));
         }
 
         private void OnOwnerRemoved(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.RemoveOwner(user.Name)));
+            InvokeIfInRoom(room, roomVm => PostOnUi(() => roomVm.RemoveOwner(user.Name)));
         }
 
         private void OnOwnerAdded(User user, string room)
         {
-            InvokeIfInRoom(room, (roomVm) => PostOnUi(() => roomVm.AddOwner(user.Name)));
+            InvokeIfInRoom(room, roomVm => PostOnUi(() => roomVm.AddOwner(user.Name)));
         }
 
-        private void OnKicked(string s)
+        private void OnKicked(string room)
         {
             // TODO need to verify client implementation, this does not seem to provide enough informaton
-        } 
+        }
 
         #endregion
     }

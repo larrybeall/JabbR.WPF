@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Caliburn.Micro;
-using Jabbr.WPF.Infrastructure;
+﻿using Caliburn.Micro;
 
 namespace Jabbr.WPF.Users
 {
     public class UserViewModel : PropertyChangedBase
     {
-        private bool _isAway;
+        private string _gravatar;
         private bool _isAfk;
+        private bool _isAway;
+        private bool _isCurrentUser;
         private string _name;
         private string _note;
-        private string _gravatar;
-        private bool _isCurrentUser;
 
         public bool IsCurrentUser
         {
             get { return _isCurrentUser; }
             set
             {
-                if(_isCurrentUser == value)
+                if (_isCurrentUser == value)
                     return;
 
                 _isCurrentUser = value;

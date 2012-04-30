@@ -1,57 +1,45 @@
-﻿<Window x:Class="Jabbr.WPF.ShellView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window x:Class="Jabbr.WPF.ShellView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:metroControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:metroBehaviors="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
-        WindowState="Maximized"
-        Title="Jabbr"
-        Width="600" 
-        Height="400">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Window.Background>
-        <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
-            <GradientStop Color="#FFDEDEDE"/>
-            <GradientStop Color="White" Offset="1"/>
-        </LinearGradientBrush>
-    </Window.Background>
-    <i:Interaction.Behaviors>
-        <metroBehaviors:BorderlessWindowBehavior ResizeWithGrip="True" />
-    </i:Interaction.Behaviors>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Border 
-            Grid.Row="0"
-            Background="Transparent"
-            MouseDown="TitleBarMouseDown"
-            MouseMove="TitleBarMouseMove">
-            <TextBlock
-                Text="JABBR.WPF"
-                HorizontalAlignment="Left" 
-                TextTrimming="CharacterEllipsis"
-                VerticalAlignment="Center" 
-                Margin="8 -1 0 0" 
-                FontSize="16" 
-                FontFamily="{DynamicResource HeaderFontFamily}"
-                FontWeight="Bold"
-                Foreground="#FF000000"/>
-        </Border>
-        <metroControls:WindowCommands Grid.Row="0" HorizontalAlignment="Right" />
-        <ContentControl Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="ActiveItem" Focusable="False" FocusVisualStyle="{x:Null}"  />
-    </Grid>
+        xmlns:metroBehaviors="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro" WindowState="Maximized"
+        Title="Jabbr" Width="600" Height="400">
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary
+Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+        <ResourceDictionary
+Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+  <Window.Background>
+    <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
+      <GradientStop Color="#FFDEDEDE" />
+      <GradientStop Color="White" Offset="1" />
+    </LinearGradientBrush>
+  </Window.Background>
+  <i:Interaction.Behaviors>
+    <metroBehaviors:BorderlessWindowBehavior ResizeWithGrip="True" />
+  </i:Interaction.Behaviors>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Border Grid.Row="0" Background="Transparent" MouseDown="TitleBarMouseDown" MouseMove="TitleBarMouseMove">
+      <TextBlock Text="JABBR.WPF" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"
+                 VerticalAlignment="Center" Margin="8 -1 0 0" FontSize="16" FontFamily="{DynamicResource HeaderFontFamily}"
+                 FontWeight="Bold" Foreground="#FF000000" />
+    </Border>
+    <metroControls:WindowCommands Grid.Row="0" HorizontalAlignment="Right" />
+    <ContentControl Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="ActiveItem"
+                    Focusable="False" FocusVisualStyle="{x:Null}" />
+  </Grid>
 </Window>

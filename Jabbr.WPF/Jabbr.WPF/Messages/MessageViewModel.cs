@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Caliburn.Micro;
-using System.Windows.Documents;
 
 namespace Jabbr.WPF.Messages
 {
@@ -13,15 +9,13 @@ namespace Jabbr.WPF.Messages
         private string _messageId;
 
         protected MessageViewModel()
-            :base(false)
+            : base(false)
         {
-            
         }
 
         protected MessageViewModel(bool cacheViews)
             : base(cacheViews)
         {
-            
         }
 
         public DateTime MessageDateTime

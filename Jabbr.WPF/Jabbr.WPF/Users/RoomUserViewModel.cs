@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Jabbr.WPF.Infrastructure;
+﻿using System.ComponentModel;
 using Caliburn.Micro;
 
 namespace Jabbr.WPF.Users
@@ -11,13 +7,14 @@ namespace Jabbr.WPF.Users
     {
         private readonly UserViewModel _userViewModel;
 
-        private bool _isOwner;
         private GroupType _group;
+        private bool _isOwner;
         private bool _isTyping;
 
         public RoomUserViewModel(UserViewModel userViewModel)
         {
             _userViewModel = userViewModel;
+            _userViewModel.PropertyChanged += OnUserPropertyChanged;
             SetGroup();
         }
 
@@ -26,7 +23,7 @@ namespace Jabbr.WPF.Users
             get { return _isOwner; }
             set
             {
-                if(_isOwner == value)
+                if (_isOwner == value)
                     return;
 
                 _isOwner = value;
@@ -74,10 +71,10 @@ namespace Jabbr.WPF.Users
             get { return _isTyping; }
             set
             {
-                if(value)
+                if (value)
                     ResetTypingTimer();
 
-                if(_isTyping == value)
+                if (_isTyping == value)
                     return;
 
                 _isTyping = value;
@@ -90,7 +87,7 @@ namespace Jabbr.WPF.Users
             get { return _group; }
             set
             {
-                if(_group == value)
+                if (_group == value)
                     return;
 
                 _group = value;
@@ -103,9 +100,13 @@ namespace Jabbr.WPF.Users
             get { return _userViewModel; }
         }
 
+        private void OnUserPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            NotifyOfPropertyChange(propertyChangedEventArgs.PropertyName);
+        }
+
         private void ResetTypingTimer()
         {
-            
         }
 
         private void SetGroup()

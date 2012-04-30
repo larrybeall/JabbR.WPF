@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Caliburn.Micro;
-
-namespace Jabbr.WPF.Messages
+﻿namespace Jabbr.WPF.Messages
 {
     //public class MessageCollectionViewModel
     //{

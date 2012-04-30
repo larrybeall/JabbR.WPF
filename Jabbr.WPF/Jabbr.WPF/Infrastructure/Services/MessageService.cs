@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using Jabbr.WPF.Messages;
-using System.Threading;
-using HtmlToXamlConversion;
 using System.Threading.Tasks;
-using JabbR.Client.Models;
+using HtmlToXamlConversion;
 using JabbR.Client;
+using JabbR.Client.Models;
+using Jabbr.WPF.Messages;
 using Jabbr.WPF.Rooms;
+using Jabbr.WPF.Users;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
     public class MessageService : BaseService
     {
+        private readonly JabbRClient _client;
+        private readonly RoomService _roomService;
         private readonly ServiceLocator _serviceLocator;
         private readonly UserService _userService;
-        private readonly RoomService _roomService;
-        private readonly JabbRClient _client;
 
         public MessageService(
-            ServiceLocator serviceLocator, 
-            UserService userService, 
+            ServiceLocator serviceLocator,
+            UserService userService,
             JabbRClient client,
             RoomService roomService)
-            :base()
         {
             _serviceLocator = serviceLocator;
             _userService = userService;
@@ -35,14 +35,14 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public Task ProcessMessageAsync(string room, Message message)
         {
-            Task<ChatMessageViewModel> task = new Task<ChatMessageViewModel>(() =>
+            var task = new Task<ChatMessageViewModel>(() =>
             {
-                var msgVm = CreateMessageViewModel(message);
+                ChatMessageViewModel msgVm = CreateMessageViewModel(message);
                 return msgVm;
             });
 
             task.ContinueWith(completedTask => OnMessageProcessed(completedTask.Result, room),
-                                TaskContinuationOptions.OnlyOnRanToCompletion);
+                              TaskContinuationOptions.OnlyOnRanToCompletion);
             task.ContinueWith(ProcessTaskExceptions, TaskContinuationOptions.OnlyOnFaulted);
 
             task.Start();
@@ -56,7 +56,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public IEnumerable<ChatMessageViewModel> ProcessMessages(IEnumerable<Message> messages)
         {
-            var result = messages.AsParallel().Select(CreateMessageViewModel);
+            ParallelQuery<ChatMessageViewModel> result = messages.AsParallel().Select(CreateMessageViewModel);
 
             return result.OrderBy(x => x.MessageDateTime);
         }
@@ -68,9 +68,9 @@ namespace Jabbr.WPF.Infrastructure.Services
             if (exception == null)
                 return;
 
-            foreach (var innerException in exception.InnerExceptions)
+            foreach (Exception innerException in exception.InnerExceptions)
             {
-                System.Diagnostics.Trace.WriteLine(innerException.Message);
+                Trace.WriteLine(innerException.Message);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Jabbr.WPF.Infrastructure.Services
         {
             string content = ProcessEmoji(message.Content);
             var msgVm = _serviceLocator.GetViewModel<ChatMessageViewModel>();
-            var userVm = _userService.GetUserViewModel(message.User);
+            UserViewModel userVm = _userService.GetUserViewModel(message.User);
 
             msgVm.IsNotifying = false;
 
@@ -108,7 +108,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private void OnMessageProcessed(ChatMessageViewModel messageViewModel, string room)
         {
-            var roomViewModel = _roomService.GetRoom(room);
+            RoomViewModel roomViewModel = _roomService.GetRoom(room);
 
             PostOnUi(() => roomViewModel.ProcessMessage(messageViewModel));
         }

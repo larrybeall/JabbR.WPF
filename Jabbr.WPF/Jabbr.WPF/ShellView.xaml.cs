@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MahApps.Metro.Controls;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace Jabbr.WPF
@@ -15,9 +10,10 @@ namespace Jabbr.WPF
             InitializeComponent();
         }
 
-        private void TitleBarMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void TitleBarMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed && e.LeftButton == MouseButtonState.Pressed)
+            if (e.RightButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed &&
+                e.LeftButton == MouseButtonState.Pressed)
                 DragMove();
 
             if (e.ClickCount == 2 && (ResizeMode == ResizeMode.CanResizeWithGrip || ResizeMode == ResizeMode.CanResize))
@@ -34,13 +30,13 @@ namespace Jabbr.WPF
                 // Calcualting correct left coordinate for multi-screen system.
                 Point mouseAbsolute = PointToScreen(Mouse.GetPosition(this));
                 double width = RestoreBounds.Width;
-                double left = mouseAbsolute.X - width / 2;
+                double left = mouseAbsolute.X - width/2;
 
                 // Aligning window's position to fit the screen.
                 double virtualScreenWidth = SystemParameters.VirtualScreenWidth;
                 left = left + width > virtualScreenWidth ? virtualScreenWidth - width : left;
 
-                var mousePosition = e.MouseDevice.GetPosition(this);
+                Point mousePosition = e.MouseDevice.GetPosition(this);
 
                 // When dragging the window down at the very top of the border,
                 // move the window a bit upwards to avoid showing the resize handle as soon as the mouse button is released

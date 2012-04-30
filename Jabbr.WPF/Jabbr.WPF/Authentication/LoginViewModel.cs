@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Caliburn.Micro;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
-using Jabbr.WPF.Infrastructure;
-using Phoenix.Windows.Engage;
+using Caliburn.Micro;
 using Jabbr.WPF.Infrastructure.Services;
+using Phoenix.Windows.Engage;
 
 namespace Jabbr.WPF.Authentication
 {
@@ -15,12 +10,12 @@ namespace Jabbr.WPF.Authentication
     {
         private readonly AuthenticationService _authenticationService;
 
-        private string _username;
-        private string _password;
         private string _avatar;
-        private bool _showOpenIdPopup;
-        private bool _isAuthenticating;
         private bool _canLogin;
+        private bool _isAuthenticating;
+        private string _password;
+        private bool _showOpenIdPopup;
+        private string _username;
 
         public LoginViewModel(AuthenticationService authenticationService)
         {
@@ -60,7 +55,7 @@ namespace Jabbr.WPF.Authentication
             get { return _canLogin; }
             set
             {
-                if(_canLogin == value)
+                if (_canLogin == value)
                     return;
 
                 _canLogin = value;
@@ -73,7 +68,7 @@ namespace Jabbr.WPF.Authentication
             get { return _avatar; }
             set
             {
-                if(_avatar == value)
+                if (_avatar == value)
                     return;
 
                 _avatar = value;
@@ -86,7 +81,7 @@ namespace Jabbr.WPF.Authentication
             get { return _showOpenIdPopup; }
             set
             {
-                if(_showOpenIdPopup == value)
+                if (_showOpenIdPopup == value)
                     return;
 
                 _showOpenIdPopup = value;
@@ -99,7 +94,7 @@ namespace Jabbr.WPF.Authentication
             get { return _isAuthenticating; }
             set
             {
-                if(_isAuthenticating == value)
+                if (_isAuthenticating == value)
                     return;
 
                 _isAuthenticating = value;
@@ -125,7 +120,7 @@ namespace Jabbr.WPF.Authentication
 
         public void CloseOpenId(ICommand switchAccountsCommand)
         {
-            if(switchAccountsCommand.CanExecute(null))
+            if (switchAccountsCommand.CanExecute(null))
                 switchAccountsCommand.Execute(null);
 
             ShowOpenIdPopup = false;

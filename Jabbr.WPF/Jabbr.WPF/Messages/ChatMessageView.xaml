@@ -3,17 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
              xmlns:AttachedProperties="clr-namespace:Jabbr.WPF.Markup.AttachedProperties;assembly=JabbR.WPF.MarkUp">
-    <UserControl.Resources>
-        <Converters:DateTimeConverter x:Key="dateTimeConverter" />
-    </UserControl.Resources>
-    <Border>
-        <Grid Margin="0,0,0,3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="95" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" FontSize="14" AttachedProperties:TextBlockHelper.XamlString="{Binding RichContent}" TextWrapping="Wrap" />
-            <TextBlock Grid.Column="1" FontSize="14" Text="{Binding MessageDateTime, Converter={StaticResource dateTimeConverter}, ConverterParameter='T'}" />
-        </Grid>
-    </Border>
+  <UserControl.Resources>
+    <Converters:DateTimeConverter x:Key="dateTimeConverter" />
+  </UserControl.Resources>
+  <Border>
+    <Grid Margin="0,0,0,3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition Width="95" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0" FontSize="14"
+                 AttachedProperties:TextBlockHelper.XamlString="{Binding RichContent}" TextWrapping="Wrap" />
+      <TextBlock Grid.Column="1" FontSize="14"
+                 Text="{Binding MessageDateTime, Converter={StaticResource dateTimeConverter}, ConverterParameter='T'}" />
+    </Grid>
+  </Border>
 </UserControl>

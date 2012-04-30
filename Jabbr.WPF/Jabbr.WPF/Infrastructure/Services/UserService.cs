@@ -1,25 +1,21 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Jabbr.WPF.Users;
-using System.Threading;
-using JabbR.Client.Models;
-using System.Collections.Concurrent;
 using JabbR.Client;
+using JabbR.Client.Models;
+using Jabbr.WPF.Users;
 
 namespace Jabbr.WPF.Infrastructure.Services
 {
     public class UserService : BaseService
     {
         private const string GravatarUrlFormat = "http://www.gravatar.com/avatar/{0}?d=mm&s=75";
+        private readonly JabbRClient _client;
 
         private readonly ServiceLocator _serviceLocator;
         private readonly ConcurrentDictionary<string, UserViewModel> _users;
-        private readonly JabbRClient _client;
 
         public UserService(ServiceLocator serviceLocator, JabbRClient client)
-            : base()
         {
             _serviceLocator = serviceLocator;
             _client = client;
@@ -27,9 +23,10 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             _client.UserActivityChanged += OnUserActivityChanged;
             _client.NoteChanged += UserNoteChanged;
+            _client.UsersInactive += OnUsersInactive;
+            _client.GravatarChanged += OnGravatarChanged;
+            _client.UsernameChanged += OnUsernameChanged;
         }
-
-        public event EventHandler<UserJoinedEventArgs> UserJoined;
 
         public UserViewModel GetUserViewModel(string name)
         {
@@ -53,7 +50,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             toReturn.Name = user.Name;
             toReturn.IsAway = user.Status == UserStatus.Inactive || user.IsAfk;
             toReturn.Note = (user.IsAfk) ? user.AfkNote ?? user.Note : user.Note;
-            toReturn.Gravatar = string.Format(GravatarUrlFormat, user.Hash ?? "00000000000000000000000000000000");
+            toReturn.Gravatar = CreateGravatarUrl(user.Hash);
 
             toReturn.IsNotifying = true;
 
@@ -67,63 +64,66 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public void ProcessNoteChanged(User user)
         {
-            var userVm = GetUserViewModel(user.Name);
+            UserViewModel userVm = GetUserViewModel(user.Name);
 
-            if(userVm == null)
+            if (userVm == null)
                 return;
 
             userVm.SetNote(user.IsAfk, user.AfkNote, user.Note);
         }
 
-        public void ProcessUserJoined(User user, string room)
+        private string CreateGravatarUrl(string gravatarHash)
         {
-            UserViewModel userVm = GetUserViewModel(user);
-
-            PostOnUi(() =>
-            {
-                var handler = UserJoined;
-                if(handler != null)
-                    handler(this, new UserJoinedEventArgs(userVm, room));
-            });
+            return string.Format(GravatarUrlFormat, gravatarHash ?? "00000000000000000000000000000000");
         }
 
-        public void ProcessUsernameChange(User user, string oldUsername)
+        private void OnUserActivityChanged(User user)
         {
-            UserViewModel userVm = GetUserViewModel(oldUsername);
-
-            if(userVm == null)
-                return;
-
-            if (!_users.TryRemove(oldUsername, out  userVm))
-                return;
-
-            _users.TryAdd(user.Name, userVm);
-
-            PostOnUi(() =>
-            {
-                userVm.Name = user.Name;
-            });
-        }
-
-        private void OnUserActivityChanged(User user) 
-        {
-            var userVm = GetUserViewModel(user.Name);
+            UserViewModel userVm = GetUserViewModel(user.Name);
             if (userVm == null)
                 return;
 
-            PostOnUi(() =>
-            {
-                userVm.IsAway = user.Status == UserStatus.Inactive;
-            });
+            PostOnUi(() => { userVm.IsAway = user.Status == UserStatus.Inactive; });
         }
 
         private void UserNoteChanged(User user, string room)
         {
-            var userVm = GetUserViewModel(user.Name);
-            if(userVm == null)
+            UserViewModel userVm = GetUserViewModel(user.Name);
+            if (userVm == null)
                 return;
 
             PostOnUi(() => userVm.SetNote(user.IsAfk, user.AfkNote, user.Note));
+        }
+
+        private void OnUsersInactive(IEnumerable<User> users)
+        {
+            List<User> inactiveUsers = users.ToList();
+
+            PostOnUi(() => inactiveUsers.ForEach(_ => _.Status = UserStatus.Inactive));
+        }
+
+        private void OnGravatarChanged(User user, string room)
+        {
+            UserViewModel userVm = GetUserViewModel(user.Name);
+            if (userVm == null)
+                return;
+
+            PostOnUi(() => userVm.Gravatar = CreateGravatarUrl(user.Hash));
+        }
+
+        private void OnUsernameChanged(string oldUsername, User user, string arg3)
+        {
+            UserViewModel userVm = GetUserViewModel(oldUsername);
+
+            if (userVm == null)
+                return;
+
+            if (!_users.TryRemove(oldUsername, out userVm))
+                return;
+
+            _users.TryAdd(user.Name, userVm);
+
+            PostOnUi(() => { userVm.Name = user.Name; });
         }
     }
 }

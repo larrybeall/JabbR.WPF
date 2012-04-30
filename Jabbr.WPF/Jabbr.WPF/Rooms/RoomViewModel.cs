@@ -1,35 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Data;
+using System.Windows;
 using Caliburn.Micro;
-using Jabbr.WPF.Infrastructure;
+using JabbR.Client.Models;
+using Jabbr.WPF.Infrastructure.Services;
 using Jabbr.WPF.Messages;
 using Jabbr.WPF.Users;
-using System.ComponentModel;
-using System.Windows;
-using Jabbr.WPF.Infrastructure.Services;
-using JabbR.Client.Models;
 
 namespace Jabbr.WPF.Rooms
 {
     public class RoomViewModel : Screen
     {
         #region fields
-        
+
         private readonly MessageService _messageService;
+        private readonly IObservableCollection<MessageViewModel> _messages;
         private readonly RoomService _roomService;
         private readonly UserService _userService;
-        private readonly IObservableCollection<MessageViewModel> _messages; 
         private readonly IObservableCollection<RoomUserViewModel> _users;
-        private List<string> _owners; 
 
         private bool _isPrivate;
-        private int _userCount;
-        private int _unreadMessageCount;
-        private string _topic;
         private JoinState _joinState;
+        private List<string> _owners;
+        private string _topic;
+        private int _unreadMessageCount;
+        private int _userCount;
 
         #endregion
 
@@ -45,7 +40,7 @@ namespace Jabbr.WPF.Rooms
             _userService = userService;
             _messages = new BindableCollection<MessageViewModel>();
             _users = new BindableCollection<RoomUserViewModel>();
-        } 
+        }
 
         #endregion
 
@@ -143,7 +138,7 @@ namespace Jabbr.WPF.Rooms
         public IObservableCollection<RoomUserViewModel> Users
         {
             get { return _users; }
-        } 
+        }
 
         #endregion
 
@@ -151,7 +146,7 @@ namespace Jabbr.WPF.Rooms
 
         internal void Populate(Room roomDetails, bool suppressNotification = true)
         {
-            if(suppressNotification)
+            if (suppressNotification)
                 SetIsNotifying(false);
 
             RoomName = roomDetails.Name;
@@ -159,13 +154,13 @@ namespace Jabbr.WPF.Rooms
             UserCount = roomDetails.Count;
             Topic = roomDetails.Topic;
 
-            if(roomDetails.Owners != null)
+            if (roomDetails.Owners != null)
                 _owners = new List<string>(roomDetails.Owners);
 
             if (roomDetails.Users != null)
             {
                 int userCount = 0;
-                foreach (var user in roomDetails.Users)
+                foreach (User user in roomDetails.Users)
                 {
                     AddUser(user);
                     userCount = userCount + 1;
@@ -176,14 +171,15 @@ namespace Jabbr.WPF.Rooms
 
             if (roomDetails.RecentMessages != null && roomDetails.RecentMessages.Any())
             {
-                var messageViewModels = _messageService.ProcessMessages(roomDetails.RecentMessages);
-                foreach (var chatMessageViewModel in messageViewModels)
+                IEnumerable<ChatMessageViewModel> messageViewModels =
+                    _messageService.ProcessMessages(roomDetails.RecentMessages);
+                foreach (ChatMessageViewModel chatMessageViewModel in messageViewModels)
                 {
                     ProcessMessage(chatMessageViewModel, true);
                 }
             }
-            
-            if(suppressNotification)
+
+            if (suppressNotification)
                 SetIsNotifying(true);
         }
 
@@ -196,7 +192,7 @@ namespace Jabbr.WPF.Rooms
 
         internal void AddUser(UserViewModel userViewModel)
         {
-            if(_users.Any(x => x.User.Equals(userViewModel)))
+            if (_users.Any(x => x.User.Equals(userViewModel)))
                 return;
 
             var userVm = new RoomUserViewModel(userViewModel);
@@ -216,7 +212,7 @@ namespace Jabbr.WPF.Rooms
 
         internal void UserLeft(UserViewModel user)
         {
-            var leftUser = _users.FirstOrDefault(x => x.User.Equals(user));
+            RoomUserViewModel leftUser = _users.FirstOrDefault(x => x.User.Equals(user));
             if (leftUser != null)
                 _users.Remove(leftUser);
 
@@ -230,26 +226,26 @@ namespace Jabbr.WPF.Rooms
 
             _owners.Add(userName);
 
-            var userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
+            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
             if (userVm != null)
                 userVm.IsOwner = true;
         }
 
         internal void RemoveOwner(string userName)
         {
-            if(!_owners.Contains(userName))
+            if (!_owners.Contains(userName))
                 return;
 
             _owners.Remove(userName);
 
-            var userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
+            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
             if (userVm != null)
                 userVm.IsOwner = false;
         }
 
         internal void SetUserTyping(UserViewModel user)
         {
-            var userVm = _users.FirstOrDefault(x => x.User.Equals(user));
+            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.User.Equals(user));
             if (userVm != null)
                 userVm.IsTyping = true;
         }
@@ -258,14 +254,21 @@ namespace Jabbr.WPF.Rooms
         {
             viewModel.HasBeenSeen = IsRoomVisible(suppressUnreadNotifications);
 
-            ChatMessageGroupViewModel lastGroupMessage = _messages.LastOrDefault() as ChatMessageGroupViewModel;
+            var lastGroupMessage = _messages.LastOrDefault() as ChatMessageGroupViewModel;
             if (lastGroupMessage == null || !lastGroupMessage.TryAddMessage(viewModel))
             {
-                ChatMessageGroupViewModel groupViewModel = new ChatMessageGroupViewModel(viewModel);
+                var groupViewModel = new ChatMessageGroupViewModel(viewModel);
                 _messages.Add(groupViewModel);
             }
 
             UpdateUnreadMessageCount();
+        }
+
+        internal void Kicked()
+        {
+            LeaveRoom();
+
+            // TODO: Display warning that user has been kicked.
         }
 
         #endregion
@@ -277,7 +280,7 @@ namespace Jabbr.WPF.Rooms
             _roomService.LeaveRoom(this);
 
             TryClose();
-        } 
+        }
 
         #endregion
 
@@ -290,16 +293,11 @@ namespace Jabbr.WPF.Rooms
             _messages.IsNotifying = isNotifying;
         }
 
-        private void AddUser(JabbR.Client.Models.User user)
+        private void AddUser(User user)
         {
-            var userVm = _userService.GetUserViewModel(user);
+            UserViewModel userVm = _userService.GetUserViewModel(user);
 
             AddUser(userVm);
-        }
-
-        private bool VerifyRoomName(string roomName)
-        {
-            return roomName.Equals(RoomName, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private bool IsRoomVisible(bool isRoomInitializing = false)
@@ -307,7 +305,8 @@ namespace Jabbr.WPF.Rooms
             if (isRoomInitializing)
                 return true;
 
-            if (Application.Current.MainWindow.IsActive == false || Application.Current.MainWindow.WindowState == WindowState.Minimized)
+            if (Application.Current.MainWindow.IsActive == false ||
+                Application.Current.MainWindow.WindowState == WindowState.Minimized)
                 return false;
 
             return IsActive;
@@ -318,7 +317,7 @@ namespace Jabbr.WPF.Rooms
             int hasNotBeenSeenCount = _messages.OfType<IHasBeenSeen>().Count(x => !x.HasBeenSeen);
             UnreadMessageCount = _messages.OfType<ICanHaveUnreadMessages>().Sum(x => x.UnreadMessageCount) +
                                  hasNotBeenSeenCount;
-        } 
+        }
 
         #endregion
 
@@ -329,15 +328,16 @@ namespace Jabbr.WPF.Rooms
             base.OnActivate();
 
             // capture point in time
-            var hasUnreadMessags = _messages.OfType<ICanHaveUnreadMessages>().Where(x => x.HasUnreadMessages).ToList();
+            List<ICanHaveUnreadMessages> hasUnreadMessags =
+                _messages.OfType<ICanHaveUnreadMessages>().Where(x => x.HasUnreadMessages).ToList();
             hasUnreadMessags.ForEach(x => x.SetAllMessagesRead());
 
             // capture point in time
-            var unseenMessages = _messages.OfType<IHasBeenSeen>().Where(x => !x.HasBeenSeen).ToList();
+            List<IHasBeenSeen> unseenMessages = _messages.OfType<IHasBeenSeen>().Where(x => !x.HasBeenSeen).ToList();
             unseenMessages.ForEach(x => x.HasBeenSeen = true);
 
             UnreadMessageCount = 0;
-        } 
+        }
 
         #endregion
     }

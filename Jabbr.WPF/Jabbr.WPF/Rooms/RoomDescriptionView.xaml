@@ -2,15 +2,18 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp">
-    <UserControl.Resources>
-        <Converters:StringFormatConverter x:Key="stringFormatter" />
-    </UserControl.Resources>
-    <Grid HorizontalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
-        <TextBlock FontSize="18" HorizontalAlignment="Left" Grid.Row="0" Text="{Binding RoomName, Converter={StaticResource stringFormatter}, ConverterParameter='#{0}'}" TextTrimming="CharacterEllipsis" />
-        <TextBlock FontSize="14" Grid.Row="1" Text="{Binding UserCount, Converter={StaticResource stringFormatter}, ConverterParameter='Users: {0}'}" />
-    </Grid>
+  <UserControl.Resources>
+    <Converters:StringFormatConverter x:Key="stringFormatter" />
+  </UserControl.Resources>
+  <Grid HorizontalAlignment="Stretch">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+    </Grid.RowDefinitions>
+    <TextBlock FontSize="18" HorizontalAlignment="Left" Grid.Row="0"
+               Text="{Binding RoomName, Converter={StaticResource stringFormatter}, ConverterParameter='#{0}'}"
+               TextTrimming="CharacterEllipsis" />
+    <TextBlock FontSize="14" Grid.Row="1"
+               Text="{Binding UserCount, Converter={StaticResource stringFormatter}, ConverterParameter='Users: {0}'}" />
+  </Grid>
 </UserControl>

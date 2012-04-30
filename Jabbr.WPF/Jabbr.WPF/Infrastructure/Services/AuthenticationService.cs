@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using JabbR.Client;
-using Jabbr.WPF.Users;
 using JabbR.Client.Models;
-using System.Net;
-using System.IO;
+using Jabbr.WPF.Users;
 using Newtonsoft.Json.Linq;
 
 namespace Jabbr.WPF.Infrastructure.Services
@@ -15,36 +14,35 @@ namespace Jabbr.WPF.Infrastructure.Services
     public class AuthenticationService : BaseService
     {
         private readonly JabbRClient _client;
-        private readonly UserService _userService;
         private readonly RoomService _roomService;
+        private readonly UserService _userService;
 
         private LogOnInfo _logOnInfo;
 
         public AuthenticationService(
-            JabbRClient jabbrClient, 
+            JabbRClient jabbrClient,
             UserService userService,
             RoomService roomService)
-            : base()
         {
             _client = jabbrClient;
             _userService = userService;
             _roomService = roomService;
         }
 
-        public event EventHandler<LoginCompleteEventArgs> SignInComplete;
-
         public UserViewModel CurrentUser { get; private set; }
+        public event EventHandler<LoginCompleteEventArgs> SignInComplete;
 
         public Task<UserViewModel> SignIn(string token)
         {
-            TaskCompletionSource<UserViewModel> taskCompletionSource = new TaskCompletionSource<UserViewModel>();
+            var taskCompletionSource = new TaskCompletionSource<UserViewModel>();
 
-            var tokenAuthentication = Task.Factory.StartNew(() => AuthenticateToken(token));
+            Task<string> tokenAuthentication = Task.Factory.StartNew(() => AuthenticateToken(token));
             tokenAuthentication.ContinueWith(
-                failedTokenTask => HandleSigninException(failedTokenTask.Exception, taskCompletionSource), TaskContinuationOptions.OnlyOnFaulted);
+                failedTokenTask => HandleSigninException(failedTokenTask.Exception, taskCompletionSource),
+                TaskContinuationOptions.OnlyOnFaulted);
             tokenAuthentication.ContinueWith(tokenTask =>
             {
-                var signinTask = _client.Connect(tokenTask.Result);
+                Task<LogOnInfo> signinTask = _client.Connect(tokenTask.Result);
                 SetupSigninTaskContinuations(signinTask, taskCompletionSource);
             }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
@@ -53,7 +51,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         public Task<UserViewModel> SignIn(string username, string password)
         {
-            TaskCompletionSource<UserViewModel> signinTaskSource = new TaskCompletionSource<UserViewModel>();
+            var signinTaskSource = new TaskCompletionSource<UserViewModel>();
 
             SetupSigninTaskContinuations(_client.Connect(username, password), signinTaskSource);
 
@@ -65,15 +63,16 @@ namespace Jabbr.WPF.Infrastructure.Services
             _client.Disconnect();
         }
 
-        private void SetupSigninTaskContinuations(Task<LogOnInfo> signinTask, TaskCompletionSource<UserViewModel> taskCompletionSource)
+        private void SetupSigninTaskContinuations(Task<LogOnInfo> signinTask,
+                                                  TaskCompletionSource<UserViewModel> taskCompletionSource)
         {
             signinTask.ContinueWith(completedTask => CompleteSignin(completedTask.Result, taskCompletionSource),
                                     TaskContinuationOptions.OnlyOnRanToCompletion);
             signinTask.ContinueWith(failedTask => HandleSigninException(failedTask.Exception, taskCompletionSource),
-                                     TaskContinuationOptions.OnlyOnFaulted);
+                                    TaskContinuationOptions.OnlyOnFaulted);
 
             taskCompletionSource.Task.ContinueWith(
-                (completedSignin) => OnSigninComplete(completedSignin.Result, _logOnInfo.Rooms.Any()),
+                completedSignin => OnSigninComplete(completedSignin.Result, _logOnInfo.Rooms.Any()),
                 TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
@@ -81,8 +80,8 @@ namespace Jabbr.WPF.Infrastructure.Services
         {
             _logOnInfo = logOnInfo;
 
-            var userinfo = _client.GetUserInfo().Result;
-            var userviewModel = _userService.GetUserViewModel(userinfo);
+            User userinfo = _client.GetUserInfo().Result;
+            UserViewModel userviewModel = _userService.GetUserViewModel(userinfo);
             userviewModel.IsCurrentUser = true;
 
             _roomService.JoinRooms(logOnInfo.Rooms);
@@ -100,9 +99,9 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private string AuthenticateToken(string token)
         {
-            CookieContainer cookieContainer = new CookieContainer();
+            var cookieContainer = new CookieContainer();
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_client.SourceUrl + "/Auth/Login.ashx");
+            var request = (HttpWebRequest) WebRequest.Create(_client.SourceUrl + "/Auth/Login.ashx");
             request.CookieContainer = cookieContainer;
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
@@ -114,7 +113,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             Stream dataStream = request.GetRequestStream();
             dataStream.Write(postBytes, 0, postBytes.Length);
             dataStream.Close();
-            var response = request.GetResponse();
+            WebResponse response = request.GetResponse();
             response.Close();
 
             CookieCollection cookies = cookieContainer.GetCookies(new Uri(_client.SourceUrl));
@@ -122,13 +121,13 @@ namespace Jabbr.WPF.Infrastructure.Services
 
             JObject jsonObject = JObject.Parse(cookieValue);
 
-            return (string)jsonObject["userId"];
+            return (string) jsonObject["userId"];
         }
 
         private void OnSigninComplete(UserViewModel user, bool hasJoinedRooms)
         {
-            var handler = SignInComplete;
-            if(handler != null)
+            EventHandler<LoginCompleteEventArgs> handler = SignInComplete;
+            if (handler != null)
                 PostOnUi(() => handler(this, new LoginCompleteEventArgs(user, hasJoinedRooms)));
         }
     }

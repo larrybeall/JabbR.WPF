@@ -5,101 +5,92 @@
              xmlns:converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
              xmlns:phx="clr-namespace:Phoenix.Windows.Engage;assembly=Phoenix.Windows.Engage"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:AttachedProperties="clr-namespace:Jabbr.WPF.Markup.AttachedProperties;assembly=JabbR.WPF.MarkUp"
-             x:Name="uiThis"
+             xmlns:AttachedProperties="clr-namespace:Jabbr.WPF.Markup.AttachedProperties;assembly=JabbR.WPF.MarkUp" x:Name="uiThis"
              Width="500" Height="255">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Resources/Icons.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            
-            <converters:InverseBooleanToVisibilityConverter x:Key="inverseBoolToVis" />
-            <converters:BooleanToVisibilityConverter x:Key="boolToVis" />
-        </ResourceDictionary>
-    </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Resources/Icons.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <converters:InverseBooleanToVisibilityConverter x:Key="inverseBoolToVis" />
+      <converters:BooleanToVisibilityConverter x:Key="boolToVis" />
+    </ResourceDictionary>
+  </UserControl.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="200" />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="32">Login</TextBlock>
+    <Image Grid.Column="0" Grid.Row="1" Width="200" Height="200" x:Name="Avatar" />
+    <StackPanel Grid.Column="1" Grid.Row="1"
+                Visibility="{Binding IsAuthenticating, Converter={StaticResource inverseBoolToVis}}">
+      <TextBlock FontSize="13" Margin="5 0">Username:</TextBlock>
+      <TextBox x:Name="Username" Height="36" Padding="0 4" FontSize="16" Margin="5" />
+      <TextBlock FontSize="13" Margin="5 0">Password:</TextBlock>
+      <PasswordBox Height="36" Padding="0 4" FontSize="18" Margin="5"
+                   AttachedProperties:PasswordHelper.Password="{Binding Password, Mode=TwoWay}" />
+      <Button x:Name="Login" Style="{DynamicResource SquareButtonStyle}" Content="Login" Width="120"
+              HorizontalAlignment="Center" Margin="5 0" />
+      <TextBlock Text="OR" Margin="5" HorizontalAlignment="Center" />
+      <Button x:Name="ShowOpenId" Style="{DynamicResource SquareButtonStyle}" Content="Open Id" Width="120"
+              HorizontalAlignment="Center" Margin="5 0" />
+    </StackPanel>
+    <StackPanel Grid.Column="1" Grid.Row="1"
+                Visibility="{Binding IsAuthenticating, Converter={StaticResource boolToVis}}" VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+      <TextBlock Text="Authenticating" FontSize="28" Margin="5" />
+      <metro:ProgressIndicator ProgressColour="{StaticResource AccentColorBrush}" Height="6" Width="120"
+                               HorizontalAlignment="Center" />
+    </StackPanel>
+    <Popup IsOpen="{Binding ShowOpenIdPopup}" PlacementTarget="{Binding ElementName=uiThis}" Placement="Center">
+      <Border BorderThickness="1" BorderBrush="LightGray">
+        <Border.Background>
+          <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
+            <GradientStop Color="#FFDEDEDE" />
+            <GradientStop Color="White" Offset="1" />
+          </LinearGradientBrush>
+        </Border.Background>
+        <Grid>
+          <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="32">Login</TextBlock>
-        <Image Grid.Column="0" Grid.Row="1" Width="200" Height="200" x:Name="Avatar" />
-        <StackPanel Grid.Column="1" Grid.Row="1" Visibility="{Binding IsAuthenticating, Converter={StaticResource inverseBoolToVis}}">
-            <TextBlock FontSize="13" Margin="5 0">Username:</TextBlock>
-            <TextBox x:Name="Username" Height="36" Padding="0 4" FontSize="16" Margin="5" />
-            <TextBlock FontSize="13" Margin="5 0">Password:</TextBlock>
-            <PasswordBox Height="36" Padding="0 4" FontSize="18" Margin="5" AttachedProperties:PasswordHelper.Password="{Binding Password, Mode=TwoWay}" />
-            <Button x:Name="Login" Style="{DynamicResource SquareButtonStyle}" Content="Login" Width="120" HorizontalAlignment="Center" Margin="5 0" />
-            <TextBlock Text="OR" Margin="5" HorizontalAlignment="Center" />
-            <Button x:Name="ShowOpenId" Style="{DynamicResource SquareButtonStyle}" Content="Open Id" Width="120" HorizontalAlignment="Center" Margin="5 0" />
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1" Visibility="{Binding IsAuthenticating, Converter={StaticResource boolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="Authenticating" FontSize="28" Margin="5" />
-            <metro:ProgressIndicator ProgressColour="{StaticResource AccentColorBrush}" Height="6" Width="120" HorizontalAlignment="Center" />
-        </StackPanel>
-        <Popup IsOpen="{Binding ShowOpenIdPopup}" PlacementTarget="{Binding ElementName=uiThis}" Placement="Center">
-            <Border BorderThickness="1" BorderBrush="LightGray">
-                <Border.Background>
-                    <LinearGradientBrush MappingMode="Absolute" StartPoint="0,0" EndPoint="0,150">
-                        <GradientStop Color="#FFDEDEDE"/>
-                        <GradientStop Color="White" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Button 
-                        Width="16" 
-                        Height="16" 
-                        HorizontalAlignment="Left"
-                        Command="{Binding Path=SwitchAccounts, ElementName=AuthWidget}">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ChromelessButtonStyle}">
-                                <Setter Property="Visibility" Value="Visible" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Rectangle 
-                            Width="16" 
-                            Height="16">
-                            <Rectangle.Fill>
-                                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_arrow_left}" />
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Button>
-                    <Button 
-                        Grid.Row="0" 
-                        ToolTip="Close"
-                        HorizontalAlignment="Right" 
-                        Style="{DynamicResource ChromelessButtonStyle}" 
-                        Content="r" 
-                        FontFamily="Marlett"
-                        FontWeight="Bold"
-                        cal:Message.Attach="CloseOpenId(AuthWidget.SwitchAccounts)"/>
-                    <phx:EngageWidget
-                        x:Name="AuthWidget"
-                        Grid.Row="1" 
-                        ApplicationName="jabbr" 
-                        Width="392" 
-                        Height="156"
-                        cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($eventArgs)]"/>
-                </Grid>
-            </Border>
-        </Popup>
-    </Grid>
-    
+          </Grid.RowDefinitions>
+          <Button Width="16" Height="16" HorizontalAlignment="Left"
+                  Command="{Binding Path=SwitchAccounts, ElementName=AuthWidget}">
+            <Button.Style>
+              <Style TargetType="Button" BasedOn="{StaticResource ChromelessButtonStyle}">
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                  <DataTrigger
+Binding="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self}}" Value="False">
+                    <Setter Property="Visibility" Value="Hidden" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Button.Style>
+            <Rectangle Width="16" Height="16">
+              <Rectangle.Fill>
+                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_arrow_left}" />
+              </Rectangle.Fill>
+            </Rectangle>
+          </Button>
+          <Button Grid.Row="0" ToolTip="Close" HorizontalAlignment="Right"
+                  Style="{DynamicResource ChromelessButtonStyle}" Content="r" FontFamily="Marlett" FontWeight="Bold"
+                  cal:Message.Attach="CloseOpenId(AuthWidget.SwitchAccounts)" />
+          <phx:EngageWidget x:Name="AuthWidget" Grid.Row="1" ApplicationName="jabbr" Width="392" Height="156"
+                            cal:Message.Attach="[Event TokenReceived] = [Action OnTokenReceived($eventArgs)]" />
+        </Grid>
+      </Border>
+    </Popup>
+  </Grid>
+
 </UserControl>

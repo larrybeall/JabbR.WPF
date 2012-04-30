@@ -1,37 +1,38 @@
-﻿<UserControl x:Class="Jabbr.WPF.Users.UserView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl x:Class="Jabbr.WPF.Users.UserView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp"
-             Margin="2.5" x:Name="uiThis">
-    <UserControl.Resources>
-        <Converters:DebugConverter x:Key="debugConverter" />
-    </UserControl.Resources>
-    <Border BorderThickness="1">
-        <Border.Style>
-            <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush4}" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
-        <Border.Background>
-            <ImageBrush ImageSource="{Binding Gravatar}" />
-        </Border.Background>
-        <Border VerticalAlignment="Bottom">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource GrayBrush4}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="{Binding Name}" />
-        </Border>
+             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp" Margin="2.5" x:Name="uiThis">
+  <UserControl.Resources>
+    <Converters:DebugConverter x:Key="debugConverter" />
+    <SolidColorBrush Color="#FFA9A9A9" x:Key="awayNameGutterBrush" />
+  </UserControl.Resources>
+  <Border BorderThickness="1">
+    <Border.Style>
+      <Style TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
+            <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush11}" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </Border.Style>
+    <Border.Background>
+      <ImageBrush ImageSource="{Binding Gravatar}" />
+    </Border.Background>
+    <Border>
+      <Border.Style>
+        <Style TargetType="Border">
+          <Setter Property="Background" Value="Transparent" />
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
+              <Setter Property="Background" Value="{DynamicResource GrayBrush11}" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </Border.Style>
+      <Border VerticalAlignment="Bottom" Background="{DynamicResource AccentColorBrush}">
+        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="{Binding Name}" />
+      </Border>
     </Border>
+  </Border>
 </UserControl>

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using Caliburn.Micro;
 using Jabbr.WPF.Users;
 
@@ -14,7 +15,7 @@ namespace Jabbr.WPF.Messages
         private int _unreadMessageCount;
 
         public ChatMessageGroupViewModel(ChatMessageViewModel message)
-            :base(false)
+            : base(false)
         {
             IsNotifying = false;
 
@@ -28,15 +29,6 @@ namespace Jabbr.WPF.Messages
             IsNotifying = true;
         }
 
-        private void MessagesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            if (notifyCollectionChangedEventArgs.Action != NotifyCollectionChangedAction.Add) return;
-
-            int totalNewItems = notifyCollectionChangedEventArgs.NewItems.Count;
-            var lastItem = (ChatMessageViewModel) notifyCollectionChangedEventArgs.NewItems[totalNewItems - 1];
-            LastMessageDateTime = lastItem.MessageDateTime;
-        }
-
         public IObservableCollection<ChatMessageViewModel> Messages
         {
             get { return _messages; }
@@ -47,12 +39,27 @@ namespace Jabbr.WPF.Messages
             get { return _user; }
         }
 
+        public DateTime LastMessageDateTime
+        {
+            get { return _lastMessageDateTime; }
+            private set
+            {
+                if (_lastMessageDateTime == value)
+                    return;
+
+                _lastMessageDateTime = value;
+                NotifyOfPropertyChange(() => LastMessageDateTime);
+            }
+        }
+
+        #region ICanHaveUnreadMessages Members
+
         public int UnreadMessageCount
         {
             get { return _unreadMessageCount; }
             private set
             {
-                if(_unreadMessageCount == value)
+                if (_unreadMessageCount == value)
                     return;
 
                 _unreadMessageCount = value;
@@ -66,17 +73,26 @@ namespace Jabbr.WPF.Messages
             get { return _unreadMessageCount > 0; }
         }
 
-        public DateTime LastMessageDateTime
+        public void SetAllMessagesRead()
         {
-            get { return _lastMessageDateTime; }
-            private set
+            // capture point of time view
+            List<ChatMessageViewModel> unseenMessages = _messages.Where(x => !x.HasBeenSeen).ToList();
+            foreach (ChatMessageViewModel chatMessageViewModel in unseenMessages)
             {
-                if(_lastMessageDateTime == value)
-                    return;
-
-                _lastMessageDateTime = value;
-                NotifyOfPropertyChange(() => LastMessageDateTime);
+                chatMessageViewModel.HasBeenSeen = true;
             }
+        }
+
+        #endregion
+
+        private void MessagesOnCollectionChanged(object sender,
+                                                 NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            if (notifyCollectionChangedEventArgs.Action != NotifyCollectionChangedAction.Add) return;
+
+            int totalNewItems = notifyCollectionChangedEventArgs.NewItems.Count;
+            var lastItem = (ChatMessageViewModel) notifyCollectionChangedEventArgs.NewItems[totalNewItems - 1];
+            LastMessageDateTime = lastItem.MessageDateTime;
         }
 
         public bool TryAddMessage(ChatMessageViewModel message)
@@ -87,16 +103,6 @@ namespace Jabbr.WPF.Messages
             _messages.Add(message);
             UnreadMessageCount = _messages.Count(x => !x.HasBeenSeen);
             return true;
-        }
-
-        public void SetAllMessagesRead()
-        {
-            // capture point of time view
-            var unseenMessages = _messages.Where(x => !x.HasBeenSeen).ToList();
-            foreach (var chatMessageViewModel in unseenMessages)
-            {
-                chatMessageViewModel.HasBeenSeen = true;
-            }
         }
     }
 }

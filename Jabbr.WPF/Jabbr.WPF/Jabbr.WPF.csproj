@@ -114,7 +114,6 @@
     <Compile Include="Messages\ChatMessageViewModel.cs" />
     <Compile Include="Messages\MessageCollectionViewModel.cs" />
     <Compile Include="Messages\MessageViewModel.cs" />
-    <Compile Include="Infrastructure\SignInCompleteEventArgs.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="NinjectBootstrapper.cs" />
     <Compile Include="Rooms\ChatWindowView.xaml.cs">
@@ -146,7 +145,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IShell.cs" />
     <Page Include="Authentication\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

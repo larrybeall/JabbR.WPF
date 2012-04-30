@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Caliburn.Micro;
+using JabbR.Client;
 using Jabbr.WPF.Infrastructure;
 using Jabbr.WPF.Infrastructure.Services;
-using JabbR.Client;
 
 namespace Jabbr.WPF.Rooms
 {
     public class ChatWindowViewModel : Conductor<RoomViewModel>.Collection.OneActive
     {
+        private readonly JabbRClient _client;
         private readonly RoomService _roomService;
         private readonly ServiceLocator _serviceLocator;
-        private readonly JabbRClient _client;
-        private string _sendText;
         private IEnumerable<RoomViewModel> _availableRooms;
         private RoomViewModel _selectedRoom;
+        private string _sendText;
 
         public ChatWindowViewModel(RoomService roomService, ServiceLocator serviceLocator, JabbRClient client)
         {
@@ -32,7 +29,7 @@ namespace Jabbr.WPF.Rooms
             get { return _sendText; }
             set
             {
-                if(_sendText == value)
+                if (_sendText == value)
                     return;
 
                 _sendText = value;
@@ -50,7 +47,7 @@ namespace Jabbr.WPF.Rooms
             get { return _selectedRoom; }
             set
             {
-                if(_selectedRoom == value)
+                if (_selectedRoom == value)
                     return;
 
                 _selectedRoom = value;
@@ -60,7 +57,7 @@ namespace Jabbr.WPF.Rooms
 
         public void OnRoomSelected()
         {
-            if(SelectedRoom == null)
+            if (SelectedRoom == null)
                 return;
 
             _roomService.JoinRoom(SelectedRoom);
@@ -88,7 +85,7 @@ namespace Jabbr.WPF.Rooms
 
         public void Send()
         {
-            if(string.IsNullOrEmpty(SendText))
+            if (string.IsNullOrEmpty(SendText))
                 return;
 
             _client.Send(SendText, ActiveItem.DisplayName);

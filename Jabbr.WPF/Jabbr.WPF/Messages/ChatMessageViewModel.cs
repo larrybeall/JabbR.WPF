@@ -1,38 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Jabbr.WPF.Infrastructure;
-using Caliburn.Micro;
-using Jabbr.WPF.Users;
-using System.Windows.Documents;
+﻿using Jabbr.WPF.Users;
 
 namespace Jabbr.WPF.Messages
 {
     public class ChatMessageViewModel : MessageViewModel, IHasBeenSeen
     {
         private bool _hasBeenSeen;
-        private UserViewModel _user;
         private string _rawContent;
         private string _richContent;
+        private UserViewModel _user;
 
         public ChatMessageViewModel()
-            :base(true)
+            : base(true)
         {
-            
-        }
-
-        public bool HasBeenSeen
-        {
-            get { return _hasBeenSeen; }
-            set
-            {
-                if(_hasBeenSeen == value)
-                    return;
-
-                _hasBeenSeen = value;
-                NotifyOfPropertyChange(() => HasBeenSeen);
-            }
         }
 
         public UserViewModel User
@@ -40,7 +19,7 @@ namespace Jabbr.WPF.Messages
             get { return _user; }
             set
             {
-                if(_user == value)
+                if (_user == value)
                     return;
 
                 _user = value;
@@ -79,5 +58,22 @@ namespace Jabbr.WPF.Messages
         {
             get { return RichContent != null; }
         }
+
+        #region IHasBeenSeen Members
+
+        public bool HasBeenSeen
+        {
+            get { return _hasBeenSeen; }
+            set
+            {
+                if (_hasBeenSeen == value)
+                    return;
+
+                _hasBeenSeen = value;
+                NotifyOfPropertyChange(() => HasBeenSeen);
+            }
+        }
+
+        #endregion
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
-using Jabbr.WPF.Infrastructure;
+using System.Windows;
 using Caliburn.Micro;
 using Jabbr.WPF.Infrastructure.Services;
 
@@ -32,10 +27,12 @@ namespace Jabbr.WPF
             _authenticationService = IoC.Get<AuthenticationService>();
         }
 
-        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+        private void TaskSchedulerOnUnobservedTaskException(object sender,
+                                                            UnobservedTaskExceptionEventArgs
+                                                                unobservedTaskExceptionEventArgs)
         {
-            if(System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debug.WriteLine(unobservedTaskExceptionEventArgs.Exception.Message);
+            if (Debugger.IsAttached)
+                Debug.WriteLine(unobservedTaskExceptionEventArgs.Exception.Message);
             else
             {
                 MessageBox.Show(unobservedTaskExceptionEventArgs.Exception.Message);

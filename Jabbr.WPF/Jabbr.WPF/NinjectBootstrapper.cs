@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Caliburn.Micro;
-using Ninject;
-using System.Reflection;
 using System.IO;
-using Jabbr.WPF.Infrastructure;
-using Jabbr.WPF.Infrastructure.Services;
+using System.Linq;
+using System.Reflection;
+using Caliburn.Micro;
 using JabbR.Client;
+using Jabbr.WPF.Infrastructure.Services;
+using Ninject;
 using SignalR.Client.Transports;
 
 namespace Jabbr.WPF
@@ -21,15 +19,15 @@ namespace Jabbr.WPF
         {
             _kernel = new StandardKernel();
             _kernel.Load(Assembly.GetExecutingAssembly());
-            
-            if(Directory.Exists(@".\modules"))
+
+            if (Directory.Exists(@".\modules"))
                 _kernel.Load(@".\modules\*.dll");
 
-            var assemblies = _kernel.GetModules()
+            IEnumerable<Assembly> assemblies = _kernel.GetModules()
                 .Select(module => module.GetType().Assembly)
                 .Distinct();
 
-            var toObserve = assemblies.Except(AssemblySource.Instance);
+            IEnumerable<Assembly> toObserve = assemblies.Except(AssemblySource.Instance);
 
             AssemblySource.Instance.AddRange(toObserve);
 
@@ -38,7 +36,7 @@ namespace Jabbr.WPF
 
         protected override object GetInstance(Type service, string key)
         {
-            var instance = _kernel.Get(service, key);
+            object instance = _kernel.Get(service, key);
             return instance;
         }
 
