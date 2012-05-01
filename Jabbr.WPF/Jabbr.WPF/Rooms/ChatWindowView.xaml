@@ -193,7 +193,8 @@ HorizontalAlignment="Center" LayoutTransform="{StaticResource sidewaysRoomName}"
                     HorizontalAlignment="Stretch" 
                     Margin="60,15,15,15" 
                     Background="{DynamicResource BlackBrush}" 
-                    Foreground="{DynamicResource appBarTextBox}">
+                    Foreground="{DynamicResource appBarTextBox}"
+                    cal:Message.Attach="[Event KeyDown] = [Action SetTyping($eventArgs)]">
                     <i:Interaction.Triggers>
                         <Triggers:InputBindingTrigger>
                             <Triggers:InputBindingTrigger.InputBinding>

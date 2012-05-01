@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
 using Caliburn.Micro;
 using JabbR.Client;
 using Jabbr.WPF.Infrastructure;
@@ -64,6 +66,36 @@ namespace Jabbr.WPF.Rooms
             SelectedRoom = null;
         }
 
+        public void Send()
+        {
+            if (string.IsNullOrEmpty(SendText))
+                return;
+
+            _client.Send(SendText, ActiveItem.DisplayName);
+            SendText = null;
+        }
+
+        public void SetTyping(KeyEventArgs args)
+        {
+            if (ActiveItem == null)
+                return;
+
+            switch (args.Key)
+            {
+                case Key.Up:
+                case Key.Down:
+                case Key.Escape:
+                case Key.Enter:
+                case Key.Tab:
+                // this shows a the forward slash key
+                case Key.Oem2:
+                    break;
+                default:
+                    ActiveItem.SetTyping();
+                    break;
+            }
+        }
+
         private void Initialize()
         {
             DisplayName = "Chat Window";
@@ -81,15 +113,6 @@ namespace Jabbr.WPF.Rooms
         private void OnJoiningRoom(object sender, JoiningRoomEventArgs joiningRoomEventArgs)
         {
             ActivateItem(joiningRoomEventArgs.Room);
-        }
-
-        public void Send()
-        {
-            if (string.IsNullOrEmpty(SendText))
-                return;
-
-            _client.Send(SendText, ActiveItem.DisplayName);
-            SendText = null;
         }
     }
 }

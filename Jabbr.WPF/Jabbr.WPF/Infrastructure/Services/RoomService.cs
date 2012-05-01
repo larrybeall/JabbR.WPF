@@ -127,6 +127,11 @@ namespace Jabbr.WPF.Infrastructure.Services
             return toReturn;
         }
 
+        public void SetTyping(string room)
+        {
+            _client.SetTyping(room);
+        }
+
         private void InvokeIfInRoom(string room, Action<RoomViewModel> toInvoke)
         {
             RoomViewModel roomVm = GetRoom(room);
@@ -170,7 +175,7 @@ namespace Jabbr.WPF.Infrastructure.Services
             InvokeIfInRoom(room, roomVm =>
             {
                 UserViewModel userVm = _userService.GetUserViewModel(user);
-                if (userVm == null)
+                if (userVm == null || userVm.IsCurrentUser)
                     return;
 
                 PostOnUi(() => roomVm.SetUserTyping(userVm));
@@ -220,7 +225,7 @@ namespace Jabbr.WPF.Infrastructure.Services
 
         private void OnKicked(string room)
         {
-            // TODO need to verify client implementation, this does not seem to provide enough informaton
+            InvokeIfInRoom(room, roomVm => PostOnUi(roomVm.Kicked));
         }
 
         #endregion

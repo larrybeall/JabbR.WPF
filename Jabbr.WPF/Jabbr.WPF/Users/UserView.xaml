@@ -1,38 +1,64 @@
 ﻿<UserControl x:Class="Jabbr.WPF.Users.UserView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Converters="clr-namespace:Jabbr.WPF.Markup.Converters;assembly=JabbR.WPF.MarkUp" Margin="2.5" x:Name="uiThis">
-  <UserControl.Resources>
-    <Converters:DebugConverter x:Key="debugConverter" />
-    <SolidColorBrush Color="#FFA9A9A9" x:Key="awayNameGutterBrush" />
-  </UserControl.Resources>
-  <Border BorderThickness="1">
-    <Border.Style>
-      <Style TargetType="Border">
-        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-        <Style.Triggers>
-          <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
-            <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush11}" />
-          </DataTrigger>
-        </Style.Triggers>
-      </Style>
-    </Border.Style>
-    <Border.Background>
-      <ImageBrush ImageSource="{Binding Gravatar}" />
-    </Border.Background>
-    <Border>
-      <Border.Style>
-        <Style TargetType="Border">
-          <Setter Property="Background" Value="Transparent" />
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding IsAway, Converter={StaticResource debugConverter}}" Value="True">
-              <Setter Property="Background" Value="{DynamicResource GrayBrush11}" />
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Border.Style>
-      <Border VerticalAlignment="Bottom" Background="{DynamicResource AccentColorBrush}">
-        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="{Binding Name}" />
-      </Border>
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options" 
+             Margin="2.5" x:Name="uiThis">
+    <UserControl.Resources>
+        <BlurEffect x:Key="imageAwayEffect" Radius="3" PresentationOptions:Freeze="True" />
+    </UserControl.Resources>
+    <Border Opacity="1" BorderThickness="1">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding User.IsAway}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource GrayBrush11}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush11}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding User.Gravatar}">
+                <Image.Style>
+                    <Style TargetType="Image">
+                        <Setter Property="Effect" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding User.IsAway}" Value="True">
+                                <Setter Property="Effect" Value="{StaticResource imageAwayEffect}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsTyping}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <Border Background="{DynamicResource AccentColorBrush}" Width="30" Height="20" />
+                <Border Margin="5,0,0,0" HorizontalAlignment="Left">
+                    <Polygon Fill="{DynamicResource AccentColorBrush}">
+                        <Polygon.Points>
+                            <Point X="0" Y="0" />
+                            <Point X="0" Y="7" />
+                            <Point X="9" Y="0" />
+                        </Polygon.Points>
+                    </Polygon>
+                </Border>
+            </StackPanel>
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding User.Name}" />
+        </Grid>
     </Border>
-  </Border>
 </UserControl>
+    

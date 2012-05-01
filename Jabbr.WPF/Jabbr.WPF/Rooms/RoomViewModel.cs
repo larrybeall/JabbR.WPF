@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using Caliburn.Micro;
 using JabbR.Client.Models;
 using Jabbr.WPF.Infrastructure.Services;
@@ -18,6 +20,7 @@ namespace Jabbr.WPF.Rooms
         private readonly RoomService _roomService;
         private readonly UserService _userService;
         private readonly IObservableCollection<RoomUserViewModel> _users;
+        private DispatcherTimer _typingTimer;
 
         private bool _isPrivate;
         private JoinState _joinState;
@@ -25,6 +28,7 @@ namespace Jabbr.WPF.Rooms
         private string _topic;
         private int _unreadMessageCount;
         private int _userCount;
+        private bool _isTyping;
 
         #endregion
 
@@ -187,6 +191,12 @@ namespace Jabbr.WPF.Rooms
         {
             Populate(roomDetails, false);
 
+            // ReSharper disable UseObjectOrCollectionInitializer
+            _typingTimer = new DispatcherTimer();
+            // ReSharper restore UseObjectOrCollectionInitializer
+            _typingTimer.Interval = TimeSpan.FromSeconds(3);
+            _typingTimer.Tick += TypingExpired;
+
             JoinState = JoinState.Joined;
         }
 
@@ -196,7 +206,7 @@ namespace Jabbr.WPF.Rooms
                 return;
 
             var userVm = new RoomUserViewModel(userViewModel);
-            userVm.IsOwner = _owners.Any(x => x.Equals(userVm.Name));
+            userVm.IsOwner = _owners.Any(x => x.Equals(userVm.User.Name));
 
             _users.Add(userVm);
 
@@ -226,7 +236,7 @@ namespace Jabbr.WPF.Rooms
 
             _owners.Add(userName);
 
-            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
+            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.User.Name.Equals(userName));
             if (userVm != null)
                 userVm.IsOwner = true;
         }
@@ -238,7 +248,7 @@ namespace Jabbr.WPF.Rooms
 
             _owners.Remove(userName);
 
-            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.Name.Equals(userName));
+            RoomUserViewModel userVm = _users.FirstOrDefault(x => x.User.Name.Equals(userName));
             if (userVm != null)
                 userVm.IsOwner = false;
         }
@@ -271,6 +281,16 @@ namespace Jabbr.WPF.Rooms
             // TODO: Display warning that user has been kicked.
         }
 
+        internal void SetTyping()
+        {
+            if(_isTyping)
+                return;
+
+            _isTyping = true;
+            _typingTimer.Start();
+            _roomService.SetTyping(RoomName);
+        }
+
         #endregion
 
         #region public methods
@@ -285,6 +305,12 @@ namespace Jabbr.WPF.Rooms
         #endregion
 
         #region private methods
+
+        private void TypingExpired(object sender, EventArgs eventArgs)
+        {
+            _typingTimer.Stop();
+            _isTyping = false;
+        }
 
         private void SetIsNotifying(bool isNotifying)
         {

@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel;
 using Caliburn.Micro;
+using System.Windows.Threading;
+using System;
 
 namespace Jabbr.WPF.Users
 {
     public class RoomUserViewModel : PropertyChangedBase
     {
         private readonly UserViewModel _userViewModel;
+        private readonly DispatcherTimer _typingTimer;
 
         private GroupType _group;
         private bool _isOwner;
@@ -15,7 +18,20 @@ namespace Jabbr.WPF.Users
         {
             _userViewModel = userViewModel;
             _userViewModel.PropertyChanged += OnUserPropertyChanged;
+
+// ReSharper disable UseObjectOrCollectionInitializer
+            _typingTimer = new DispatcherTimer();
+// ReSharper restore UseObjectOrCollectionInitializer
+            _typingTimer.Interval = TimeSpan.FromSeconds(3);
+            _typingTimer.Tick += OnTypingExpiration;
+
             SetGroup();
+        }
+
+        private void OnTypingExpiration(object sender, EventArgs eventArgs)
+        {
+            _typingTimer.Stop();
+            IsTyping = false;
         }
 
         public bool IsOwner
@@ -30,40 +46,6 @@ namespace Jabbr.WPF.Users
                 NotifyOfPropertyChange(() => IsOwner);
                 SetGroup();
             }
-        }
-
-        public bool IsAway
-        {
-            get { return _userViewModel.IsAway; }
-            set
-            {
-                _userViewModel.IsAway = value;
-                SetGroup();
-            }
-        }
-
-        public bool IsAfk
-        {
-            get { return _userViewModel.IsAfk; }
-            set { _userViewModel.IsAfk = value; }
-        }
-
-        public string Name
-        {
-            get { return _userViewModel.Name; }
-            set { _userViewModel.Name = value; }
-        }
-
-        public string Note
-        {
-            get { return _userViewModel.Note; }
-            set { _userViewModel.Note = value; }
-        }
-
-        public string Gravatar
-        {
-            get { return _userViewModel.Gravatar; }
-            set { _userViewModel.Gravatar = value; }
         }
 
         public bool IsTyping
@@ -95,18 +77,23 @@ namespace Jabbr.WPF.Users
             }
         }
 
-        internal UserViewModel User
+        public UserViewModel User
         {
             get { return _userViewModel; }
         }
 
         private void OnUserPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            NotifyOfPropertyChange(propertyChangedEventArgs.PropertyName);
+            if(propertyChangedEventArgs.PropertyName == "IsAway")
+                SetGroup();
         }
 
         private void ResetTypingTimer()
         {
+            if(_typingTimer.IsEnabled)
+                _typingTimer.Stop();
+
+            _typingTimer.Start();
         }
 
         private void SetGroup()
@@ -117,7 +104,7 @@ namespace Jabbr.WPF.Users
                 return;
             }
 
-            Group = IsAway ? GroupType.Away : GroupType.Online;
+            Group = _userViewModel.IsAway ? GroupType.Away : GroupType.Online;
         }
     }
 }
