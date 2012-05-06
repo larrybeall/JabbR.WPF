@@ -101,7 +101,19 @@ namespace Jabbr.WPF.Messages
                 return false;
 
             _messages.Add(message);
+            LastMessageDateTime = message.MessageDateTime;
             UnreadMessageCount = _messages.Count(x => !x.HasBeenSeen);
+            return true;
+        }
+
+        public bool TryAddPreviousMessage(ChatMessageViewModel message)
+        {
+            if (!ReferenceEquals(message.User, User))
+                return false;
+
+            _messages.Insert(0, message);
+            MessageDateTime = message.MessageDateTime;
+            MessageId = message.MessageId;
             return true;
         }
     }

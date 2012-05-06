@@ -50,7 +50,7 @@
                 Grid.Row="0"
                 FontSize="16"
                 AttachedProperties:TextBlockHelper.XamlString="{Binding Topic, Converter={StaticResource htmlToXamlConverter}}" />
-            <jabbrControls:BottomScrolledItemsControl Grid.Row="1" x:Name="Messages" />
+            <jabbrControls:BottomScrolledItemsControl Grid.Row="1" x:Name="Messages" ScrollTopThreshold="50" cal:Message.Attach="[Event ScrolledToTop] = [Action RequestPreviousMessages()]" />
         </Grid>
         <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Source={StaticResource usersSource}}">
             <ItemsControl.GroupStyle>

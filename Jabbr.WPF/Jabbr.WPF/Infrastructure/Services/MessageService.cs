@@ -33,6 +33,16 @@ namespace Jabbr.WPF.Infrastructure.Services
             _client.MessageReceived += OnMessageReceived;
         }
 
+        public void RequestPreviousMessages(string messageId, RoomViewModel room)
+        {
+            _client.GetPreviousMessages(messageId)
+                .ContinueWith(_ =>
+                                  {
+                                      var messages = ProcessMessages(_.Result);
+                                      PostOnUi(() => room.AddPreviousMessages(messages));
+                                  });
+        }
+
         public Task ProcessMessageAsync(string room, Message message)
         {
             var task = new Task<ChatMessageViewModel>(() =>

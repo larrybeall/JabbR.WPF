@@ -29,6 +29,7 @@ namespace Jabbr.WPF.Rooms
         private int _unreadMessageCount;
         private int _userCount;
         private bool _isTyping;
+        private bool _isRequstingPreviousMessages;
 
         #endregion
 
@@ -49,6 +50,19 @@ namespace Jabbr.WPF.Rooms
         #endregion
 
         #region properties
+
+        public bool IsRequestingPreviousMessages
+        {
+            get { return _isRequstingPreviousMessages; }
+            set
+            {
+                if(_isRequstingPreviousMessages == value)
+                    return;
+
+                _isRequstingPreviousMessages = value;
+                NotifyOfPropertyChange(() => IsRequestingPreviousMessages);
+            }
+        }
 
         public int UserCount
         {
@@ -274,6 +288,33 @@ namespace Jabbr.WPF.Rooms
             UpdateUnreadMessageCount();
         }
 
+        internal void AddPreviousMessages(IEnumerable<ChatMessageViewModel> messages)
+        {
+            bool hasUpdates = false;
+
+            _messages.IsNotifying = false;
+
+            foreach (var chatMessage in messages.Reverse())
+            {
+                chatMessage.HasBeenSeen = true;
+                var firstMessageGroup = _messages.FirstOrDefault() as ChatMessageGroupViewModel;
+                if (firstMessageGroup == null || !firstMessageGroup.TryAddPreviousMessage(chatMessage))
+                {
+                    var groupMessage = new ChatMessageGroupViewModel(chatMessage);
+                    _messages.Insert(0, groupMessage);
+
+                    hasUpdates = true;
+                }
+            }
+
+            _messages.IsNotifying = true;
+
+            if(hasUpdates)
+                _messages.Refresh();
+
+            IsRequestingPreviousMessages = false;
+        }
+
         internal void Kicked()
         {
             LeaveRoom();
@@ -300,6 +341,19 @@ namespace Jabbr.WPF.Rooms
             _roomService.LeaveRoom(this);
 
             TryClose();
+        }
+
+        public void RequestPreviousMessages()
+        {
+            if(IsRequestingPreviousMessages)
+                return;
+
+            var firstMessage = _messages.FirstOrDefault();
+            if (firstMessage == null)
+                return;
+
+            IsRequestingPreviousMessages = true;
+            _messageService.RequestPreviousMessages(firstMessage.MessageId, this);
         }
 
         #endregion
