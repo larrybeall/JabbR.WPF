@@ -45,16 +45,65 @@ namespace JabbR.WPF.MarkUp.Controls
     ///     <MyNamespace:CustomControl1/>
     ///
     /// </summary>
-    public class BottomScrolledItemsControl : ItemsControl
+    public class BottomScrolledItemsControl : ListBox
     {
         private ScrollViewer _scrollViewer;
         private bool _isAtBottom;
+        private object _topItem;
 
         static BottomScrolledItemsControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(BottomScrolledItemsControl), new FrameworkPropertyMetadata(typeof(BottomScrolledItemsControl)));
             ItemsPanelTemplate itemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(VirtualizingStackPanel)));
             ItemsPanelProperty.OverrideMetadata(typeof(BottomScrolledItemsControl), new FrameworkPropertyMetadata(itemsPanel));
+        }
+
+        #region ScrollTopThreshold Property
+
+        public static readonly DependencyProperty ScrollTopThresholdProperty =
+            DependencyProperty.Register("ScrollTopThreshold", typeof(double), typeof(BottomScrolledItemsControl), new PropertyMetadata(default(double)));
+
+        public double ScrollTopThreshold
+        {
+            get { return (double)GetValue(ScrollTopThresholdProperty); }
+            set { SetValue(ScrollTopThresholdProperty, value); }
+        } 
+
+        #endregion
+
+        #region ScrolledToTop Routed Event
+
+        public static readonly RoutedEvent ScrolledToTopEvent = EventManager.RegisterRoutedEvent(
+            "ScrolledToTop",
+            RoutingStrategy.Bubble,
+            typeof(EventHandler<RoutedEventArgs>),
+            typeof(BottomScrolledItemsControl));
+
+        public event EventHandler<RoutedEventArgs> ScrolledToTop
+        {
+            add { AddHandler(ScrolledToTopEvent, value); }
+            remove { RemoveHandler(ScrolledToTopEvent, value); }
+        }
+
+        protected virtual void OnScrolledToTop()
+        {
+            if (Items.Count > 0)
+                _topItem = Items[0];
+
+            RaiseEvent(new RoutedEventArgs(ScrolledToTopEvent, this));
+        }
+
+        #endregion
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset && _topItem != null)
+            {
+                _scrollViewer.ScrollToBottom();
+                ScrollIntoView(_topItem);
+            }
+
+            base.OnItemsChanged(e);
         }
 
         public override void OnApplyTemplate()
@@ -77,6 +126,10 @@ namespace JabbR.WPF.MarkUp.Controls
                 _scrollViewer.ScrollToBottom();
 
             _isAtBottom = _scrollViewer.ScrollableHeight.Equals(_scrollViewer.VerticalOffset);
+
+            int scrollTopCompareValue = _scrollViewer.VerticalOffset.CompareTo(ScrollTopThreshold);
+            if(scrollTopCompareValue <= 0)
+                OnScrolledToTop();
         }
     }
 }
