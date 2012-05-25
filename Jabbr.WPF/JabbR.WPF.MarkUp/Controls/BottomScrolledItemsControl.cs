@@ -45,7 +45,7 @@ namespace JabbR.WPF.MarkUp.Controls
     ///     <MyNamespace:CustomControl1/>
     ///
     /// </summary>
-    public class BottomScrolledItemsControl : ItemsControl
+    public class BottomScrolledItemsControl : ListBox
     {
         private ScrollViewer _scrollViewer;
         private bool _isAtBottom;
@@ -99,16 +99,8 @@ namespace JabbR.WPF.MarkUp.Controls
         {
             if (e.Action == NotifyCollectionChangedAction.Reset && _topItem != null)
             {
-                var item = ItemContainerGenerator.ContainerFromItem(_topItem);
-                if(item == null)
-                    return;
-
-                var frameworkElement = item as FrameworkElement;
-                if(frameworkElement != null)
-                    frameworkElement.BringIntoView();
-                else if (!IsGrouping && Items.Contains(_topItem))
-                {
-                }
+                _scrollViewer.ScrollToBottom();
+                ScrollIntoView(_topItem);
             }
 
             base.OnItemsChanged(e);
@@ -119,7 +111,6 @@ namespace JabbR.WPF.MarkUp.Controls
             base.OnApplyTemplate();
 
             _scrollViewer = GetTemplateChild("scrollViewer") as ScrollViewer;
-            
             
             if(_scrollViewer == null)
                 return;
