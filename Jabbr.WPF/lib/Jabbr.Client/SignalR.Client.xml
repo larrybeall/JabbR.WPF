@@ -9,7 +9,7 @@
             Helpers for encoding, decoding, and parsing URI query components.
             </summary>
         </member>
-        <member name="M:SignalR.TaskAsyncHelper.Interleave``1(System.Func{``0,System.Action,System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task},``0)">
+        <member name="M:SignalR.TaskAsyncHelper.Interleave``1(System.Func{``0,System.Action,System.Threading.Tasks.Task},System.Func{System.Threading.Tasks.Task},``0,System.Threading.Tasks.TaskCompletionSource{System.Object})">
             <summary>
             Passes a task returning function into another task returning function so that
             it can decide when it starts and returns a task that completes when all are finished
@@ -72,6 +72,13 @@
             <param name="data">The data to send.</param>
             <returns>A task that represents when the data has been sent.</returns>
         </member>
+        <member name="M:SignalR.Client.Connection.Send(System.Object)">
+            <summary>
+            Sends an object that will be JSON serialized asynchronously over the connection.
+            </summary>
+            <param name="value">The value to serialize.</param>
+            <returns>A task that represents when the data has been sent.</returns>
+        </member>
         <member name="E:SignalR.Client.Connection.Received">
             <summary>
             Occurs when the <see cref="T:SignalR.Client.Connection"/> has received data from the server.
@@ -90,6 +97,11 @@
         <member name="E:SignalR.Client.Connection.Reconnected">
             <summary>
             Occurs when the <see cref="T:SignalR.Client.Connection"/> successfully reconnects after a timeout.
+            </summary>
+        </member>
+        <member name="E:SignalR.Client.Connection.StateChanged">
+            <summary>
+            Occurs when the <see cref="T:SignalR.Client.Connection"/> state changes.
             </summary>
         </member>
         <member name="P:SignalR.Client.Connection.CookieContainer">
@@ -112,11 +124,6 @@
             Gets the url for the connection.
             </summary>
         </member>
-        <member name="P:SignalR.Client.Connection.IsActive">
-            <summary>
-            Gets a value that indicates whether the connection is active or not.
-            </summary>
-        </member>
         <member name="P:SignalR.Client.Connection.MessageId">
             <summary>
             Gets or sets the last message id for the connection.
@@ -135,6 +142,11 @@
         <member name="P:SignalR.Client.Connection.QueryString">
             <summary>
             Gets the querystring specified in the ctor.
+            </summary>
+        </member>
+        <member name="P:SignalR.Client.Connection.State">
+            <summary>
+            Gets the current <see cref="T:SignalR.Client.ConnectionState"/> of the connection.
             </summary>
         </member>
         <member name="T:SignalR.Client.Hubs.HubConnection">
@@ -243,6 +255,11 @@
             Represents a subscription to a hub method.
             </summary>
         </member>
+        <member name="T:SignalR.Client.Infrastructure.ThreadSafeInvoker">
+            <summary>
+            Allows for thread safe invocation of a delegate.
+            </summary>
+        </member>
         <member name="T:SignalR.Client.Http.DefaultHttpClient">
             <summary>
             The default <see cref="T:SignalR.Client.Http.IHttpClient"/> implementation.
@@ -337,6 +354,43 @@
         <member name="M:SignalR.Client.Http.IResponse.Close">
             <summary>
             Closes the response.
+            </summary>
+        </member>
+        <member name="T:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader">
+            <summary>
+            Event source implementation for .NET. This isn't to the spec but it's enough to support SignalR's
+            server.
+            </summary>
+        </member>
+        <member name="M:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.#ctor(System.IO.Stream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader"/> class.
+            </summary>
+            <param name="stream">The stream to read event source payloads from.</param>
+        </member>
+        <member name="M:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.Start">
+            <summary>
+            Starts the reader.
+            </summary>
+        </member>
+        <member name="M:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.Close">
+            <summary>
+            Closes the connection and the underlying stream.
+            </summary>
+        </member>
+        <member name="P:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.Opened">
+            <summary>
+            Invoked when the connection is open.
+            </summary>
+        </member>
+        <member name="P:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.Closed">
+            <summary>
+            Invoked when the connection is closed.
+            </summary>
+        </member>
+        <member name="P:SignalR.Client.Transports.ServerSentEvents.EventSourceStreamReader.Message">
+            <summary>
+            Invoked when there's a message if received in the stream.
             </summary>
         </member>
         <member name="T:SignalR.Client.Hubs.HubProxyExtensions">
@@ -442,10 +496,38 @@
             <param name="eventName">The name of the event.</param>
             <returns>An <see cref="T:System.IObservable{object[]}"/>.</returns>
         </member>
-        <member name="M:SignalR.Client.Transports.LongPollingTransport.FireReconnected(SignalR.Client.IConnection,System.Threading.CancellationTokenSource,System.Int32@)">
+        <member name="T:SignalR.Client.StateChange">
+            <summary>
+            Represents a change in the connection state.
+            </summary>
+        </member>
+        <member name="M:SignalR.Client.StateChange.#ctor(SignalR.Client.ConnectionState,SignalR.Client.ConnectionState)">
+            <summary>
+            Creates a new stance of <see cref="T:SignalR.Client.StateChange"/>.
+            </summary>
+            <param name="oldState">The old state of the connection.</param>
+            <param name="newState">The new state of the connection.</param>
+        </member>
+        <member name="P:SignalR.Client.StateChange.OldState">
+            <summary>
+            Gets the old state of the connection.
+            </summary>
+        </member>
+        <member name="P:SignalR.Client.StateChange.NewState">
+            <summary>
+            Gets the new state of the connection.
+            </summary>
+        </member>
+        <member name="M:SignalR.Client.Transports.LongPollingTransport.FireReconnected(SignalR.Client.IConnection)">
             <summary>
             
             </summary>
+        </member>
+        <member name="M:SignalR.Client.Transports.ServerSentEventsTransport.OnBeforeAbort(SignalR.Client.IConnection)">
+            <summary>
+            Stops even event source as well and the base connection.
+            </summary>
+            <param name="connection">The <see cref="T:SignalR.Client.IConnection"/> being aborted.</param>
         </member>
         <member name="P:SignalR.Client.Transports.ServerSentEventsTransport.ConnectionTimeout">
             <summary>
